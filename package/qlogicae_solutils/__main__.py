@@ -1,23 +1,28 @@
 from __future__ import annotations
 
-import subprocess
-import sys
-
-from pathlib import Path
-
 
 def main() -> int:
-    result = subprocess.run(
-        [
-            sys.executable,
-            str(Path(__file__).parent.resolve() / "v0" / "__main__.py"),
-            *sys.argv[1:],
-        ],
-        check=False,
-    )
+    try:
+        import sys
+        import subprocess
+        from pathlib import Path
 
-    return result.returncode
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(Path(__file__).resolve().parent / "v1" / "app.py"),
+                *sys.argv[1:],
+            ],
+            check=False,
+            shell=False,
+        )
+
+        return result.returncode
+
+    except (OSError, ValueError, RuntimeError) as error:
+        print(f"Error: {error}", file=sys.stderr)
+        return 1
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())
