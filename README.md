@@ -13,7 +13,7 @@
   <div style="margin: 32px 64px;">
 
 <!-- Static Markdown Badges -->
-![Project - Version](https://img.shields.io/badge/Version-v0.0.1-blue)
+![Project - Version](https://img.shields.io/badge/Version-v0.1.0-blue)
 ![License - Name](https://img.shields.io/badge/License-MIT-red)
 
 <!-- Dynamic Markdown Badges -->

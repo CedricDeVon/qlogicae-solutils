@@ -1,6 +1,6 @@
 [project]
 name = "qlogicae-solutils"
-version = "0.0.1"
+version = "0.1.0"
 description = "A local, OS-independent, CI/CD workflow execution tool for QLogicae projects"
 readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.12"
@@ -181,6 +181,7 @@ files = [
 exclude = [
     '(^|/)_vendor(/|$)',
     '__init__.py',
+    'qlogicae_solutils/v1/configuration'
 ]
 mypy_path = "qlogicae_solutils/v1"
 strict = true
@@ -207,6 +208,9 @@ exclude = [
 ]
 
 [tool.hatch.build.targets.wheel]
+packages = ["qlogicae_solutils"]
+
+[tool.hatch.envs.default.scripts]
 test-check-and-apply-format = """
     ruff check qlogicae_solutils/v1 --fix
 """
@@ -220,7 +224,7 @@ test-run-unit = """
 """
 
 test-run-smoke = """
-    pytest -vv test/qlogicae_solutils/v1/smoke/test_imports.py
+    pytest -vv test/qlogicae_solutils/qlogicae-solutils-cli-active-major-version-label/smoke/test_imports.py
 """
 
 test-run-e2e = """
@@ -265,14 +269,6 @@ benchmark-view-memray-usage-import-and-allocate = """
 
 benchmark-short-library-import-memory-usage = """
     ./.venv/bin/python -m benchmark.qlogicae_solutils.v1.tool qlogicae_solutils.v1 --json-output output/benchmark/import-library-memory-usage.json --repetitions 10
-"""
-
-benchmark-long-experiment-import-memory-usage = """
-    ./.venv/bin/python -m benchmark.qlogicae_solutils.v1.tool benchmark.qlogicae_solutils.v1.memory.import.experiment.static_import benchmark.qlogicae_solutils.v1.memory.import.experiment.old_dynamic_import benchmark.qlogicae_solutils.v1.memory.import.experiment.typeless_with_static_class_import benchmark.qlogicae_solutils.v1.memory.import.experiment.typeless_with_dynamic_class_import benchmark.qlogicae_solutils.v1.memory.import.experiment.empty_package --json-output output/benchmark/import-experiment-memory-usage.json/ --repetitions 20
-"""
-
-benchmark-long-library-import-memory-usage = """
-    ./.venv/bin/python -m benchmark.qlogicae_solutils.v1.tool qlogicae_solutils.v1 qlogicae_solutils.v2 qlogicae_solutils.v1 --json-output output/benchmark/import-library-memory-usage.json --repetitions 20
 """
 
 deploy-build-release = """

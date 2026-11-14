@@ -2,13 +2,10 @@
 
 def main():
     try:
-        from plugin import (
-            root
-        )
+        import sys
 
-        from qlogicae_cliq.v1.library.cli_app_manager import (
-            CliAppManager    
-        )
+        from plugin import root
+        from qlogicae_cliq.v1.library.cli_app_manager import CliAppManager
 
         result = CliAppManager().get_singleton().run(
             external_dependency={

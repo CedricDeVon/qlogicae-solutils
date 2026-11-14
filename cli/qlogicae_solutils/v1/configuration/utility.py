@@ -1,6 +1,9 @@
 
 def export():
-    data = {    
+    description = (
+        "A local, OS-independent, CI/CD workflow execution tool for QLogicae projects"
+    )
+    data = {
         "data": {
             "company-name": {
                 "value": "qlogicae"
@@ -9,7 +12,7 @@ def export():
                 "value": "solutils"
             },
             "project-description": {
-                "value": "A local, OS-independent, CI/CD workflow execution tool for QLogicae projects"
+                "value": description
             },
             "active-major-version-label": {
                 "value": "v1"
