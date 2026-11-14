@@ -1,0 +1,2 @@
+[console_scripts]
+qlogicae-cor = qlogicae_cliq.v1.app:main

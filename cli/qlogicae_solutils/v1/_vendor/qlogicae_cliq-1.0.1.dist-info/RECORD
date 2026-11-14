@@ -1,0 +1,17 @@
+qlogicae_cliq/__init__.py,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0
+qlogicae_cliq/__main__.py,sha256=3Ip5o7DPc4w27jnBGP8GKxeLBdobRDlkjiodnVh8xiw,627
+qlogicae_cliq/v1/__init__.py,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0
+qlogicae_cliq/v1/__main__.py,sha256=in-wsDhLrzU2waGUgLUhehV2yYj2a4r84_CHMAkUdOE,622
+qlogicae_cliq/v1/app.py,sha256=Ae-A8xa0xYBsni2wrY3mjHTc1Ld1_PzC1YEuLbjwzEA,179
+qlogicae_cliq/v1/library/__init__.py,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0
+qlogicae_cliq/v1/library/cli_app_manager.py,sha256=n6uKiNZMZyZmu7NMLm3jy5OtCNny1SXQNAK0pt9RRbY,10411
+qlogicae_cliq/v1/library/cli_command_manager.py,sha256=eZyUGhSYzohZGYpAqfAL_vTjekFmoIUsCwDTtcPq_sg,10869
+qlogicae_cliq/v1/library/cli_database_manager.py,sha256=Mkk1fjXB5gSKd38bVZ2W6TJL0wyXKjiSRtV5766g37A,10889
+qlogicae_cliq/v1/library/cli_log_manager.py,sha256=oZkvT9Vs3WBmwkPWIvJDqb52iwR1bz1t3lFAQV3wjNY,10419
+qlogicae_cliq/v1/library/cli_plugin_manager.py,sha256=FOrmOLNrJmIdHEi1my4IPgUdFHV0iprxcRQ4NLm5Eoc,9856
+qlogicae_cliq/py.typed,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0
+qlogicae_cliq-1.0.1.dist-info/METADATA,sha256=DBYytC5uf8KQ17XizUU06NuD9n7v1scOrLJj5V-Uo3E,5129
+qlogicae_cliq-1.0.1.dist-info/WHEEL,sha256=2iZrJkDIkeDh0k9SikKMqFuRP-ua6mb4Ir1AsER4BEw,87
+qlogicae_cliq-1.0.1.dist-info/entry_points.txt,sha256=mUJrDMh7C55hu-UUm_WKK_JatuZOYZ56HxMHsYRVurE,59
+qlogicae_cliq-1.0.1.dist-info/licenses/LICENSE,sha256=0nkMTqI13eB7BiRZX8di222r0RNYZMeuTCPwvhNEZKU,1082
+qlogicae_cliq-1.0.1.dist-info/RECORD,,

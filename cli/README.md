@@ -9,13 +9,11 @@
 
 <div style="text-align: center;">
   <h1>SolUtils</h1>
-  <p style="font-style: italic;">A local OS-independent CI/CD tool for QLogicae projects</p>
+  <p style="font-style: italic;">A local, OS-independent, CI/CD workflow execution tool for QLogicae projects</p>
   <div style="margin: 32px 64px;">
 
 <!-- Static Markdown Badges -->
 ![Project - Version](https://img.shields.io/badge/Version-v0.0.1-blue)
-[![Python - Versions](https://img.shields.io/badge/Python-3.12|%933.13|%933.14-blue?logo=python&logoColor=gold)](https://www.python.org/)
-![License - MIT](https://img.shields.io/badge/License-MIT-red)
 ![License - Name](https://img.shields.io/badge/License-MIT-red)
 
 <!-- Dynamic Markdown Badges -->
@@ -104,10 +102,10 @@
   	🧾 Description
 </h3>
 <p style="font-style:italic">
-  	[insert quote]
+  	If it works, it works - is that really a problem?
 </p>
 <p>
-  	[...]
+  	<strong>QLogicae SolUtils</strong> is a local, OS-independent, CI/CD workflow execution tool for QLogicae projects.
 </p>
 <h3 id="about-core-features">
   	⚙️ Core Features
@@ -118,7 +116,12 @@
 <ul>
 	<li>
 		<p>
-			[...]
+			OS-Independent Commands
+		</p>
+	</li>
+	<li>
+		<p>
+			And more to come!
 		</p>
 	</li>
 </ul>
@@ -132,7 +135,7 @@
 </br>
 
 
-
+<!-- 
 <h2 id="usage">
   	🧑‍💻 Usage
 </h2>
@@ -174,7 +177,7 @@
 <p>
   	[...]
 </p>
-</br>
+</br> -->
 
 
 

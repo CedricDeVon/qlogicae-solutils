@@ -1,10 +1,8 @@
-from __future__ import annotations
 
-
-def main() -> int:
+def main():
     try:
-        import sys
-        import subprocess
+        import sys # nosec B404
+        import subprocess # nosec B404
         from pathlib import Path
 
         result = subprocess.run(
@@ -13,8 +11,8 @@ def main() -> int:
                 str(Path(__file__).resolve().parent / "app.py"),
                 *sys.argv[1:],
             ],
-            check=False,
-            shell=False,
+            check=False, # nosec B603
+            shell=False, # nosec B603
         )
 
         return result.returncode

@@ -1,7 +1,7 @@
 [project]
 name = "qlogicae-solutils"
 version = "0.0.1"
-description = "A local OS-independent CI/CD tool for QLogicae projects"
+description = "A local, OS-independent, CI/CD workflow execution tool for QLogicae projects"
 readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.12"
 license = "MIT"
@@ -207,4 +207,83 @@ exclude = [
 ]
 
 [tool.hatch.build.targets.wheel]
+test-check-and-apply-format = """
+    ruff check qlogicae_solutils/v1 --fix
+"""
+
+test-check-and-apply-lint = """
+
+"""
+
+test-run-unit = """
+    pytest -vv --cov --cov-branch --cov-report=term-missing --cov-report=html:\"output/test/unit/html\" --cov-report=xml:\"output/test/unit/coverage.xml\" --cov-report=json:\"output/test/unit/coverage.json\" --junitxml=\"output/test/unit/junit.xml\"
+"""
+
+test-run-smoke = """
+    pytest -vv test/qlogicae_solutils/v1/smoke/test_imports.py
+"""
+
+test-run-e2e = """
+    
+"""
+
+test-check-feature-staleness = """
+    vulture qlogicae_solutils 
+"""
+
+test-check-dependencies = """
+    pip-audit -r requirements.txt
+"""
+
+test-check-hardcoded-secrets = """
+    detect-secrets scan 
+"""
+
+test-check-security = """
+    bandit -r qlogicae_solutils
+"""
+
+test-check-pip-deployment-build = """
+    twine check output/build/release/dist/*
+"""
+
+benchmark-create-memray-usage-import-only = """
+    memray run -o output/benchmark/usage.import_only.bin -m benchmark.qlogicae_solutils.v1.memory.import.usage.import_only --force
+"""
+
+benchmark-view-memray-usage-import-only = """
+    memray tree output/benchmark/usage.import_only.bin
+"""
+
+benchmark-create-memray-usage-import-and-allocate = """
+    memray run -o output/benchmark/usage.import_and_allocate.bin -m benchmark.qlogicae_solutils.v1.memory.import.usage.import_and_allocate --force
+"""
+
+benchmark-view-memray-usage-import-and-allocate = """
+    memray tree output/benchmark/usage.import_and_allocate.bin
+"""
+
+benchmark-short-library-import-memory-usage = """
+    ./.venv/bin/python -m benchmark.qlogicae_solutils.v1.tool qlogicae_solutils.v1 --json-output output/benchmark/import-library-memory-usage.json --repetitions 10
+"""
+
+benchmark-long-experiment-import-memory-usage = """
+    ./.venv/bin/python -m benchmark.qlogicae_solutils.v1.tool benchmark.qlogicae_solutils.v1.memory.import.experiment.static_import benchmark.qlogicae_solutils.v1.memory.import.experiment.old_dynamic_import benchmark.qlogicae_solutils.v1.memory.import.experiment.typeless_with_static_class_import benchmark.qlogicae_solutils.v1.memory.import.experiment.typeless_with_dynamic_class_import benchmark.qlogicae_solutils.v1.memory.import.experiment.empty_package --json-output output/benchmark/import-experiment-memory-usage.json/ --repetitions 20
+"""
+
+benchmark-long-library-import-memory-usage = """
+    ./.venv/bin/python -m benchmark.qlogicae_solutils.v1.tool qlogicae_solutils.v1 qlogicae_solutils.v2 qlogicae_solutils.v1 --json-output output/benchmark/import-library-memory-usage.json --repetitions 20
+"""
+
+deploy-build-release = """
+    twine upload output/build/release/dist/* --config-file .pypirc
+"""
+
+usage-install-release = """
+    ./.venv/bin/python -m pip install --force-reinstall output/build/release/dist/*.whl
+"""
+
+usage-uninstall-release = """
+    ./.venv/bin/python -m pip uninstall -y output/build/release/dist/*.whl
+"""
 

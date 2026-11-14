@@ -1,0 +1,2 @@
+[console_scripts]
+qlogicae-cor = qlogicae_cor.v3.app:main

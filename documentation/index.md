@@ -62,6 +62,7 @@
 <table style="width: 100%;">
     <thead>
         <tr>
+            <th style="text-align: left">Status</th>
             <th style="text-align: left">Name</th>
             <th style="text-align: left">Date</th>
             <th style="text-align: left">Summary</th>
@@ -70,6 +71,11 @@
     </thead>
     <tbody>
         <tr>
+            <td style="text-align: left">⌛ Developing</td>
+            <td style="text-align: left">1.0.0</td>
+            <td style="text-align: left">2026-12-XX</td>
+            <td style="text-align: left">Initial public release</td>
+            <td style="text-align: left"></td>
         </tr>
     </tbody>
 </table>
