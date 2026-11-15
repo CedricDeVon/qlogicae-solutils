@@ -1,6 +1,6 @@
 [project]
 name = "qlogicae-solutils"
-version = "0.1.0"
+version = "1.0.0a1"
 description = "A local, OS-independent, CI/CD workflow execution tool for QLogicae projects"
 readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.12"
@@ -49,7 +49,6 @@ dev = [
     "hatch",
     "twine",
     "memray",
-    "scalene",
     "pympler",
     "vulture",
     "bandit",
@@ -59,7 +58,8 @@ dev = [
 ]
 
 [project.scripts]
-qlogicae-solutils = "qlogicae_solutils.v1.main:main"
+qlogicae-solutils = "qlogicae_solutils.v1.__main__:main"
+qlogicae-solutils-v1 = "qlogicae_solutils.v1.__main__:main"
 
 
 [project.urls]
@@ -137,7 +137,10 @@ exclude = [
     ".tox",
     ".nox",
     ".idea",
-    ".vscode"
+    ".vscode",
+    "qlogicae_solutils/v1/_vendor",
+    "qlogicae_solutils/v1/qlogicae_cliq",
+    "qlogicae_solutils/v1/qlogicae_cor",
 ]
 
 
@@ -181,7 +184,6 @@ files = [
 exclude = [
     '(^|/)_vendor(/|$)',
     '__init__.py',
-    'qlogicae_solutils/v1/configuration'
 ]
 mypy_path = "qlogicae_solutils/v1"
 strict = true
@@ -196,9 +198,7 @@ explicit_package_bases = true
 
 
 [[tool.mypy.overrides]]
-module = [
-    "qlogicae_solutils.v1._vendor.*",
-]
+module = []
 ignore_errors = true
 
 
@@ -211,75 +211,119 @@ exclude = [
 packages = ["qlogicae_solutils"]
 
 [tool.hatch.envs.default.scripts]
-test-check-and-apply-format = """
+v1-build-filesystem-clean = """
+    python3 -c "import shutil,sys; [shutil.rmtree(p, ignore_errors=True) for p in sys.argv[1:]]" dist output
+"""
+
+v1-build-filesystem-setup = """
+    python3 -c "import pathlib,sys; [pathlib.Path(p).mkdir(parents=True, exist_ok=True) for p in sys.argv[1:]]" /home/cedricdevon/workspace/qlogicae/selection/qlogicae-solutils/cli/archive /home/cedricdevon/workspace/qlogicae/selection/qlogicae-solutils/cli/output/build/release /home/cedricdevon/workspace/qlogicae/selection/qlogicae-solutils/cli/output/build/release/source /home/cedricdevon/workspace/qlogicae/selection/qlogicae-solutils/cli/output/build/release/minified /home/cedricdevon/workspace/qlogicae/selection/qlogicae-solutils/cli/output/test/unit /home/cedricdevon/workspace/qlogicae/selection/qlogicae-solutils/cli/output/test/smoke /home/cedricdevon/workspace/qlogicae/selection/qlogicae-solutils/cli/output/test/e2e /home/cedricdevon/workspace/qlogicae/selection/qlogicae-solutils/cli/output/benchmark
+"""
+
+v1-build-pre-minify = """
+    python3 -c "import shutil,sys; shutil.copytree(sys.argv[1], sys.argv[2], dirs_exist_ok=True)" qlogicae_solutils output/build/release/minified/qlogicae_solutils
+"""
+
+v1-build-minify = """
+    pyminify --in-place --prefer-single-line --remove-debug --remove-asserts --remove-literal-statements --remove-class-attribute-annotations output/build/release/minified
+"""
+
+v1-build-source = """
+    python3 -c "import shutil,sys; shutil.copytree(sys.argv[1], sys.argv[2], dirs_exist_ok=True)" qlogicae_solutils output/build/release/source/qlogicae_solutils
+"""
+
+v1-build-pre-1-pip-package = """
+    python3 -c "import shutil,sys; [shutil.rmtree(p, ignore_errors=True) for p in sys.argv[1:]]" qlogicae_solutils
+"""
+
+v1-build-pre-2-pip-package = """
+    python3 -c "import shutil,sys; shutil.copytree(sys.argv[1], sys.argv[2], dirs_exist_ok=True)" output/build/release/minified/qlogicae_solutils qlogicae_solutils
+"""
+
+v1-build-pip-package = """
+    hatch build
+"""
+
+v1-build-post-1-pip-package = """
+    python3 -c "import shutil,sys; shutil.copytree(sys.argv[1], sys.argv[2], dirs_exist_ok=True)" dist output/build/release/dist
+"""
+
+v1-build-post-2-pip-package = """
+    python3 -c "import shutil,sys; [shutil.rmtree(p, ignore_errors=True) for p in sys.argv[1:]]" qlogicae_solutils
+"""
+
+v1-build-post-3-pip-package = """
+    python3 -c "import shutil,sys; shutil.copytree(sys.argv[1], sys.argv[2], dirs_exist_ok=True)" output/build/release/source/qlogicae_solutils qlogicae_solutils
+"""
+
+v1-test-check-and-apply-format = """
     ruff check qlogicae_solutils/v1 --fix
 """
 
-test-check-and-apply-lint = """
+v1-test-check-and-apply-lint = """
 
 """
 
-test-run-unit = """
+v1-test-run-unit = """
     pytest -vv --cov --cov-branch --cov-report=term-missing --cov-report=html:\"output/test/unit/html\" --cov-report=xml:\"output/test/unit/coverage.xml\" --cov-report=json:\"output/test/unit/coverage.json\" --junitxml=\"output/test/unit/junit.xml\"
 """
 
-test-run-smoke = """
-    pytest -vv test/qlogicae_solutils/qlogicae-solutils-cli-active-major-version-label/smoke/test_imports.py
+v1-test-run-smoke = """
+    pytest -vv test/qlogicae_solutils/v1/smoke/test_imports.py
 """
 
-test-run-e2e = """
+v1-test-run-e2e = """
     
 """
 
-test-check-feature-staleness = """
+v1-test-check-feature-staleness = """
     vulture qlogicae_solutils 
 """
 
-test-check-dependencies = """
+v1-test-check-dependencies = """
     pip-audit -r requirements.txt
 """
 
-test-check-hardcoded-secrets = """
+v1-test-check-hardcoded-secrets = """
     detect-secrets scan 
 """
 
-test-check-security = """
+v1-test-check-security = """
     bandit -r qlogicae_solutils
 """
 
-test-check-pip-deployment-build = """
+v1-test-check-pip-deployment-build = """
     twine check output/build/release/dist/*
 """
 
-benchmark-create-memray-usage-import-only = """
+v1-benchmark-create-memray-usage-import-only = """
     memray run -o output/benchmark/usage.import_only.bin -m benchmark.qlogicae_solutils.v1.memory.import.usage.import_only --force
 """
 
-benchmark-view-memray-usage-import-only = """
+v1-benchmark-view-memray-usage-import-only = """
     memray tree output/benchmark/usage.import_only.bin
 """
 
-benchmark-create-memray-usage-import-and-allocate = """
+v1-benchmark-create-memray-usage-import-and-allocate = """
     memray run -o output/benchmark/usage.import_and_allocate.bin -m benchmark.qlogicae_solutils.v1.memory.import.usage.import_and_allocate --force
 """
 
-benchmark-view-memray-usage-import-and-allocate = """
+v1-benchmark-view-memray-usage-import-and-allocate = """
     memray tree output/benchmark/usage.import_and_allocate.bin
 """
 
-benchmark-short-library-import-memory-usage = """
-    ./.venv/bin/python -m benchmark.qlogicae_solutils.v1.tool qlogicae_solutils.v1 --json-output output/benchmark/import-library-memory-usage.json --repetitions 10
+v1-benchmark-short-library-import-memory-usage = """
+    ./.venv/bin/python -m benchmark.qlogicae_solutils.v1.tool qlogicae_solutils.v1 --json-output output/benchmark/memory_usage/import-library-memory-usage.json --repetitions 10
 """
 
-deploy-build-release = """
+v1-deploy-build-release = """
     twine upload output/build/release/dist/* --config-file .pypirc
 """
 
-usage-install-release = """
+v1-usage-install-release = """
     ./.venv/bin/python -m pip install --force-reinstall output/build/release/dist/*.whl
 """
 
-usage-uninstall-release = """
+v1-usage-uninstall-release = """
     ./.venv/bin/python -m pip uninstall -y output/build/release/dist/*.whl
 """
 
