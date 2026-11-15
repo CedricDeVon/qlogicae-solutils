@@ -69,7 +69,7 @@ def _allocate():
                                         "kwargs": { "help": "", },
                                         "command_handler": (
                                             workflow_list_selections_command_handler
-                                        ),                                        
+                                        ),
                                     },
                                 ],
                             },

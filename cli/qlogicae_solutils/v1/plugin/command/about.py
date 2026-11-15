@@ -11,9 +11,9 @@ def about_version_command_handler(arguments):
     qlogicae_exports = qlogicae.export()
 
     print(
-        ((qlogicae_exports
+        (qlogicae_exports
             .get("current-version-label", {}) or {})
-            .get("value", None) or None)
+            .get("value", None) or None
     )
 
     return True
@@ -40,7 +40,7 @@ def _allocate():
                                 "kwargs": { "help": "", },
                                 "command_handler": (
                                     about_version_command_handler
-                                ),                                
+                                ),
                             },
                         ],
                     },

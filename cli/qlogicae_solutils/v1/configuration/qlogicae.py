@@ -12,7 +12,7 @@ def _allocate():
     description = (
         "A local, OS-independent, CI/CD workflow execution tool for QLogicae projects"
     )
-    _data = {    
+    _data = {
         "company-name": {
             "value": "qlogicae"
         },

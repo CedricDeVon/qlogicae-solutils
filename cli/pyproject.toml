@@ -216,7 +216,7 @@ v1-build-filesystem-clean = """
 """
 
 v1-build-filesystem-setup = """
-    python3 -c "import pathlib,sys; [pathlib.Path(p).mkdir(parents=True, exist_ok=True) for p in sys.argv[1:]]" /home/cedricdevon/workspace/qlogicae/selection/qlogicae-solutils/cli/archive /home/cedricdevon/workspace/qlogicae/selection/qlogicae-solutils/cli/output/build/release /home/cedricdevon/workspace/qlogicae/selection/qlogicae-solutils/cli/output/build/release/source /home/cedricdevon/workspace/qlogicae/selection/qlogicae-solutils/cli/output/build/release/minified /home/cedricdevon/workspace/qlogicae/selection/qlogicae-solutils/cli/output/test/unit /home/cedricdevon/workspace/qlogicae/selection/qlogicae-solutils/cli/output/test/smoke /home/cedricdevon/workspace/qlogicae/selection/qlogicae-solutils/cli/output/test/e2e /home/cedricdevon/workspace/qlogicae/selection/qlogicae-solutils/cli/output/benchmark
+    python3 -c "import pathlib,sys; [pathlib.Path(p).mkdir(parents=True, exist_ok=True) for p in sys.argv[1:]]" archive output/build/release output/build/release/source output/build/release/minified output/test/unit output/test/smoke output/test/e2e output/benchmark
 """
 
 v1-build-pre-minify = """
@@ -296,23 +296,23 @@ v1-test-check-pip-deployment-build = """
 """
 
 v1-benchmark-create-memray-usage-import-only = """
-    memray run -o output/benchmark/usage.import_only.bin -m benchmark.qlogicae_solutils.v1.memory.import.usage.import_only --force
+    memray run -o output/benchmark/memory_usage/import_only.bin -m benchmark.qlogicae_solutils.v1.memory.import.usage.import_only --force
 """
 
 v1-benchmark-view-memray-usage-import-only = """
-    memray tree output/benchmark/usage.import_only.bin
+    memray tree output/benchmark/memory_usage/import_only.bin
 """
 
 v1-benchmark-create-memray-usage-import-and-allocate = """
-    memray run -o output/benchmark/usage.import_and_allocate.bin -m benchmark.qlogicae_solutils.v1.memory.import.usage.import_and_allocate --force
+    memray run -o output/benchmark/memory_usage/import_and_allocate.bin -m benchmark.qlogicae_solutils.v1.memory.import.usage.import_and_allocate --force
 """
 
 v1-benchmark-view-memray-usage-import-and-allocate = """
-    memray tree output/benchmark/usage.import_and_allocate.bin
+    memray tree output/benchmark/memory_usage/import_and_allocate.bin
 """
 
 v1-benchmark-short-library-import-memory-usage = """
-    ./.venv/bin/python -m benchmark.qlogicae_solutils.v1.tool qlogicae_solutils.v1 --json-output output/benchmark/memory_usage/import-library-memory-usage.json --repetitions 10
+    ./.venv/bin/python -m benchmark.qlogicae_solutils.v1.tool qlogicae_solutils.v1 --json-output output/benchmark/memory_usage/import-library.json --repetitions 10
 """
 
 v1-deploy-build-release = """
