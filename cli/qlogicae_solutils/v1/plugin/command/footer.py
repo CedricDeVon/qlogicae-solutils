@@ -1,0 +1,36 @@
+__all__ = (
+    "export"
+)
+
+_data = None
+
+
+def _allocate():
+    global _allocate
+    global _data
+
+    _data = {
+        "object_merge": {
+            "level": 1
+        },
+        "command": {
+            "options": {
+                "commands": [
+                    {
+                        "name": "",
+                        "args": (),
+                        "kwargs": { "help": "", },
+                    },
+                ],
+            },
+        },
+    }
+
+    _allocate = lambda: None
+
+
+def export():
+    if not _data:
+        _allocate()
+
+    return _data

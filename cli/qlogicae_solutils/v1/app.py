@@ -1,32 +1,16 @@
 
-
 def main():
-    try:
-        import sys
+    from library.application_manager import ApplicationManager
 
-        from plugin import root
-        from qlogicae_cliq.v1.library.cli_app_manager import CliAppManager
+    result = (
+        ApplicationManager()
+            .get_singleton()
+            .run()
+    )
 
-        result = CliAppManager().get_singleton().run(
-            external_dependency={
-                "is_pre_allocated": False,
-            },
-            plugin={
-                "is_recursive": True,
-                "imported_modules": (
-                    root,
-                ),
-                "raw_export_data": (),
-                # "initial_export_data": {},
-            },
-        )
-
-        return result
-
-    except (OSError, ValueError, RuntimeError) as error:
-        print(f"Error: {error}", file=sys.stderr)
-        return 1
+    return result
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

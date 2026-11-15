@@ -2,54 +2,52 @@ __all__ = (
     "export"
 )
 
-def command_about_version(arguments):
-    print("Confirmed!")
-
-    return True
+_data = None
 
 
 def on_pre_setup():
-    print("on_pre_setup")
+    pass
 
 
 def on_post_setup():
-    print("on_post_setup")
+    pass
 
 
 def on_pre_run():
-    print("on_pre_run")
+    pass
 
 
 def on_post_run():
-    print("on_post_run")
+    pass
 
 
-def export():
-    data = {
+def _allocate():
+    global _allocate
+    global _data
+
+    from configuration import qlogicae
+
+    qlogicae_exports = qlogicae.export()
+
+    _data = {
         "object_merge": {
-            "level": -1
+            "level": 0
         },
         "command": {
             "options": {
-                "commands": [
-                    {
-                        "name": "about",
-                        "args": (),
-                        "kwargs": {
-                            "help": "about",
-                        },
-                        "subcommands": [
-                            {
-                                "name": "version",
-                                "kwargs": {
-                                    "help": "version",
-                                },
-                                "command_handler": command_about_version,
-                                "arguments": [],
-                            },
-                        ],
-                    },
-                ],
+                "kwargs": {
+                    "prog": (
+                        (qlogicae_exports
+                            .get("brand-base-name", {}) or {})
+                            .get("value", "") or ""
+                    ),
+                    "description": (
+                        (qlogicae_exports
+                            .get("project-description", {}) or {})
+                            .get("value", "") or ""
+                    )
+                },
+                "commands": [],
             },
             "callbacks": {
                 "on_pre_setup": on_pre_setup,
@@ -60,6 +58,11 @@ def export():
         },
     }
 
-    return data
+    _allocate = lambda: None
 
 
+def export():
+    if not _data:
+        _allocate()
+
+    return _data
