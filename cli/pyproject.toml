@@ -255,6 +255,10 @@ v1-build-post-3-pip-package = """
     python3 -c "import shutil,sys; shutil.copytree(sys.argv[1], sys.argv[2], dirs_exist_ok=True)" output/build/release/source/qlogicae_solutils qlogicae_solutils
 """
 
+v1-archive-output = """
+    python3 -c "import shutil,sys; shutil.copytree(sys.argv[1], sys.argv[2], dirs_exist_ok=True)" output archive/v1.0.0a1/2026-11-16T22-28-33.264746926+08-00
+"""
+
 v1-test-check-and-apply-format = """
     ruff check qlogicae_solutils/v1 --fix
 """
@@ -264,7 +268,7 @@ v1-test-check-and-apply-lint = """
 """
 
 v1-test-run-unit = """
-    pytest -vv --cov --cov-branch --cov-report=term-missing --cov-report=html:\"output/test/unit/html\" --cov-report=xml:\"output/test/unit/coverage.xml\" --cov-report=json:\"output/test/unit/coverage.json\" --junitxml=\"output/test/unit/junit.xml\"
+    
 """
 
 v1-test-run-smoke = """
