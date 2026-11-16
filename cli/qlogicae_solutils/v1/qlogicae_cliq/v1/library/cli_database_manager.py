@@ -68,10 +68,8 @@ def _allocate():
                 )
 
             database_data = (
-                kwargs.get(
-                    "database",
-                    {}
-                ) or {}
+                (kwargs
+                    .get("database", {}) or {})
             )
             if not isinstance(database_data, (dict)):
                 raise ValueError(

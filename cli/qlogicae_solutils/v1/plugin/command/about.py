@@ -27,26 +27,32 @@ def _allocate():
         "object_merge": {
             "level": 1
         },
-        "command": {
-            "options": {
-                "commands": [
-                    {
-                        "name": "about",
-                        "args": (),
-                        "kwargs": { "help": "", },
-                        "subcommands": [
-                            {
-                                "name": "version",
-                                "kwargs": { "help": "", },
-                                "command_handler": (
-                                    about_version_command_handler
-                                ),
-                            },
-                        ],
+        "qlogicae": {
+            "cliq": {
+                "v1": {    
+                    "command": {
+                        "options": {
+                            "commands": [
+                                {
+                                    "name": "about",
+                                    "args": (),
+                                    "kwargs": { "help": "", },
+                                    "subcommands": [
+                                        {
+                                            "name": "version",
+                                            "kwargs": { "help": "", },
+                                            "command_handler": (
+                                                about_version_command_handler
+                                            ),
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
                     },
-                ],
-            },
-        },
+                }
+            }
+        }
     }
 
     _allocate = lambda: None

@@ -21,49 +21,55 @@ def _allocate():
         "object_merge": {
             "level": 1
         },
-        "command": {
-            "options": {
-                "commands": [
-                    {
-                        "name": "debug",
-                        "args": (),
-                        "kwargs": { "help": "", },
-                        "subcommands": [
-                            {
-                                "name": "view",
-                                "args": (),
-                                "kwargs": { "help": "", },
-                                "subcommands": [
-                                    {
-                                        "name": "value-cache",
-                                        "kwargs": { "help": "", },
-                                        "command_handler": (
-                                            debug_view_value_cache_command_handler
-                                        ),
-                                        "arguments": [
-                                            {
-                                                "args": (
-                                                    "--target",
-                                                    "-t"
-                                                ),
-                                                "kwargs": {
-                                                    "dest": "target",
-                                                    "help": "",
-                                                    "required": True,
-                                                    "default": (),
-                                                    "type": str,
-                                                    "nargs": "+",
-                                                }
-                                            }
-                                        ],
-                                    },
-                                ],
-                            },
-                        ],
+        "qlogicae": {
+            "cliq": {
+                "v1": {    
+                    "command": {
+                        "options": {
+                            "commands": [
+                                {
+                                    "name": "debug",
+                                    "args": (),
+                                    "kwargs": { "help": "", },
+                                    "subcommands": [
+                                        {
+                                            "name": "view",
+                                            "args": (),
+                                            "kwargs": { "help": "", },
+                                            "subcommands": [
+                                                {
+                                                    "name": "value-cache",
+                                                    "kwargs": { "help": "", },
+                                                    "command_handler": (
+                                                        debug_view_value_cache_command_handler
+                                                    ),
+                                                    "arguments": [
+                                                        {
+                                                            "args": (
+                                                                "--targets",
+                                                                "-t"
+                                                            ),
+                                                            "kwargs": {
+                                                                "dest": "targets",
+                                                                "help": "",
+                                                                "required": True,
+                                                                "default": (),
+                                                                "type": str,
+                                                                "nargs": "+",
+                                                            }
+                                                        }
+                                                    ],
+                                                },
+                                            ],
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
                     },
-                ],
-            },
-        },
+                }
+            }
+        }
     }
 
     _allocate = lambda: None

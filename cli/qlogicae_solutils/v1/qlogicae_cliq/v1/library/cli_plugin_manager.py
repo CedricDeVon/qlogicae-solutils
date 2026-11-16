@@ -60,114 +60,128 @@ def _allocate():
             )
 
             self._default_setup_options = {
-                "command": {
-                    "options": {
-                        "args": (),
-                        "kwargs": {
-                            "prog": "cli",
-                            "description": "command description",
-                            "add_help": True,
-                            "allow_abbrev": True,
-                        },
-                        "commands": [],
-                        "subparsers": {
-                            "args": (),
-                            "kwargs": {
-                                "dest": "command",
-                                "required": True,
-                                "title": "commands",
-                                "description": None,
-                                "metavar": "",
+                "qlogicae": {
+                    "cliq": {
+                        "v1": {
+                            "command": {
+                                "options": {
+                                    "args": (),
+                                    "kwargs": {
+                                        "prog": "cli",
+                                        "description": "command description",
+                                        "add_help": True,
+                                        "allow_abbrev": True,
+                                    },
+                                    "commands": [],
+                                    "subparsers": {
+                                        "args": (),
+                                        "kwargs": {
+                                            "dest": "command",
+                                            "required": True,
+                                            "title": "commands",
+                                            "description": None,
+                                            "metavar": "",
+                                        },
+                                    },
+                                },
+                                "callbacks": {
+                                    "on_pre_setup": None,
+                                    "on_post_setup": None,
+                                },
                             },
-                        },
-                    },
-                    "callbacks": {
-                        "on_pre_setup": None,
-                        "on_post_setup": None,
-                    },
-                },
-                "database": {
-                    "is_enabled": False,
-                    "value_cache": {
-                        "is_enabled": False,
-                        "options": {
-                            "values": {},
-                            "defaults": {}
-                        },
-                        "callbacks": {
-                            "on_pre_setup": None,
-                            "on_post_setup": None,
-                        },
-                    },
-                    "persistent_cache": {
-                        "is_enabled": False,
-                        "options": {
-                            "database_path": "persistent_cache.db",
-                            "create_missing": True,
-                            "lifespan_in_seconds": 0.0,
-                            "file_mode": 0o600,
-                            "key_encoding": "utf-8",
-                            "auto_remove_expired": True,
-                            "auto_remove_invalid": True,
-                            "sync_on_write": False,
-                        },
-                        "callbacks": {
-                            "on_pre_setup": None,
-                            "on_post_setup": None,
-                        },
-                    },
-                    "callbacks": {
-                        "on_pre_setup": None,
-                        "on_post_setup": None,
-                    },
-                },
-                "log": {
-                    "is_enabled": False,
-                    "file": {
-                        "options": {
-                            "is_enabled": False,
-                            "is_verbose_enabled": True,
-                            "log_level": 10,
-                            "stack_level": 3,
-                            "target_filesystem_paths": [
-                                "logs.log"
-                            ],
-                        },
-                        "callbacks": {
-                            "on_pre_setup": None,
-                            "on_post_setup": None,
-                        },
-                    },
-                    "console": {
-                        "options": {
-                            "is_enabled": False,
-                            "is_verbose_enabled": True,
-                            "log_level": 10,
-                            "stack_level": 3,
-                        },
-                        "callbacks": {
-                            "on_pre_setup": None,
-                            "on_post_setup": None,
-                        },
-                    },
-                    "callbacks": {
-                        "on_pre_setup": None,
-                        "on_post_setup": None,
-                    },
+                            "database": {
+                                "is_enabled": False,
+                                "value_cache": {
+                                    "is_enabled": False,
+                                    "options": {
+                                        "values": {},
+                                        "defaults": {}
+                                    },
+                                    "callbacks": {
+                                        "on_pre_setup": None,
+                                        "on_post_setup": None,
+                                    },
+                                },
+                                "persistent_cache": {
+                                    "is_enabled": False,
+                                    "options": {
+                                        "database_path": "persistent_cache.db",
+                                        "create_missing": True,
+                                        "lifespan_in_seconds": 0.0,
+                                        "file_mode": 0o600,
+                                        "key_encoding": "utf-8",
+                                        "auto_remove_expired": True,
+                                        "auto_remove_invalid": True,
+                                        "sync_on_write": False,
+                                    },
+                                    "callbacks": {
+                                        "on_pre_setup": None,
+                                        "on_post_setup": None,
+                                    },
+                                },
+                                "callbacks": {
+                                    "on_pre_setup": None,
+                                    "on_post_setup": None,
+                                },
+                            },
+                            "log": {
+                                "is_enabled": False,
+                                "file": {
+                                    "options": {
+                                        "is_enabled": False,
+                                        "is_verbose_enabled": True,
+                                        "log_level": 10,
+                                        "stack_level": 3,
+                                        "target_filesystem_paths": [
+                                            "logs.log"
+                                        ],
+                                    },
+                                    "callbacks": {
+                                        "on_pre_setup": None,
+                                        "on_post_setup": None,
+                                    },
+                                },
+                                "console": {
+                                    "options": {
+                                        "is_enabled": False,
+                                        "is_verbose_enabled": True,
+                                        "log_level": 10,
+                                        "stack_level": 3,
+                                    },
+                                    "callbacks": {
+                                        "on_pre_setup": None,
+                                        "on_post_setup": None,
+                                    },
+                                },
+                                "callbacks": {
+                                    "on_pre_setup": None,
+                                    "on_post_setup": None,
+                                },
+                            }
+                        }
+                    }                    
                 }
             }
 
             return True
+
+        def read_root(self, kwargs):
+            data = (
+                (((kwargs
+                    .get("qlogicae", {}) or {})
+                    .get("cliq", {}) or {})
+                    .get("v1", {}) or {})
+            )
+            return (
+                data
+            )
 
         def is_log_enabled(self, kwargs):
             if not isinstance(kwargs, (dict)) or not kwargs:
                 raise ValueError("'kwargs' must be a non-empty dictionary")
 
             log_data = (
-                kwargs.get(
-                    "log",
-                    {}
-                ) or {}
+                (kwargs.get("log", {}) or {})
             )
             is_log_enabled = (
                 log_data.get(
@@ -212,10 +226,7 @@ def _allocate():
                 raise ValueError("'kwargs' must be a non-empty dictionary")
 
             database_data = (
-                kwargs.get(
-                    "database",
-                    {}
-                ) or {}
+                (kwargs.get("database", {}) or {})
             )
             is_database_enabled = (
                 database_data.get(

@@ -2,6 +2,13 @@ __all__ = (
     "ApplicationManager",
 )
 
+_plugin_root = None
+_plugin_command_workflow = None
+_plugin_command_workspace = None
+_plugin_command_filesystem = None
+_plugin_command_about = None
+_plugin_command_debug = None
+_plugin_command_footer = None
 _CliAppManager = None
 _ApplicationManager = None
 _ExternalDependencyManager = None
@@ -33,7 +40,14 @@ def _allocate():
             return cls._singleton
 
         def construct(self):
-            global _CliAppManager
+            global _plugin_root
+            global _plugin_command_workflow
+            global _plugin_command_workspace
+            global _plugin_command_filesystem
+            global _plugin_command_about
+            global _plugin_command_debug
+            global _plugin_command_footer
+            global _CliAppManager            
             global _ExternalDependencyManager
 
             from qlogicae_cor.v3.library.external_dependency_manager import (
@@ -43,8 +57,43 @@ def _allocate():
             _ExternalDependencyManager = (
                 ExternalDependencyManager().get_singleton
             )
+            _plugin_root = (
+                _ExternalDependencyManager().import_module(                    
+                    path="plugin.root",
+                )
+            )
+            _plugin_command_workflow = (
+                _ExternalDependencyManager().import_module(                    
+                    path="plugin.command.workflow",
+                )
+            )
+            _plugin_command_workspace = (
+                _ExternalDependencyManager().import_module(                    
+                    path="plugin.command.workspace",
+                )
+            )
+            _plugin_command_filesystem = (
+                _ExternalDependencyManager().import_module(                    
+                    path="plugin.command.filesystem",
+                )
+            )
+            _plugin_command_about = (
+                _ExternalDependencyManager().import_module(                    
+                    path="plugin.command.about",
+                )
+            )
+            _plugin_command_debug = (
+                _ExternalDependencyManager().import_module(                    
+                    path="plugin.command.debug",
+                )
+            )
+            _plugin_command_footer = (
+                _ExternalDependencyManager().import_module(                    
+                    path="plugin.command.footer",
+                )
+            )
             _CliAppManager = (
-                _ExternalDependencyManager().import_module(
+                _ExternalDependencyManager().import_module(                    
                     path=".cli_app_manager",
                     package="qlogicae_cliq.v1.library",
                     member="CliAppManager",
@@ -67,33 +116,26 @@ def _allocate():
             if not isinstance(kwargs, (dict)):
                 raise ValueError("'kwargs' must be a dictionary")
 
-            from plugin import root
-            from plugin.command import (
-                about,
-                debug,
-                filesystem,
-                footer,
-                workflow,
-                workspace,
-            )
-
             result = _CliAppManager().get_singleton().run(
                 external_dependency={
                     "is_pre_allocated": False,
                 },
                 plugin={
-                    "is_recursive": True,
+                    "is_recursive": True,                    
+                    "target_filesystem_paths": (
+                        "qlogicae/solutils/v1/private/plugin",
+                        "qlogicae/solutils/v1/public/plugin",
+                    ),
                     "imported_modules": (
-                        root,
-                        workflow,
-                        workspace,
-                        filesystem,
-                        about,
-                        debug,
-                        footer,
+                        _plugin_root(),
+                        _plugin_command_workflow(),
+                        _plugin_command_workspace(),
+                        _plugin_command_filesystem(),
+                        _plugin_command_about(),
+                        _plugin_command_debug(),
+                        _plugin_command_footer(),
                     ),
                     "raw_export_data": (),
-                    # "initial_export_data": {},
                 },
             )
 

@@ -13,17 +13,23 @@ def _allocate():
         "object_merge": {
             "level": 1
         },
-        "command": {
-            "options": {
-                "commands": [
-                    {
-                        "name": "",
-                        "args": (),
-                        "kwargs": { "help": "", },
+        "qlogicae": {
+            "cliq": {
+                "v1": {    
+                    "command": {
+                        "options": {
+                            "commands": [
+                                {
+                                    "name": "",
+                                    "args": (),
+                                    "kwargs": { "help": "", },
+                                },
+                            ],
+                        },
                     },
-                ],
-            },
-        },
+                }
+            }
+        }
     }
 
     _allocate = lambda: None

@@ -33,29 +33,35 @@ def _allocate():
         "object_merge": {
             "level": 0
         },
-        "command": {
-            "options": {
-                "kwargs": {
-                    "prog": (
-                        (qlogicae_exports
-                            .get("brand-base-name", {}) or {})
-                            .get("value", "") or ""
-                    ),
-                    "description": (
-                        (qlogicae_exports
-                            .get("project-description", {}) or {})
-                            .get("value", "") or ""
-                    )
-                },
-                "commands": [],
-            },
-            "callbacks": {
-                "on_pre_setup": on_pre_setup,
-                "on_post_setup": on_post_setup,
-                "on_pre_run": on_pre_run,
-                "on_post_run": on_post_run,
-            },
-        },
+        "qlogicae": {
+            "cliq": {
+                "v1": {
+                    "command": {
+                        "options": {
+                            "kwargs": {
+                                "prog": (
+                                    (qlogicae_exports
+                                        .get("brand-base-name", {}) or {})
+                                        .get("value", "") or ""
+                                ),
+                                "description": (
+                                    (qlogicae_exports
+                                        .get("project-description", {}) or {})
+                                        .get("value", "") or ""
+                                )
+                            },
+                            "commands": [],
+                        },
+                        "callbacks": {
+                            "on_pre_setup": on_pre_setup,
+                            "on_post_setup": on_post_setup,
+                            "on_pre_run": on_pre_run,
+                            "on_post_run": on_post_run,
+                        },
+                    },
+                }
+            }
+        }
     }
 
     _allocate = lambda: None

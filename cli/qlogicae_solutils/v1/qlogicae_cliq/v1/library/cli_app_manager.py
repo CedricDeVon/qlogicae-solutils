@@ -200,9 +200,11 @@ def _allocate():
                 return {}
 
             plugin_exports = (
-                cli_plugin_manager
-                    .read_module_exports()
-            )
+                cli_plugin_manager.read_root(
+                    cli_plugin_manager
+                        .read_module_exports()
+                )
+            )            
 
             return (
                 plugin_exports

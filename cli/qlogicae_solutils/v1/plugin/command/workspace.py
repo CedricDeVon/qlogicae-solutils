@@ -21,26 +21,48 @@ def _allocate():
         "object_merge": {
             "level": 1
         },
-        "command": {
-            "options": {
-                "commands": [
-                    {
-                        "name": "workspace",
-                        "args": (),
-                        "kwargs": { "help": "", },
-                        "subcommands": [
-                            {
-                                "name": "setup",
-                                "kwargs": { "help": "", },
-                                "command_handler": (
-                                    workspace_setup_command_handler
-                                ),
-                            },
-                        ],
+        "qlogicae": {
+            "cliq": {
+                "v1": {
+                    "command": {
+                        "options": {
+                            "commands": [
+                                {
+                                    "name": "workspace",
+                                    "args": (),
+                                    "kwargs": { "help": "", },
+                                    "subcommands": [
+                                        {
+                                            "name": "setup",
+                                            "kwargs": { "help": "", },
+                                            "command_handler": (
+                                                workspace_setup_command_handler
+                                            ),
+                                            "arguments": [
+                                                {
+                                                    "args": (
+                                                        "--versions",
+                                                        "-v"
+                                                    ),
+                                                    "kwargs": {
+                                                        "dest": "versions",
+                                                        "help": "",
+                                                        "required": True,
+                                                        "default": (),
+                                                        "type": str,
+                                                        "nargs": "+",
+                                                    }
+                                                },
+                                            ],
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
                     },
-                ],
-            },
-        },
+                }
+            }
+        }
     }
 
     _allocate = lambda: None

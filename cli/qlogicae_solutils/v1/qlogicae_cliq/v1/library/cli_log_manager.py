@@ -57,10 +57,8 @@ def _allocate():
                 )
 
             log_data = (
-                kwargs.get(
-                    "log",
-                    {}
-                ) or {}
+                (kwargs
+                    .get("log", {}) or {})
             )
             if not isinstance(log_data, (dict)):
                 raise ValueError(

@@ -82,10 +82,8 @@ def _allocate():
                 )
 
             command_data = (
-                kwargs.get(
-                    "command",
-                    {}
-                ) or {}
+                (kwargs
+                    .get("command", {}) or {})
             )
             if not isinstance(command_data, (dict)):
                 raise ValueError(
