@@ -2,14 +2,9 @@ __all__ = (
     "ApplicationManager",
 )
 
-_plugin_root = None
-_plugin_command_workspace = None
-_plugin_command_filesystem = None
-_plugin_command_about = None
-_plugin_command_debug = None
-_plugin_command_footer = None
-_CliApplicationManager = None
+_PluginManager = None
 _ApplicationManager = None
+_CliApplicationManager = None
 _ExternalDependencyManager = None
 
 
@@ -39,12 +34,7 @@ def _allocate():
             return cls._singleton
 
         def construct(self):
-            global _plugin_root
-            global _plugin_command_workspace
-            global _plugin_command_filesystem
-            global _plugin_command_about
-            global _plugin_command_debug
-            global _plugin_command_footer
+            global _PluginManager
             global _CliApplicationManager            
             global _ExternalDependencyManager
 
@@ -55,34 +45,11 @@ def _allocate():
             _ExternalDependencyManager = (
                 ExternalDependencyManager().get_singleton
             )
-            _plugin_root = (
+            _PluginManager = (
                 _ExternalDependencyManager().import_module(                    
-                    path="qlogicae_solutils.v1.plugin.root",
-                )
-            )
-            _plugin_command_workspace = (
-                _ExternalDependencyManager().import_module(                    
-                    path="qlogicae_solutils.v1.plugin.command.workspace",
-                )
-            )
-            _plugin_command_filesystem = (
-                _ExternalDependencyManager().import_module(                    
-                    path="qlogicae_solutils.v1.plugin.command.filesystem",
-                )
-            )
-            _plugin_command_about = (
-                _ExternalDependencyManager().import_module(                    
-                    path="qlogicae_solutils.v1.plugin.command.about",
-                )
-            )
-            _plugin_command_debug = (
-                _ExternalDependencyManager().import_module(                    
-                    path="qlogicae_solutils.v1.plugin.command.debug",
-                )
-            )
-            _plugin_command_footer = (
-                _ExternalDependencyManager().import_module(                    
-                    path="qlogicae_solutils.v1.plugin.command.footer",
+                    path="qlogicae_solutils.v1.library.plugin_manager",
+                    member="PluginManager",
+                    is_member_callable=True,
                 )
             )
             _CliApplicationManager = (
@@ -108,26 +75,27 @@ def _allocate():
             if not isinstance(kwargs, (dict)):
                 raise ValueError("'kwargs' must be a dictionary")
 
-            result = _CliApplicationManager().get_singleton().run(
-                external_dependency={
-                    "is_pre_allocated": False,
-                },
-                plugin={
-                    "is_recursive": True,                    
-                    "target_filesystem_paths": (
-                        "qlogicae/solutils/v1/private/plugin",
-                        "qlogicae/solutils/v1/public/plugin",
-                    ),
-                    "imported_modules": (
-                        _plugin_root(),
-                        _plugin_command_workspace(),
-                        _plugin_command_filesystem(),
-                        _plugin_command_about(),
-                        _plugin_command_debug(),
-                        _plugin_command_footer(),
-                    ),
-                    "raw_export_data": (),
-                },
+            cli_application_manager = (
+                _CliApplicationManager().get_singleton()
+            )
+            plugin_manager = (
+                _PluginManager().get_singleton()
+            )
+            external_dependency_options = {
+                "is_pre_allocated": False,
+            }
+            plugin_options = (
+                plugin_manager
+                    .read_default_options()
+            )
+
+            result = cli_application_manager.run(
+                external_dependency=(
+                    external_dependency_options
+                ),
+                plugin=(
+                    plugin_options
+                ),
             )
 
             return result
