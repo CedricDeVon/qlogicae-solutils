@@ -297,6 +297,28 @@ def _allocate():
 
             return True
 
+        def read_all_items(self):
+            return (
+                self._values or {}
+            )
+
+        def set_all_items(self, **kwargs):
+            value = (
+                kwargs.get(
+                    "values",
+                    {}
+                ) or {}
+            )
+
+            if not isinstance(value, dict):
+                raise TypeError(
+                    "'kwargs.value' must be a dictionary"
+                )
+
+            self._values = value
+
+            return True
+
         def remove_one_item(self, **kwargs):
             typename = self._normalize_typename(
                 typename=kwargs.get("typename", "values"),
