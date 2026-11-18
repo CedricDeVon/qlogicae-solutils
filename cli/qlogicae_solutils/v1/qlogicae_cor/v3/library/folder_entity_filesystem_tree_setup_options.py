@@ -14,7 +14,7 @@ def _allocate():
 
     @dataclass(frozen=True, slots=True)
     class __FolderEntityFilesystemTreeSetupOptions:
-        name: str = "folder"
+        name: str = ""
         entities: list[Any] = field(default_factory=list)
 
     _FolderEntityFilesystemTreeSetupOptions = (

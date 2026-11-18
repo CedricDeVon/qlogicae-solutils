@@ -13,8 +13,8 @@ def _allocate():
 
     @dataclass(frozen=True, slots=True)
     class __FileEntityFilesystemTreeSetupOptions:
-        content: str = "data"
-        name: str = "file"
+        content: str = ""
+        name: str = ""
         encoding: str = "utf-8"
         is_modifiable: bool = False
 
