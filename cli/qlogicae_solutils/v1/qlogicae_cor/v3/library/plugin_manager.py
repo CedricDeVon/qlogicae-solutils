@@ -6,6 +6,7 @@ _types = None
 _PluginManager = None
 _ObjectMergeManager = None
 _PythonModuleManager = None
+_ValueCacheStorageManager = None
 _ExternalDependencyManager = None
 
 
@@ -14,10 +15,6 @@ def _allocate():
     global _PluginManager
 
     class __PluginManager:
-        __slots__ = (
-            "_module_exports",
-        )
-
         _singleton = None
 
         def __init__(self):
@@ -29,14 +26,6 @@ def _allocate():
         def __exit__(self, exc_type, exc_value, traceback):
             self.shutdown()
 
-        @property
-        def module_exports(self):
-            return self._module_exports
-
-        @module_exports.setter
-        def module_exports(self, value):
-            self._module_exports = value
-
         @classmethod
         def get_singleton(cls):
             if cls._singleton is None:
@@ -46,11 +35,14 @@ def _allocate():
 
         def construct(self):
             global _ExternalDependencyManager
-            global _ObjectMergeManager
+            global _ValueCacheStorageManager
             global _PythonModuleManager
+            global _ObjectMergeManager
             global _types
 
-            from .external_dependency_manager import ExternalDependencyManager
+            from qlogicae_cor.v3.library.external_dependency_manager import (
+                ExternalDependencyManager
+            )
 
             _ExternalDependencyManager = (
                 ExternalDependencyManager().get_singleton
@@ -63,22 +55,25 @@ def _allocate():
             )
             _ObjectMergeManager = (
                 _ExternalDependencyManager().import_module(
-                    path=".object_merge_manager",
-                    package="qlogicae_cor.v3.library",
+                    path="qlogicae_cor.v3.library.object_merge_manager",
                     member="ObjectMergeManager",
                     is_member_callable=True,
                 )
             )
             _PythonModuleManager = (
                 _ExternalDependencyManager().import_module(
-                    path=".python_module_manager",
-                    package="qlogicae_cor.v3.library",
+                    path="qlogicae_cor.v3.library.python_module_manager",
                     member="PythonModuleManager",
                     is_member_callable=True,
                 )
             )
-
-            self._module_exports = {}
+            _ValueCacheStorageManager = (
+                _ExternalDependencyManager().import_module(
+                    path="qlogicae_cor.v3.library.value_cache_storage_manager",
+                    member="ValueCacheStorageManager",
+                    is_member_callable=True,
+                )
+            )
 
             return True
 
@@ -100,15 +95,9 @@ def _allocate():
                 )
             )
 
-            module_exports = (
-                self.setup_merged_raw_module_exports(
-                    kwargs,
-                    raw_module_exports
-                )
-            )
-
-            self._module_exports = (
-                module_exports
+            self.setup_merged_raw_module_exports(
+                kwargs,
+                raw_module_exports
             )
 
             return True
@@ -116,31 +105,16 @@ def _allocate():
         def shutdown(self):
             return True
 
-        def write_module_exports(
-            self,
-            value
-        ):
-            if not isinstance(value, (dict)) or not value:
-                raise ValueError("'value' must be a non-empty dictionary")
-
-            self._module_exports = (
-                value
-            )
-
-            return True
-
-        def remove_module_exports(
-            self,
-        ):
-            self._module_exports = {}
-
-            return True
-
         def read_module_exports(
             self,
         ):
+            value_cache_storage_manager = (
+                _ValueCacheStorageManager()
+                    .get_singleton()
+            )
+
             return (
-                self._module_exports
+                value_cache_storage_manager.read_all_items()
             )
 
         def read_imported_modules(
@@ -212,6 +186,9 @@ def _allocate():
             object_merge_manager = (
                 _ObjectMergeManager().get_singleton()
             )
+            value_cache_storage_manager = (
+                _ValueCacheStorageManager().get_singleton()
+            )
 
             raw_export_data = (
                 options.get("raw_export_data", tuple()) or tuple()
@@ -224,7 +201,12 @@ def _allocate():
                 tuple(targets) + raw_export_data
             )
 
-            module_exports = initial_export_data
+            module_exports = (
+                object_merge_manager.deep_merge(
+                    self.read_module_exports(),
+                    initial_export_data
+                )
+            )
             for target in targets:
                 if not isinstance(target, (dict)):
                     raise ValueError("'target' must be a dictionary")
@@ -236,10 +218,11 @@ def _allocate():
                     )
                 )
 
-            return (
-                module_exports
+            value_cache_storage_manager.set_all_items(
+                values=module_exports
             )
 
+            return True
 
         def read_plugin_module_export(
             self,

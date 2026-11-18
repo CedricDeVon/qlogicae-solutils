@@ -266,7 +266,7 @@ def _allocate():
 
             _PluginManager = (
                 _ExternalDependencyManager().import_module(
-                    path="qlogicae_moduli.v1.library.plugin_manager",
+                    path="qlogicae_cor.v3.library.plugin_manager",
                     member="PluginManager",
                     is_member_callable=True,
                 )
@@ -305,7 +305,7 @@ def _allocate():
         def read_module_exports(self):
             _PluginManager = (
                 _ExternalDependencyManager().import_module(
-                    path="qlogicae_moduli.v1.library.plugin_manager",
+                    path="qlogicae_cor.v3.library.plugin_manager",
                     member="PluginManager",
                     is_member_callable=True,
                 )
