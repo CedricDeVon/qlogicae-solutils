@@ -177,8 +177,7 @@ def _allocate():
             if database_is_enabled:
                 _ValueCacheStorageManager = (
                     _ExternalDependencyManager().import_module(
-                        path=".value_cache_storage_manager",
-                        package="qlogicae_cor.v3.library",
+                        path="qlogicae_cor.v3.library.value_cache_storage_manager",
                         member="ValueCacheStorageManager",
                         is_member_callable=True,
                     )
@@ -228,8 +227,7 @@ def _allocate():
             if database_is_enabled:
                 _PersistentCacheStorageManager = (
                     _ExternalDependencyManager().import_module(
-                        path=".persistent_cache_storage_manager",
-                        package="qlogicae_cor.v3.library",
+                        path="qlogicae_cor.v3.library.persistent_cache_storage_manager",
                         member="PersistentCacheStorageManager",
                         is_member_callable=True,
                     )

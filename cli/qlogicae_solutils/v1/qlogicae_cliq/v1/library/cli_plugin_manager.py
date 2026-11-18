@@ -266,8 +266,7 @@ def _allocate():
 
             _PluginManager = (
                 _ExternalDependencyManager().import_module(
-                    path=".plugin_manager",
-                    package="qlogicae_cor.v3.library",
+                    path="qlogicae_moduli.v1.library.plugin_manager",
                     member="PluginManager",
                     is_member_callable=True,
                 )
@@ -306,8 +305,7 @@ def _allocate():
         def read_module_exports(self):
             _PluginManager = (
                 _ExternalDependencyManager().import_module(
-                    path=".plugin_manager",
-                    package="qlogicae_cor.v3.library",
+                    path="qlogicae_moduli.v1.library.plugin_manager",
                     member="PluginManager",
                     is_member_callable=True,
                 )
@@ -319,7 +317,7 @@ def _allocate():
             )
 
             data = (
-                plugin_manager.module_exports or {}
+                plugin_manager.read_module_exports() or {}
             )
 
             return data

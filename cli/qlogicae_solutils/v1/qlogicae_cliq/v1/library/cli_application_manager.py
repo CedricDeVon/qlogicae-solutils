@@ -1,9 +1,9 @@
 __all__ = (
-    "CliAppManager",
+    "CliApplicationManager",
 )
 
 _CliLogManager = None
-_CliAppManager = None
+_CliApplicationManager = None
 _CliPluginManager = None
 _CliCommandManager = None
 _CliDatabaseManager = None
@@ -12,9 +12,9 @@ _ExternalDependencyManager = None
 
 def _allocate():
     global _allocate
-    global _CliAppManager
+    global _CliApplicationManager
 
-    class __CliAppManager:
+    class __CliApplicationManager:
         __slots__ = ()
 
         _singleton = None
@@ -355,13 +355,13 @@ def _allocate():
             return 0 if value else 1
 
 
-    _CliAppManager = __CliAppManager
+    _CliApplicationManager = __CliApplicationManager
     _allocate = lambda: None
 
 
-def CliAppManager():
-    if _CliAppManager is None:
+def CliApplicationManager():
+    if _CliApplicationManager is None:
         _allocate()
 
-    return _CliAppManager
+    return _CliApplicationManager
 
