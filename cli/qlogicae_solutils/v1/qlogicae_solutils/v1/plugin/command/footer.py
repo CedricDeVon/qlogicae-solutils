@@ -36,7 +36,7 @@ def _allocate():
 
 
 def export():
-    if not _data:
+    if _data is None:
         _allocate()
 
     return _data

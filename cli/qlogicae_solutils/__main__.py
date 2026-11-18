@@ -8,7 +8,7 @@ def main():
         result = subprocess.run(
             [
                 sys.executable,
-                str(Path(__file__).resolve().parent / "v1" / "app.py"),
+                str(Path(__file__).resolve().parent / "v1" / "main.py"),
                 *sys.argv[1:],
             ],
             check=False, # nosec B603

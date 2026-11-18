@@ -255,8 +255,16 @@ v1-build-post-3-pip-package = """
     python3 -c "import shutil,sys; shutil.copytree(sys.argv[1], sys.argv[2], dirs_exist_ok=True)" output/build/release/source/qlogicae_solutils qlogicae_solutils
 """
 
+v1-build-local-uninstall = """
+    ./.venv/bin/pip uninstall -y qlogicae_solutils
+"""
+
+v1-build-local-install = """
+    ./.venv/bin/pip install output/build/release/dist/*.whl
+"""
+
 v1-archive-output = """
-    python3 -c "import shutil,sys; shutil.copytree(sys.argv[1], sys.argv[2], dirs_exist_ok=True)" output archive/v1.0.0a1/2026-11-16T22-28-33.264746926+08-00
+    python3 -c "import shutil,sys; shutil.copytree(sys.argv[1], sys.argv[2], dirs_exist_ok=True)" output archive/v1.0.0a1/2026-11-18T16-45-33.502601654+08-00
 """
 
 v1-test-check-and-apply-format = """

@@ -5,7 +5,15 @@ __all__ = (
 _data = None
 
 
-def debug_view_value_cache_command_handler(arguments):
+def run_debug_view_value_cache_command(arguments):
+    print(
+        arguments
+    )
+
+    return True
+
+
+def run_debug_view_plugin_command(arguments):
     print(
         arguments
     )
@@ -30,18 +38,19 @@ def _allocate():
                                 {
                                     "name": "debug",
                                     "args": (),
-                                    "kwargs": { "help": "", },
+                                    "kwargs": { "help": "Manage debug operations.", },
                                     "subcommands": [
                                         {
-                                            "name": "view",
+                                            "name": "show",
                                             "args": (),
-                                            "kwargs": { "help": "", },
+                                            "kwargs": { "help": "Display operations.", },
                                             "subcommands": [
                                                 {
                                                     "name": "value-cache",
-                                                    "kwargs": { "help": "", },
+                                                    "args": (),
+                                                    "kwargs": { "help": "Display value cache database items.", },
                                                     "command_handler": (
-                                                        debug_view_value_cache_command_handler
+                                                        run_debug_view_value_cache_command
                                                     ),
                                                     "arguments": [
                                                         {
@@ -51,7 +60,7 @@ def _allocate():
                                                             ),
                                                             "kwargs": {
                                                                 "dest": "targets",
-                                                                "help": "",
+                                                                "help": "Value cache database key paths.",
                                                                 "required": True,
                                                                 "default": (),
                                                                 "type": str,
@@ -61,7 +70,7 @@ def _allocate():
                                                     ],
                                                 },
                                             ],
-                                        },
+                                        },                                        
                                     ],
                                 },
                             ],
@@ -76,7 +85,7 @@ def _allocate():
 
 
 def export():
-    if not _data:
+    if _data is None:
         _allocate()
 
     return _data

@@ -3,13 +3,12 @@ __all__ = (
 )
 
 _plugin_root = None
-_plugin_command_workflow = None
 _plugin_command_workspace = None
 _plugin_command_filesystem = None
 _plugin_command_about = None
 _plugin_command_debug = None
 _plugin_command_footer = None
-_CliAppManager = None
+_CliApplicationManager = None
 _ApplicationManager = None
 _ExternalDependencyManager = None
 
@@ -41,13 +40,12 @@ def _allocate():
 
         def construct(self):
             global _plugin_root
-            global _plugin_command_workflow
             global _plugin_command_workspace
             global _plugin_command_filesystem
             global _plugin_command_about
             global _plugin_command_debug
             global _plugin_command_footer
-            global _CliAppManager            
+            global _CliApplicationManager            
             global _ExternalDependencyManager
 
             from qlogicae_cor.v3.library.external_dependency_manager import (
@@ -59,44 +57,38 @@ def _allocate():
             )
             _plugin_root = (
                 _ExternalDependencyManager().import_module(                    
-                    path="plugin.root",
-                )
-            )
-            _plugin_command_workflow = (
-                _ExternalDependencyManager().import_module(                    
-                    path="plugin.command.workflow",
+                    path="qlogicae_solutils.v1.plugin.root",
                 )
             )
             _plugin_command_workspace = (
                 _ExternalDependencyManager().import_module(                    
-                    path="plugin.command.workspace",
+                    path="qlogicae_solutils.v1.plugin.command.workspace",
                 )
             )
             _plugin_command_filesystem = (
                 _ExternalDependencyManager().import_module(                    
-                    path="plugin.command.filesystem",
+                    path="qlogicae_solutils.v1.plugin.command.filesystem",
                 )
             )
             _plugin_command_about = (
                 _ExternalDependencyManager().import_module(                    
-                    path="plugin.command.about",
+                    path="qlogicae_solutils.v1.plugin.command.about",
                 )
             )
             _plugin_command_debug = (
                 _ExternalDependencyManager().import_module(                    
-                    path="plugin.command.debug",
+                    path="qlogicae_solutils.v1.plugin.command.debug",
                 )
             )
             _plugin_command_footer = (
                 _ExternalDependencyManager().import_module(                    
-                    path="plugin.command.footer",
+                    path="qlogicae_solutils.v1.plugin.command.footer",
                 )
             )
-            _CliAppManager = (
+            _CliApplicationManager = (
                 _ExternalDependencyManager().import_module(                    
-                    path=".cli_app_manager",
-                    package="qlogicae_cliq.v1.library",
-                    member="CliAppManager",
+                    path="qlogicae_cliq.v1.library.cli_application_manager",
+                    member="CliApplicationManager",
                     is_member_callable=True,
                 )
             )
@@ -116,7 +108,7 @@ def _allocate():
             if not isinstance(kwargs, (dict)):
                 raise ValueError("'kwargs' must be a dictionary")
 
-            result = _CliAppManager().get_singleton().run(
+            result = _CliApplicationManager().get_singleton().run(
                 external_dependency={
                     "is_pre_allocated": False,
                 },
@@ -128,7 +120,6 @@ def _allocate():
                     ),
                     "imported_modules": (
                         _plugin_root(),
-                        _plugin_command_workflow(),
                         _plugin_command_workspace(),
                         _plugin_command_filesystem(),
                         _plugin_command_about(),

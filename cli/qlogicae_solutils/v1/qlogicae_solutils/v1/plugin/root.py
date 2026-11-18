@@ -25,11 +25,12 @@ def _allocate():
     global _allocate
     global _data
 
-    from configuration import qlogicae
+    from qlogicae_solutils.v1.plugin import qlogicae
 
     qlogicae_exports = qlogicae.export()
 
     _data = {
+
         "object_merge": {
             "level": 0
         },
@@ -40,14 +41,18 @@ def _allocate():
                         "options": {
                             "kwargs": {
                                 "prog": (
-                                    (qlogicae_exports
-                                        .get("brand-base-name", {}) or {})
-                                        .get("value", "") or ""
+                                    ((((qlogicae_exports
+                                        .get("qlogicae", {}) or {})
+                                        .get("solutils", {}) or {})
+                                        .get("v1", {}) or {})
+                                        .get("brand-base-name", "") or "")
                                 ),
                                 "description": (
-                                    (qlogicae_exports
-                                        .get("project-description", {}) or {})
-                                        .get("value", "") or ""
+                                    ((((qlogicae_exports
+                                        .get("qlogicae", {}) or {})
+                                        .get("solutils", {}) or {})
+                                        .get("v1", {}) or {})
+                                        .get("project-description", "") or "")
                                 )
                             },
                             "commands": [],
@@ -68,7 +73,7 @@ def _allocate():
 
 
 def export():
-    if not _data:
+    if _data is None:
         _allocate()
 
     return _data
