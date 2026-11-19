@@ -25,8 +25,7 @@ def _allocate():
     )
     _TimestampManager = (
         _ExternalDependencyManager().import_module(
-            path=".timestamp_manager",
-            package="qlogicae_cor.v3.library",
+            path="qlogicae_cor.v3.library.timestamp_manager",
             member="TimestampManager",
             is_member_callable=True,
         )

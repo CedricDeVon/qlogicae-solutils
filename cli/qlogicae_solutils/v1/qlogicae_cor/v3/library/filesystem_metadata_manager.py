@@ -49,8 +49,7 @@ def _allocate():
             )
             _FilesystemMetadata = (
                 _ExternalDependencyManager().import_module(
-                    path=".filesystem_metadata",
-                    package="qlogicae_cor.v3.library",
+                    path="qlogicae_cor.v3.library.filesystem_metadata",
                     member="FilesystemMetadata",
                     is_member_callable=True
                 )

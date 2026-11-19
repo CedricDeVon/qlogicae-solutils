@@ -53,24 +53,21 @@ def _allocate():
             )
             _ConsoleLogManager = (
                 _ExternalDependencyManager().import_module(
-                    path=".console_log_manager",
-                    package="qlogicae_cor.v3.library",
+                    path="qlogicae_cor.v3.library.console_log_manager",
                     member="ConsoleLogManager",
                     is_member_callable=True,
                 )
             )
             _FileLogManager = (
                 _ExternalDependencyManager().import_module(
-                    path=".file_log_manager",
-                    package="qlogicae_cor.v3.library",
+                    path="qlogicae_cor.v3.library.file_log_manager",
                     member="FileLogManager",
                     is_member_callable=True,
                 )
             )
             _LogOptionsManager = (
                 _ExternalDependencyManager().import_module(
-                    path=".log_options_manager",
-                    package="qlogicae_cor.v3.library",
+                    path="qlogicae_cor.v3.library.log_options_manager",
                     member="LogOptionsManager",
                     is_member_callable=True,
                 )

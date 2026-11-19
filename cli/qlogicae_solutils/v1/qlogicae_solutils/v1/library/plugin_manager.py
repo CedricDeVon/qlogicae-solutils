@@ -7,6 +7,7 @@ _PluginManager = None
 _plugin_command_about = None
 _plugin_command_debug = None
 _plugin_command_footer = None
+_plugin_command_workflow = None
 _plugin_command_workspace = None
 _plugin_command_filesystem = None
 _ExternalDependencyManager = None
@@ -42,6 +43,7 @@ def _allocate():
             global _plugin_command_about
             global _plugin_command_debug
             global _plugin_command_footer
+            global _plugin_command_workflow
             global _plugin_command_workspace
             global _plugin_command_filesystem
             global _ExternalDependencyManager
@@ -61,6 +63,11 @@ def _allocate():
             _plugin_command_workspace = (
                 _ExternalDependencyManager().import_module(                    
                     path="qlogicae_solutils.v1.plugin.command.workspace",
+                )
+            )
+            _plugin_command_workflow = (
+                _ExternalDependencyManager().import_module(                    
+                    path="qlogicae_solutils.v1.plugin.command.workflow",
                 )
             )
             _plugin_command_filesystem = (
@@ -104,7 +111,8 @@ def _allocate():
                 ),
                 "imported_modules": (
                     _plugin_root(),
-                    _plugin_command_workspace(),
+                    _plugin_command_workflow(),
+                    _plugin_command_workspace(),                    
                     _plugin_command_filesystem(),
                     _plugin_command_about(),
                     _plugin_command_debug(),

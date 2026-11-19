@@ -172,8 +172,7 @@ def _allocate():
 
             _CliPluginManager = (
                 _ExternalDependencyManager().import_module(
-                    path=".cli_plugin_manager",
-                    package="qlogicae_cliq.v1.library",
+                    path="qlogicae_cliq.v1.library.cli_plugin_manager",
                     member="CliPluginManager",
                     is_member_callable=True,
                 )
@@ -216,8 +215,7 @@ def _allocate():
 
             _CliPluginManager = (
                 _ExternalDependencyManager().import_module(
-                    path=".cli_plugin_manager",
-                    package="qlogicae_cliq.v1.library",
+                    path="qlogicae_cliq.v1.library.cli_plugin_manager",
                     member="CliPluginManager",
                     is_member_callable=True,
                 )
@@ -236,8 +234,7 @@ def _allocate():
             ):
                 _CliLogManager = (
                     _ExternalDependencyManager().import_module(
-                        path=".cli_log_manager",
-                        package="qlogicae_cliq.v1.library",
+                        path="qlogicae_cliq.v1.library.cli_log_manager",
                         member="CliLogManager",
                         is_member_callable=True,
                     )
@@ -259,8 +256,7 @@ def _allocate():
 
             _CliPluginManager = (
                 _ExternalDependencyManager().import_module(
-                    path=".cli_plugin_manager",
-                    package="qlogicae_cliq.v1.library",
+                    path="qlogicae_cliq.v1.library.cli_plugin_manager",
                     member="CliPluginManager",
                     is_member_callable=True,
                 )
@@ -279,8 +275,7 @@ def _allocate():
             ):
                 _CliDatabaseManager = (
                     _ExternalDependencyManager().import_module(
-                        path=".cli_database_manager",
-                        package="qlogicae_cliq.v1.library",
+                        path="qlogicae_cliq.v1.library.cli_database_manager",
                         member="CliDatabaseManager",
                         is_member_callable=True,
                     )
@@ -302,8 +297,7 @@ def _allocate():
 
             _CliCommandManager = (
                 _ExternalDependencyManager().import_module(
-                    path=".cli_command_manager",
-                    package="qlogicae_cliq.v1.library",
+                    path="qlogicae_cliq.v1.library.cli_command_manager",
                     member="CliCommandManager",
                     is_member_callable=True,
                 )
@@ -329,8 +323,7 @@ def _allocate():
 
             _CliCommandManager = (
                 _ExternalDependencyManager().import_module(
-                    path=".cli_command_manager",
-                    package="qlogicae_cliq.v1.library",
+                    path="qlogicae_cliq.v1.library.cli_command_manager",
                     member="CliCommandManager",
                     is_member_callable=True,
                 )

@@ -49,8 +49,7 @@ def _allocate():
             )
             _LogOptions = (
                 _ExternalDependencyManager().import_module(
-                    path=".log_options",
-                    package="qlogicae_cor.v3.library",
+                    path="qlogicae_cor.v3.library.log_options",
                     member="LogOptions",
                     is_member_callable=True,
                 )

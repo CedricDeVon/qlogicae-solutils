@@ -57,16 +57,14 @@ def _allocate():
 
             _TimeManager = (
                 _ExternalDependencyManager().import_module(
-                    path=".time_manager",
-                    package="qlogicae_cor.v3.library",
+                    path="qlogicae_cor.v3.library.time_manager",
                     member="TimeManager",
                     is_member_callable=True,
                 )
             )
             _TimeUnit = (
                 _ExternalDependencyManager().import_module(
-                    path=".time_unit",
-                    package="qlogicae_cor.v3.library",
+                    path="qlogicae_cor.v3.library.time_unit",
                     member="TimeUnit",
                     is_member_callable=True,
                 )

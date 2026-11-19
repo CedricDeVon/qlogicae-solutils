@@ -58,16 +58,14 @@ def _allocate():
             )
             _JsonManager = (
                 _ExternalDependencyManager().import_module(
-                    path=".json_manager",
-                    package="qlogicae_cor.v3.library",
+                    path="qlogicae_cor.v3.library.json_manager",
                     member="JsonManager",
                     is_member_callable=True,
                 )
             )
             _TextEncodingManager = (
                 _ExternalDependencyManager().import_module(
-                    path=".text_encoding_manager",
-                    package="qlogicae_cor.v3.library",
+                    path="qlogicae_cor.v3.library.text_encoding_manager",
                     member="TextEncodingManager",
                     is_member_callable=True,
                 )

@@ -59,24 +59,21 @@ def _allocate():
             )
             _TimeUnit = (
                 _ExternalDependencyManager().import_module(
-                    path=".time_unit",
-                    package="qlogicae_cor.v3.library",
+                    path="qlogicae_cor.v3.library.time_unit",
                     member="TimeUnit",
                     is_member_callable=True,
                 )
             )
             _TimeZoneManager = (
                 _ExternalDependencyManager().import_module(
-                    path=".time_zone_manager",
-                    package="qlogicae_cor.v3.library",
+                    path="qlogicae_cor.v3.library.time_zone_manager",
                     member="TimeZoneManager",
                     is_member_callable=True,
                 )
             )
             _Timestamp = (
                 _ExternalDependencyManager().import_module(
-                    path=".timestamp",
-                    package="qlogicae_cor.v3.library",
+                    path="qlogicae_cor.v3.library.timestamp",
                     member="Timestamp",
                     is_member_callable=True,
                 )

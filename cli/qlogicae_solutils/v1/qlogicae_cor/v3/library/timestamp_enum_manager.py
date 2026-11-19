@@ -44,16 +44,14 @@ def _allocate():
 
             _EnumConversionValue = (
                 _ExternalDependencyManager().import_module(
-                    path=".enum_conversion_value",
-                    package="qlogicae_cor.v3.library",
+                    path="qlogicae_cor.v3.library.enum_conversion_value",
                     member="EnumConversionValue",
                     is_member_callable=True
                 )
             )
             _Timestamp = (
                 _ExternalDependencyManager().import_module(
-                    path=".timestamp",
-                    package="qlogicae_cor.v3.library",
+                    path="qlogicae_cor.v3.library.timestamp",
                     member="Timestamp",
                     is_member_callable=True
                 )

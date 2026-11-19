@@ -103,6 +103,19 @@ def _allocate():
                     "must be a dictionary"
                 )
 
+            is_parser_enabled = (
+                command_data.get(
+                    "is_parser_enabled",
+                    True
+                )
+            )
+            if not isinstance(is_parser_enabled, (bool)):
+                raise ValueError(
+                    "plugin export property "
+                    "'command.is_parser_enabled' "
+                    "must be a boolean"
+                )
+
             callbacks = (
                 command_data.get(
                     "callbacks",
@@ -135,11 +148,19 @@ def _allocate():
                 callback_on_pre_setup()
 
             result = True
-            result = (
-                self.setup_parser(
-                    options
-                ) and result
-            )
+
+            if is_parser_enabled:
+                result = (
+                    self.setup_parser(
+                        options
+                    ) and result
+                )
+            else:
+                result = (
+                    self.setup_command_collection(
+                        options
+                    ) and result
+                )
 
             if (
                 callback_on_post_setup and
@@ -254,6 +275,51 @@ def _allocate():
 
                     stack.extend(
                         (nested_subparsers, subcommand, combination)
+                        for subcommand in reversed(subcommands)
+                    )
+
+            self._command_collection = result
+
+            return True
+
+        def setup_command_collection(self, commands):
+            if not commands:
+                raise ValueError("'commands' must be defined")
+
+            result = {}
+            stack = [
+                (command, "")
+                for command in reversed(commands)
+            ]
+
+            while stack:
+                command, prefix = stack.pop()
+
+                if not command:
+                    continue
+
+                name = command["name"]
+
+                combination = (
+                    f"{prefix}-{name}"
+                    if prefix
+                    else name
+                )
+
+                command_handler = command.get("command_handler")
+
+                if callable(command_handler):
+                    result[combination] = command_handler
+
+                subcommands = command.get("subcommands") or ()
+
+                if subcommands:
+                    subparser_configuration = (
+                        command.get("subparsers") or {}
+                    )
+
+                    stack.extend(
+                        (subcommand, combination)
                         for subcommand in reversed(subcommands)
                     )
 

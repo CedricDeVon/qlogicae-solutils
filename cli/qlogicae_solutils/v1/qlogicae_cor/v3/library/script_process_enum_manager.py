@@ -44,16 +44,14 @@ def _allocate():
 
             _EnumConversionValue = (
                 _ExternalDependencyManager().import_module(
-                    path=".enum_conversion_value",
-                    package="qlogicae_cor.v3.library",
+                    path="qlogicae_cor.v3.library.enum_conversion_value",
                     member="EnumConversionValueScriptProcess",
                     is_member_callable=True,
                 )
             )
             _ScriptProcess = (
                 _ExternalDependencyManager().import_module(
-                    path=".script_process",
-                    package="qlogicae_cor.v3.library",
+                    path="qlogicae_cor.v3.library.script_process",
                     member="ScriptProcess",
                     is_member_callable=True,
                 )

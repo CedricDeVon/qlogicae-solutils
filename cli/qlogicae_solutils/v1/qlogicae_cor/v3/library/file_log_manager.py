@@ -117,32 +117,28 @@ def _allocate():
             )
             _TextEncodingManager = (
                 _ExternalDependencyManager().import_module(
-                    path=".text_encoding_manager",
-                    package="qlogicae_cor.v3.library",
+                    path="qlogicae_cor.v3.library.text_encoding_manager",
                     member="TextEncodingManager",
                     is_member_callable=True,
                 )
             )
             _LogFormat = (
                 _ExternalDependencyManager().import_module(
-                    path=".log_format",
-                    package="qlogicae_cor.v3.library",
+                    path="qlogicae_cor.v3.library.log_format",
                     member="LogFormat",
                     is_member_callable=True,
                 )
             )
             _LogOptions = (
                 _ExternalDependencyManager().import_module(
-                    path=".log_options",
-                    package="qlogicae_cor.v3.library",
+                    path="qlogicae_cor.v3.library.log_options",
                     member="LogOptions",
                     is_member_callable=True,
                 )
             )
             _LogOptionsManager = (
                 _ExternalDependencyManager().import_module(
-                    path=".log_options_manager",
-                    package="qlogicae_cor.v3.library",
+                    path="qlogicae_cor.v3.library.log_options_manager",
                     member="LogOptionsManager",
                     is_member_callable=True,
                 )

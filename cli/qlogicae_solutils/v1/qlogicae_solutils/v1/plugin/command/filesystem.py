@@ -45,6 +45,38 @@ def run_filesystem_compress_command(arguments):
     return True
 
 
+def run_filesystem_size_command(arguments):
+    print(
+        arguments
+    )
+
+    return True
+
+
+def run_filesystem_list_command(arguments):
+    print(
+        arguments
+    )
+
+    return True
+
+
+def run_filesystem_count_command(arguments):
+    print(
+        arguments
+    )
+
+    return True
+
+
+def run_filesystem_metadata_command(arguments):
+    print(
+        arguments
+    )
+
+    return True
+
+
 def _allocate():
     global _allocate
     global _data
@@ -429,6 +461,9 @@ def _allocate():
                                         {
                                             "name": "size",
                                             "kwargs": { "help": "Show filesystem size.", },
+                                            "command_handler": (
+                                                run_filesystem_size_command
+                                            ),
                                             "arguments": [
                                                 {
                                                     "args": (
@@ -462,6 +497,9 @@ def _allocate():
                                         {
                                             "name": "list",
                                             "kwargs": { "help": "Show filesystem paths.", },
+                                            "command_handler": (
+                                                run_filesystem_list_command
+                                            ),
                                             "arguments": [
                                                 {
                                                     "args": (
@@ -497,6 +535,9 @@ def _allocate():
                                         {
                                             "name": "count",
                                             "kwargs": { "help": "Show filesystem count.", },
+                                            "command_handler": (
+                                                run_filesystem_count_command
+                                            ),
                                             "arguments": [
                                                 {
                                                     "args": (
@@ -532,6 +573,9 @@ def _allocate():
                                         {
                                             "name": "metadata",
                                             "kwargs": { "help": "Show filesystem metadata.", },
+                                            "command_handler": (
+                                                run_filesystem_metadata_command
+                                            ),
                                             "arguments": [
                                                 {
                                                     "args": (
