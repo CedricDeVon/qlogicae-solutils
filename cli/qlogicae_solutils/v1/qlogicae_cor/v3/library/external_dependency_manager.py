@@ -21,6 +21,7 @@ def _allocate():
             "_is_member_callable",
             "_is_package",
             "_member",
+            "_is_optional",
         )
 
         def __init__(self, **kwargs):
@@ -65,6 +66,17 @@ def _allocate():
                 raise TypeError("'package' must be a string or None")
 
             self._package = value or None
+
+        @property
+        def is_optional(self):
+            return self._is_optional
+
+        @is_optional.setter
+        def is_optional(self, value):
+            if not isinstance(value, bool):
+                raise TypeError("'is_optional' must be a boolean")
+
+            self._is_package = value
 
         @property
         def is_package(self):
@@ -143,6 +155,11 @@ def _allocate():
 
             self._package = package or None
 
+            is_optional = kwargs.get("is_optional", False)
+
+            if not isinstance(is_optional, bool):
+                raise TypeError("'kwargs.is_optional' must be a boolean")
+
             is_package = kwargs.get("is_package", False)
 
             if not isinstance(is_package, bool):
@@ -164,8 +181,9 @@ def _allocate():
                 raise TypeError("'kwargs.is_member_callable' must be a boolean")
 
             self._member = member or None
-            self._is_member_callable = is_member_callable
             self._is_package = is_package
+            self._is_optional = is_optional
+            self._is_member_callable = is_member_callable
             self._is_pre_allocated = is_pre_allocated
             self._allocated_module = None
 
@@ -188,32 +206,43 @@ def _allocate():
             if self._allocated_module is not None:
                 return self._allocated_module
 
-            if self._package:
-                allocated_module = _importlib.import_module(
-                    self._path,
-                    package=self._package,
-                )
-            else:
-                allocated_module = _importlib.import_module(self._path)
+            try:            
+                if self._package:
+                    allocated_module = _importlib.import_module(
+                        self._path,
+                        package=self._package,
+                    )
+                else:
+                    allocated_module = _importlib.import_module(self._path)
 
-            if self._is_package and not hasattr(allocated_module, "__path__"):
-                raise TypeError(
-                    f"Imported target '{self._path}' is not a package"
-                )
+                if self._is_package and not hasattr(allocated_module, "__path__"):
+                    raise TypeError(
+                        f"Imported target '{self._path}' is not a package"
+                    )
 
-            if self._member:
-                for name in self._member.split("."):
-                    if not name:
-                        continue
+                if self._member:
+                    for name in self._member.split("."):
+                        if not name:
+                            continue
 
-                    allocated_module = getattr(allocated_module, name)
+                        allocated_module = getattr(allocated_module, name)
 
-            if self._is_member_callable:
-                self._allocated_module = allocated_module()
-            else:
-                self._allocated_module = allocated_module
+                if self._is_member_callable:
+                    self._allocated_module = allocated_module()
+                else:
+                    self._allocated_module = allocated_module
 
+            except Exception as error:
+                if self._is_optional:
+                   self._allocated_module = {}
+
+                else:
+                    raise Exception(
+                        f"import path does not exist"
+                    )
+                    
             return self._allocated_module
+
 
         def pre_allocate(self):
             if self._allocated_module is None:
