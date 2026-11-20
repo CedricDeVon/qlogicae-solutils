@@ -43,30 +43,30 @@ def _allocate():
             from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
-                ExternalDependencyManager().get_singleton
+                ExternalDependencyManager()
             )
 
             _logging = (
-                _ExternalDependencyManager().import_module(
+                _ExternalDependencyManager().get_singleton().import_module(
                     path="logging",
                 )
             )
             _ConsoleLogManager = (
-                _ExternalDependencyManager().import_module(
+                _ExternalDependencyManager().get_singleton().import_module(
                     path="qlogicae_cor.v3.library.console_log_manager",
                     member="ConsoleLogManager",
                     is_member_callable=True,
                 )
             )
             _FileLogManager = (
-                _ExternalDependencyManager().import_module(
+                _ExternalDependencyManager().get_singleton().import_module(
                     path="qlogicae_cor.v3.library.file_log_manager",
                     member="FileLogManager",
                     is_member_callable=True,
                 )
             )
             _LogOptionsManager = (
-                _ExternalDependencyManager().import_module(
+                _ExternalDependencyManager().get_singleton().import_module(
                     path="qlogicae_cor.v3.library.log_options_manager",
                     member="LogOptionsManager",
                     is_member_callable=True,

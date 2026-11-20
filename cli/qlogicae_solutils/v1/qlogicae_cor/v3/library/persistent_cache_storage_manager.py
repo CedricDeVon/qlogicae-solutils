@@ -54,23 +54,23 @@ def _allocate():
             from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
-                ExternalDependencyManager().get_singleton
+                ExternalDependencyManager()
             )
 
             _dbm = (
-                _ExternalDependencyManager()
+                _ExternalDependencyManager().get_singleton()
                     .import_module(
                         path="dbm"
                     )
             )
             _pickle = ( # nosec B403
-                _ExternalDependencyManager()
+                _ExternalDependencyManager().get_singleton()
                     .import_module(
                         path="pickle"
                     )
             )
             _time = ( # nosec B110
-                _ExternalDependencyManager()
+                _ExternalDependencyManager().get_singleton()
                     .import_module(
                         path="time"
                     )

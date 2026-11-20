@@ -35,7 +35,7 @@ def _allocate():
             )
 
             _ExternalDependencyManager = (
-                ExternalDependencyManager().get_singleton
+                ExternalDependencyManager()
             )
 
             self._values = {}
@@ -375,7 +375,7 @@ def _allocate():
                 return False
 
             _json = (
-                _ExternalDependencyManager()
+                _ExternalDependencyManager().get_singleton()
                 .import_module(path="json")
             )
 
@@ -397,7 +397,7 @@ def _allocate():
             )
 
             _json = (
-                _ExternalDependencyManager()
+                _ExternalDependencyManager().get_singleton()
                 .import_module(path="json")
             )
 

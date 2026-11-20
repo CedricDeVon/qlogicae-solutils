@@ -5,7 +5,7 @@ __all__ = (
 _pathlib = None
 _TextEncodingManager = None
 _FileIoManager = None
-_ExternalDependencyManager = None
+_ExternalDependencyManager =.get_singleton() None
 
 
 def _allocate():
@@ -39,16 +39,16 @@ def _allocate():
             from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
-                ExternalDependencyManager().get_singleton
+                ExternalDependencyManager()
             )
 
             _pathlib = (
-                _ExternalDependencyManager().import_module(
+                _ExternalDependencyManager().get_singleton().import_module(
                     path="pathlib",
                 )
             )
             _TextEncodingManager = (
-                _ExternalDependencyManager().import_module(
+                _ExternalDependencyManager().get_singleton().import_module(
                     path="qlogicae_cor.v3.library.text_encoding_manager",
                     member="TextEncodingManager",
                     is_member_callable=True,

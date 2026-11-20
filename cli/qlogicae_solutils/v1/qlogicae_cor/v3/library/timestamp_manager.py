@@ -44,35 +44,35 @@ def _allocate():
             from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
-                ExternalDependencyManager().get_singleton
+                ExternalDependencyManager()
             )
 
             _time = (
-                _ExternalDependencyManager().import_module(
+                _ExternalDependencyManager().get_singleton().import_module(
                     path="time"
                 )
             )
             _datetime = (
-                _ExternalDependencyManager().import_module(
+                _ExternalDependencyManager().get_singleton().import_module(
                     path="datetime",
                 )
             )
             _TimeUnit = (
-                _ExternalDependencyManager().import_module(
+                _ExternalDependencyManager().get_singleton().import_module(
                     path="qlogicae_cor.v3.library.time_unit",
                     member="TimeUnit",
                     is_member_callable=True,
                 )
             )
             _TimeZoneManager = (
-                _ExternalDependencyManager().import_module(
+                _ExternalDependencyManager().get_singleton().import_module(
                     path="qlogicae_cor.v3.library.time_zone_manager",
                     member="TimeZoneManager",
                     is_member_callable=True,
                 )
             )
             _Timestamp = (
-                _ExternalDependencyManager().import_module(
+                _ExternalDependencyManager().get_singleton().import_module(
                     path="qlogicae_cor.v3.library.timestamp",
                     member="Timestamp",
                     is_member_callable=True,

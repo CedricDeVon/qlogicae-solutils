@@ -39,16 +39,16 @@ def _allocate():
             from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
-                ExternalDependencyManager().get_singleton
+                ExternalDependencyManager()
             )
 
             _zipfile = (
-                _ExternalDependencyManager().import_module(
+                _ExternalDependencyManager().get_singleton().import_module(
                     path="zipfile",
                 )
             )
             _pathlib = (
-                _ExternalDependencyManager().import_module(
+                _ExternalDependencyManager().get_singleton().import_module(
                     path="pathlib",
                 )
             )
@@ -89,7 +89,7 @@ def _allocate():
 
             return result
 
-        def zip_extract(
+        def extract_path(
             self,
             archive_path,
             destination_path,

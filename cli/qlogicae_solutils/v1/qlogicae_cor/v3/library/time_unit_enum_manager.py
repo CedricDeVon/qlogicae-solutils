@@ -39,18 +39,18 @@ def _allocate():
             from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
-                ExternalDependencyManager().get_singleton
+                ExternalDependencyManager()
             )
 
             _EnumConversionValue = (
-                _ExternalDependencyManager().import_module(
+                _ExternalDependencyManager().get_singleton().import_module(
                     path="qlogicae_cor.v3.library.enum_conversion_value",
                     member="EnumConversionValue",
                     is_member_callable=True
                 )
             )
             _TimeUnit = (
-                _ExternalDependencyManager().import_module(
+                _ExternalDependencyManager().get_singleton().import_module(
                     path="qlogicae_cor.v3.library.time_unit",
                     member="TimeUnit",
                     is_member_callable=True

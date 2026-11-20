@@ -39,23 +39,23 @@ def _allocate():
             from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
-                ExternalDependencyManager().get_singleton
+                ExternalDependencyManager()
             )
 
             _datetime = (
-                _ExternalDependencyManager().import_module(
+                _ExternalDependencyManager().get_singleton().import_module(
                     path="datetime",
                 )
             )
             _EnumConversionValue = (
-                _ExternalDependencyManager().import_module(
+                _ExternalDependencyManager().get_singleton().import_module(
                     path="qlogicae_cor.v3.library.enum_conversion_value",
                     member="EnumConversionValue",
                     is_member_callable=True,
                 )
             )
             _TimeZone = (
-                _ExternalDependencyManager().import_module(
+                _ExternalDependencyManager().get_singleton().import_module(
                     path="qlogicae_cor.v3.library.time_zone",
                     member="TimeZone",
                     is_member_callable=True,

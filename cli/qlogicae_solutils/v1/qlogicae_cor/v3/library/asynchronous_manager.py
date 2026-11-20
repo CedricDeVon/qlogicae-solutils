@@ -62,28 +62,36 @@ def _allocate():
             from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
-                ExternalDependencyManager().get_singleton
+                ExternalDependencyManager()
             )
 
             _asyncio = (
-                _ExternalDependencyManager().import_module(
-                    path="asyncio",
-                )
+                _ExternalDependencyManager()
+                    .get_singleton()
+                    .import_module(
+                        path="asyncio",
+                    )
             )
             _threading = (
-                _ExternalDependencyManager().import_module(
-                    path="threading",
-                )
+                _ExternalDependencyManager()
+                    .get_singleton()
+                    .import_module(
+                        path="threading",
+                    )
             )
             _functools = (
-                _ExternalDependencyManager().import_module(
-                    path="functools",
-                )
+                _ExternalDependencyManager()
+                    .get_singleton()
+                    .import_module(
+                        path="functools",
+                    )
             )
             _concurrent_futures = (
-                _ExternalDependencyManager().import_module(
-                    path="concurrent.futures",
-                )
+                _ExternalDependencyManager()
+                    .get_singleton()
+                    .import_module(
+                        path="concurrent.futures",
+                    )
             )
 
             self._thread_executor = None

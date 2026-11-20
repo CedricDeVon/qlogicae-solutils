@@ -37,10 +37,10 @@ def _allocate():
             from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
-                ExternalDependencyManager().get_singleton
+                ExternalDependencyManager()
             )
             _copy = (
-                _ExternalDependencyManager()
+                _ExternalDependencyManager().get_singleton()
                     .import_module(
                         path="copy"
                     )

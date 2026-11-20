@@ -41,23 +41,23 @@ def _allocate():
             from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
-                ExternalDependencyManager().get_singleton
+                ExternalDependencyManager()
             )
 
             _pathlib = (
-                _ExternalDependencyManager().import_module(
+                _ExternalDependencyManager().get_singleton().import_module(
                     path="pathlib",
                 )
             )
             _FileEntityFilesystemTreeSetupOptions = (
-                _ExternalDependencyManager().import_module(
+                _ExternalDependencyManager().get_singleton().import_module(
                     path="qlogicae_cor.v3.library.file_entity_filesystem_tree_setup_options",
                     member="FileEntityFilesystemTreeSetupOptions",
                     is_member_callable=True,
                 )
             )
             _FolderEntityFilesystemTreeSetupOptions = (
-                _ExternalDependencyManager().import_module(
+                _ExternalDependencyManager().get_singleton().import_module(
                     path="qlogicae_cor.v3.library.folder_entity_filesystem_tree_setup_options",
                     member="FolderEntityFilesystemTreeSetupOptions",
                     is_member_callable=True,

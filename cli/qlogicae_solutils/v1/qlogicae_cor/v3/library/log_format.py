@@ -21,10 +21,10 @@ def _allocate():
 
     _logging = logging
     _ExternalDependencyManager = (
-        ExternalDependencyManager().get_singleton
+        ExternalDependencyManager()
     )
     _TimestampManager = (
-        _ExternalDependencyManager().import_module(
+        _ExternalDependencyManager().get_singleton().import_module(
             path="qlogicae_cor.v3.library.timestamp_manager",
             member="TimestampManager",
             is_member_callable=True,
