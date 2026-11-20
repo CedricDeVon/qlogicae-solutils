@@ -3,7 +3,7 @@ def main():
     from importlib.metadata import version
 
     print(
-        version("qlogicae-mirage")
+        version("qlogicae-moduli")
     )
 
     return 0

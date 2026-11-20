@@ -2,7 +2,6 @@ __all__ = (
     "PluginManager",
 )
 
-_types = None
 _PluginManager = None
 _ObjectMergeManager = None
 _PythonModuleManager = None
@@ -38,41 +37,41 @@ def _allocate():
             global _ValueCacheStorageManager
             global _PythonModuleManager
             global _ObjectMergeManager
-            global _types
 
             from qlogicae_cor.v3.library.external_dependency_manager import (
                 ExternalDependencyManager
             )
 
             _ExternalDependencyManager = (
-                ExternalDependencyManager().get_singleton
+                ExternalDependencyManager()
             )
 
-            _types = (
-                _ExternalDependencyManager().import_module(
-                    path="types",
-                )
-            )
             _ObjectMergeManager = (
-                _ExternalDependencyManager().import_module(
-                    path="qlogicae_cor.v3.library.object_merge_manager",
-                    member="ObjectMergeManager",
-                    is_member_callable=True,
-                )
+                _ExternalDependencyManager()
+                    .get_singleton()
+                    .import_module(
+                        path="qlogicae_cor.v3.library.object_merge_manager",
+                        member="ObjectMergeManager",
+                        is_member_callable=True,
+                    )
             )
             _PythonModuleManager = (
-                _ExternalDependencyManager().import_module(
-                    path="qlogicae_cor.v3.library.python_module_manager",
-                    member="PythonModuleManager",
-                    is_member_callable=True,
-                )
+                _ExternalDependencyManager()
+                    .get_singleton()
+                    .import_module(
+                        path="qlogicae_cor.v3.library.python_module_manager",
+                        member="PythonModuleManager",
+                        is_member_callable=True,
+                    )
             )
             _ValueCacheStorageManager = (
-                _ExternalDependencyManager().import_module(
-                    path="qlogicae_cor.v3.library.value_cache_storage_manager",
-                    member="ValueCacheStorageManager",
-                    is_member_callable=True,
-                )
+                _ExternalDependencyManager()
+                    .get_singleton()
+                    .import_module(
+                        path="qlogicae_cor.v3.library.value_cache_storage_manager",
+                        member="ValueCacheStorageManager",
+                        is_member_callable=True,
+                    )
             )
 
             return True
@@ -84,20 +83,20 @@ def _allocate():
             if not isinstance(kwargs, (dict)) or not kwargs:
                 raise ValueError("'kwargs' must be a non-empty dictionary")
 
-            imported_modules = (
-                self.read_imported_modules(
-                    kwargs
+            plugin_exports = (
+                self.read_plugin_exports(
+                    **kwargs
                 )
             )
-            raw_module_exports = (
-                self.read_raw_module_exports(
-                    imported_modules
+            plugin_export_data_collection = (
+                self.read_plugin_export_data(
+                    plugin_exports
                 )
             )
 
-            self.setup_merged_raw_module_exports(
+            self.setup_value_cache_storage_database(
                 kwargs,
-                raw_module_exports
+                plugin_export_data_collection
             )
 
             return True
@@ -105,7 +104,7 @@ def _allocate():
         def shutdown(self):
             return True
 
-        def read_module_exports(
+        def read_plugin_export_data(
             self,
         ):
             value_cache_storage_manager = (
@@ -117,71 +116,82 @@ def _allocate():
                 value_cache_storage_manager.read_all_items()
             )
 
-        def read_imported_modules(
+        def read_plugin_exports(
             self,
-            options,
+            **kwargs,
         ):
-            if not isinstance(options, (dict)) or not options:
-                raise ValueError("'options' must be a non-empty dictionary")
+            if not isinstance(kwargs, (dict)) or not kwargs:
+                raise ValueError("'kwargs' must be a non-empty dictionary")
 
             target_filesystem_paths = (
-                options.get("target_filesystem_paths", tuple()) or tuple()
+                kwargs.get("target_filesystem_paths", tuple()) or tuple()
             )
             is_recursive = (
-                options.get("is_recursive", True)
+                kwargs.get("is_recursive", True)
             )
-            imported_modules = (
-                options.get("imported_modules", tuple()) or tuple()
+            internal_objects = (
+                kwargs.get("internal_objects", tuple()) or tuple()
+            )
+            internal_modules = (
+                kwargs.get("internal_modules", tuple()) or tuple()
+            )
+            external_objects = (
+                kwargs.get("external_objects", tuple()) or tuple()
             )
 
-            output_imported_modules = tuple(
-                _PythonModuleManager()
-                    .get_singleton()
-                    .read_imported_modules(
-                        target_filesystem_paths,
-                        is_recursive
-                    )
-            )
+            external_modules = tuple()        
+            if target_filesystem_paths:
+                external_modules = tuple(
+                    _PythonModuleManager()
+                        .get_singleton()
+                        .read_imported_modules(
+                            target_filesystem_paths,
+                            is_recursive
+                        )
+                )
 
             outputs = (
-                imported_modules + output_imported_modules
+                internal_objects +
+                internal_modules +
+                external_objects +
+                external_modules
             )
 
             return (
                 outputs
             )
 
-        def read_raw_module_exports(
+        def read_plugin_export_data(
             self,
-            targets
+            plugin_exports
         ):
-            if not isinstance(targets, (tuple, list)) or not targets:
-                raise ValueError("'targets' must either be a non-empty tuple or list")
+            if not isinstance(plugin_exports, (tuple, list)) or not plugin_exports:
+                raise ValueError("'plugin_exports' must either be a non-empty tuple or list")
 
-            raw_module_exports = [
-                self.read_plugin_module_export(
-                    imported_module
-                ) for imported_module in targets
+            plugin_export_data_collection = [
+                self.read_plugin_export(
+                    plugin_export
+                ) for plugin_export in plugin_exports
             ]
 
-            raw_module_exports.sort(
-                key=lambda item: (item.get('object_merge', {}) or {}).get('level', 0)
+            plugin_export_data_collection.sort(
+                key=lambda item: (item.get('merge_layer', 0) or 0)
             )
 
             return tuple(
-                raw_module_exports
+                plugin_export_data_collection
             )
 
-        def setup_merged_raw_module_exports(
+        def setup_value_cache_storage_database(
             self,
-            options,
-            targets
+            kwargs,
+            plugin_export_data_collection
         ):
-            if not isinstance(options, (dict)):
-                raise ValueError("'options' must be a dictionary")
+            if not isinstance(kwargs, (dict)):
+                raise ValueError("'kwargs' must be a dictionary")
 
-            if not isinstance(targets, (tuple, list)) or not targets:
-                raise ValueError("'targets' must either be a non-empty tuple or list")
+            if not isinstance(plugin_export_data_collection, (tuple, list)) or not plugin_export_data_collection:
+                raise ValueError("'plugin_export_data_collection' must either be a non-empty tuple or list")
 
             object_merge_manager = (
                 _ObjectMergeManager().get_singleton()
@@ -189,55 +199,135 @@ def _allocate():
             value_cache_storage_manager = (
                 _ValueCacheStorageManager().get_singleton()
             )
-
-            raw_export_data = (
-                options.get("raw_export_data", tuple()) or tuple()
+            
+            internal_export_data = (
+                kwargs.get("internal_export_data", tuple()) or tuple()
             )
             initial_export_data = (
-                options.get("initial_export_data", {}) or {}
+                kwargs.get("initial_export_data", {}) or {}
             )
 
-            targets = (
-                tuple(targets) + raw_export_data
+            plugin_export_data_collection = (
+                tuple(plugin_export_data_collection) + internal_export_data
             )
 
             module_exports = (
                 object_merge_manager.deep_merge(
-                    self.read_module_exports(),
+                    self.read_plugin_export_data(),
                     initial_export_data
                 )
             )
-            for target in targets:
-                if not isinstance(target, (dict)):
-                    raise ValueError("'target' must be a dictionary")
+            for plugin_export_data in plugin_export_data_collection:
+                if not isinstance(plugin_export_data, (dict)):
+                    raise ValueError("'plugin_export_data' must be a dictionary")
 
                 module_exports = (
                     object_merge_manager.deep_merge(
                         module_exports,
-                        target
+                        plugin_export_data
                     )
                 )
 
-            value_cache_storage_manager.set_all_items(
-                values=module_exports
-            )
+            if not module_exports:
+                value_cache_storage_manager.set_all_items(
+                    values=module_exports
+                )
 
             return True
 
-        def read_plugin_module_export(
+        def read_plugin_export(
             self,
-            target,
+            plugin_export,
         ):
-            if not isinstance(target, (_types().ModuleType)) or not target:
-                raise ValueError("'target' must be a non-empty module")
+            if not plugin_export:
+                raise ValueError("'plugin_export' must be defined")
 
-            module_export = (
-                target.export()
+            plugin_export_data = (
+                plugin_export.export()
             )
 
             return (
-                module_export
+                plugin_export_data
             )
+
+        def setup_data(
+            self,
+            **kwargs
+        ):
+            if not isinstance(kwargs, (dict)):
+                raise ValueError("'kwargs' must be a dictionary")
+
+            keys = (
+                kwargs.get(
+                    "keys",
+                    ()
+                ) or ()
+            )
+            merge_layer = (
+                kwargs.get(
+                    "merge_layer",
+                    0
+                ) or 0
+            )
+            data = (
+                kwargs.get(
+                    "data",
+                    {}
+                ) or {}
+            )
+
+            result = {
+                "merge_layer": merge_layer,
+                **data
+            }
+            current = result
+
+            for key in keys:
+                if not isinstance(key, (str)) or not key:
+                    raise ValueError("'key' must be a non-empty string")
+                
+                current[key] = {}
+                current = current[key]
+
+            return result
+
+        def read_data(
+            self,
+            **kwargs
+        ):
+            if not isinstance(kwargs, (dict)):
+                raise ValueError("'kwargs' must be a dictionary")
+
+            keys = (
+                kwargs.get(
+                    "keys",
+                    ()
+                ) or ()
+            )
+
+            value_cache_storage_manager = (
+                _ValueCacheStorageManager()
+                    .get_singleton()
+            )
+
+            if not keys:
+                return (
+                    value_cache_storage_manager
+                        .read_all_items()
+                )
+
+            data = (
+                value_cache_storage_manager
+                    .get_one_item(
+                        keys=keys
+                    )
+            )
+
+            return (
+                data
+            )
+
+
 
     _PluginManager = __PluginManager
     _allocate = lambda: None
