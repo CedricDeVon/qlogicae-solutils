@@ -43,17 +43,17 @@ def _allocate():
             )
 
             _ExternalDependencyManager = (
-                ExternalDependencyManager().get_singleton
+                ExternalDependencyManager()
             )
             _PluginManager = (
-                _ExternalDependencyManager().import_module(                    
+                _ExternalDependencyManager().get_singleton().import_module(                    
                     path="qlogicae_solutils.v1.library.plugin_manager",
                     member="PluginManager",
                     is_member_callable=True,
                 )
             )
             _CliApplicationManager = (
-                _ExternalDependencyManager().import_module(                    
+                _ExternalDependencyManager().get_singleton().import_module(                    
                     path="qlogicae_cliq.v1.library.cli_application_manager",
                     member="CliApplicationManager",
                     is_member_callable=True,

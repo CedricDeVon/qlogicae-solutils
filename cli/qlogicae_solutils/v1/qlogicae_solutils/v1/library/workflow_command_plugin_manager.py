@@ -177,65 +177,6 @@ def WorkflowCommandPluginManager():
 
 
 
-# "qlogicae": {
-#     "solutils": {
-#         "v1": {
-#             "workflow": {
-#                 "selection": {
-#                     "sub-workflow": {
-#                         "jobs": [
-#                             {
-#                                 "run": "echo 'sub workflow'",
-#                             },
-#                         ]
-#                     },
-#                     "main-workflow": {
-#                         "jobs": [
-#                             {
-#                                 "run": "echo 'main workflow'",
-#                             },
-#                             {
-#                                 "run": "sub-workflow",
-#                             },
-#                             {
-#                                 "run": "about-show-version",
-#                             },
-#                             {
-#                                 "run": print_message_1,
-#                             },
-#                             {
-#                                 "run": print_message_2,
-#                                 "argument": {
-#                                     "args": (
-#                                         "Hello",
-#                                     ),
-#                                 }
-#                             },
-#                             {
-#                                 "run": print_message_3,
-#                                 "argument": {
-#                                     "kwargs": {
-#                                         "text": "World"
-#                                     }
-#                                 }
-#                             },
-#                             {
-#                                 "run": print_message_4,
-#                                 "argument": {
-#                                     "args": (
-#                                         "Hello",
-#                                     ),
-#                                     "kwargs": {
-#                                         "text": "World"
-#                                     }
-#                                 }
-#                             },
-#                         ]
-#                     },
-#                 }
-#             }
-#         }
-#     },
 
 
 # def run_workflow_run_command(arguments):

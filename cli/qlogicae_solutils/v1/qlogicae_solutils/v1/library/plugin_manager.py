@@ -56,7 +56,7 @@ def _allocate():
                 ExternalDependencyManager()
             )
             _plugin_root = (
-                _ExternalDependencyManager().import_module(                    
+                _ExternalDependencyManager().get_singleton().import_module(                    
                     path="qlogicae_solutils.v1.plugin.root",
                 )
             )
