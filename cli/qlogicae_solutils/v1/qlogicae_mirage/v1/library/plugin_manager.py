@@ -13,7 +13,7 @@ def _allocate():
 
     class __PluginManager:
         __slots__ = (
-            "_data_path",
+            "_key_path",
         )
 
         _singleton = None
@@ -28,17 +28,17 @@ def _allocate():
             self.shutdown()
 
         @property
-        def data_path(self):
-            return self._data_path
+        def key_path(self):
+            return self._key_path
 
-        @data_path.setter
-        def data_path(self, value):
+        @key_path.setter
+        def key_path(self, value):
             if not isinstance(value, (tuple, list)):
                 raise ValueError(
                     "'value' must be a tuple or list"
                 )
 
-            self._data_path = value
+            self._key_path = value
 
         @classmethod
         def get_singleton(cls):
@@ -68,7 +68,7 @@ def _allocate():
                     )
             )
 
-            self._data_path = (
+            self._key_path = (
                 "qlogicae",
                 "mirage",
                 "v1",
@@ -85,7 +85,7 @@ def _allocate():
         def shutdown(self):
             return True
 
-        def export(self):
+        def export_plugin(self):
             moduli_plugin_manager = (
                 _ModuliPluginManager()
                     .get_singleton()
@@ -94,8 +94,8 @@ def _allocate():
             initial_data = (
                 moduli_plugin_manager
                     .setup_data(
-                        keys=self._data_path,
-                        merge_layer=0,
+                        moduli={ "layer": 0 },
+                        key_path=self._key_path,
                         data={
                             "workflow": {
                                 "selection": {},
@@ -104,17 +104,23 @@ def _allocate():
                                     "on_post_run": None,
                                 },
                             },
-                            "callbacks": {
-                                "on_pre_run": None,
-                                "on_post_run": None,
-                                "on_pre_setup": None,
-                                "on_post_setup": None,
-                            },
                         },
                     )
             )
 
             return initial_data
+
+        def setup_plugin(self):
+            result = True
+            return result
+
+        def run_plugin(self):            
+            result = True
+            return result
+
+        def shutdown_plugin(self):            
+            result = True
+            return result
 
         def read_data(self):
             moduli_plugin_manager = (
@@ -125,7 +131,7 @@ def _allocate():
             return (
                 moduli_plugin_manager
                     .read_data(
-                        keys=self._data_path,
+                        keys=self._key_path,
                     )
             )
 
