@@ -4,6 +4,7 @@ __all__ = (
 
 _PluginManager = None
 _ModuliPluginManager = None
+_CommandParserManager = None
 _ExternalDependencyManager = None
 
 
@@ -48,8 +49,9 @@ def _allocate():
             return cls._singleton
 
         def construct(self):
-            global _ModuliPluginManager
             global _ExternalDependencyManager
+            global _ModuliPluginManager
+            global _CommandParserManager
 
             from qlogicae_cor.v3.library.external_dependency_manager import (
                 ExternalDependencyManager,
@@ -64,6 +66,15 @@ def _allocate():
                     .import_module(                    
                         path="qlogicae_moduli.v1.library.plugin_manager",
                         member="PluginManager",
+                        is_member_callable=True,
+                    )
+            )
+            _CommandParserManager = (
+                _ExternalDependencyManager()
+                    .get_singleton()
+                    .import_module(
+                        path="qlogicae_fuite.v1.library.command_parser_manager",
+                        member="CommandParserManager",
                         is_member_callable=True,
                     )
             )
@@ -85,7 +96,7 @@ def _allocate():
         def shutdown(self):
             return True
 
-        def export(self):
+        def export_plugin(self):
             moduli_plugin_manager = (
                 _ModuliPluginManager()
                     .get_singleton()
@@ -94,8 +105,8 @@ def _allocate():
             initial_data = (
                 moduli_plugin_manager
                     .setup_data(
-                        keys=self._data_path,
-                        merge_layer=0,
+                        moduli={ "layer": 0 },
+                        key_path=self._key_path,
                         data={
                             "is_parser_enabled": True,
                             "options": {
@@ -129,6 +140,52 @@ def _allocate():
             )
 
             return initial_data
+
+        def setup_plugin(self):
+            plugin_data = (
+                self.read_data() or {}
+            )
+            if not plugin_data:
+                return True            
+
+            command_parser_manager = (
+                _CommandParserManager()
+                    .get_singleton()
+            )
+            
+            result = True
+            result = (
+                command_parser_manager.setup(
+                    **plugin_data
+                )
+            )
+
+            return result
+
+        def run_plugin(self):            
+            plugin_data = (
+                self.read_data() or {}
+            )
+            if not plugin_data:
+                return True
+
+            command_parser_manager = (
+                _CommandParserManager()
+                    .get_singleton()
+            )
+
+            result = True
+            result = (
+                command_parser_manager.run(
+                    **plugin_data
+                )
+            )
+
+            return result
+
+        def shutdown_plugin(self):            
+            result = True
+            return result
 
         def read_data(self):
             moduli_plugin_manager = (

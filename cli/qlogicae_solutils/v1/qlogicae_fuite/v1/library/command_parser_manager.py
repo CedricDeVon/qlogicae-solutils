@@ -2,9 +2,7 @@ __all__ = (
     "CommandParserManager",
 )
 
-_sys = None
 _argparse = None
-_PluginManager = None
 _CommandParserManager = None
 _FunctionStorageManager = None
 _ExternalDependencyManager = None
@@ -42,9 +40,7 @@ def _allocate():
             return cls._singleton
 
         def construct(self):
-            global _sys
             global _argparse
-            global _PluginManager
             global _FunctionStorageManager
             global _ExternalDependencyManager
 
@@ -64,15 +60,6 @@ def _allocate():
                         is_member_callable=True,
                     )
             )
-            _PluginManager = (
-                _ExternalDependencyManager()
-                    .get_singleton()
-                    .import_module(
-                        path="qlogicae_fuite.v1.library.plugin_manager",
-                        member="PluginManager",
-                        is_member_callable=True,
-                    )
-            )
 
             self._parser = None
             self._commands = None
@@ -87,14 +74,8 @@ def _allocate():
                     "'kwargs' must be a dictionary"
                 )
 
-            plugin_manager = (
-                _PluginManager().get_singleton()
-            )
-            plugin_data = (
-                plugin_manager.read_data()
-            )
             options = (
-                plugin_data.get(
+                kwargs.get(
                     "options",
                     {}
                 ) or {}
@@ -106,7 +87,7 @@ def _allocate():
                 )
 
             is_parser_enabled = (
-                plugin_data.get(
+                kwargs.get(
                     "is_parser_enabled",
                     True
                 )
@@ -119,7 +100,7 @@ def _allocate():
                 )
 
             callbacks = (
-                plugin_data.get(
+                kwargs.get(
                     "callbacks",
                     {}
                 ) or {}
@@ -149,25 +130,22 @@ def _allocate():
             ):
                 callback_on_pre_setup()
 
+            function_storage_manager = (
+                _FunctionStorageManager()
+                    .get_singleton()
+            )
             result = True
-
+            result = (
+                function_storage_manager
+                    .setup_functions(
+                        options
+                    ) and result
+            )
             if is_parser_enabled:
                 result = (
                     self.setup_parser(
                         options
                     ) and result
-                )
-            else:
-                function_storage_manager = (
-                    _FunctionStorageManager()
-                        .get_singleton()
-                )
-
-                result = (
-                    function_storage_manager
-                        .setup_functions(
-                            options
-                        ) and result
                 )
 
             if (
@@ -180,6 +158,64 @@ def _allocate():
 
         def shutdown(self):
             return True
+
+        def run(self, **kwargs):
+            if not isinstance(kwargs, (dict)):
+                raise ValueError(
+                    "'kwargs' must be a dictionary"
+                )
+
+            command_callbacks = (
+                kwargs.get(
+                    "callbacks",
+                    {}
+                ) or {}
+            )
+            if not isinstance(command_callbacks, (dict)):
+                raise ValueError(
+                    "plugin export property 'command.callbacks' "
+                    "must be a dictionary"
+                )
+
+            command_callback_on_pre_run = (
+                command_callbacks.get(
+                    "on_pre_run",
+                    None
+                )
+            )
+            command_callback_on_post_run = (
+                command_callbacks.get(
+                    "on_post_run",
+                    None
+                )
+            )
+
+            if (
+                command_callback_on_pre_run and
+                callable(command_callback_on_pre_run)
+            ):
+                command_callback_on_pre_run()
+
+            result = True
+            result = (
+                self.setup_parsed_arguments() and result
+            )
+            result = (
+                self.setup_command_handler() and result
+            )
+            result = (
+                self.run_command_handler() and result
+            )
+
+            if (
+                command_callback_on_post_run and
+                callable(command_callback_on_post_run)
+            ):
+                command_callback_on_post_run()
+
+            return (
+                result
+            )
 
         def setup_parser(self, kwargs):
             if not isinstance(kwargs, dict):
@@ -271,66 +307,6 @@ def _allocate():
                     
             return True
 
-        def run(self):
-            plugin_manager = (
-                _PluginManager().get_singleton()
-            )
-            plugin_data = (
-                plugin_manager.read_data()
-            )
-
-            command_callbacks = (
-                plugin_data.get(
-                    "callbacks",
-                    {}
-                ) or {}
-            )
-            if not isinstance(command_callbacks, (dict)):
-                raise ValueError(
-                    "plugin export property 'command.callbacks' "
-                    "must be a dictionary"
-                )
-
-            command_callback_on_pre_run = (
-                command_callbacks.get(
-                    "on_pre_run",
-                    None
-                )
-            )
-            command_callback_on_post_run = (
-                command_callbacks.get(
-                    "on_post_run",
-                    None
-                )
-            )
-
-            if (
-                command_callback_on_pre_run and
-                callable(command_callback_on_pre_run)
-            ):
-                command_callback_on_pre_run()
-
-            result = True
-            result = (
-                self.setup_parsed_arguments() and result
-            )
-            result = (
-                self.setup_command_handler() and result
-            )
-            result = (
-                self.run_command_handler() and result
-            )
-
-            if (
-                command_callback_on_post_run and
-                callable(command_callback_on_post_run)
-            ):
-                command_callback_on_post_run()
-
-            return (
-                result
-            )
-
         def setup_parsed_arguments(self):
             arguments = self._parser.parse_args()
 
@@ -362,24 +338,6 @@ def _allocate():
 
             return result
 
-        def read_command_error_output(self):
-            _sys = (
-                _ExternalDependencyManager().get_singleton().import_module(
-                    path="sys",
-                )
-            )
-
-            return _sys().stderr
-
-        def read_command_arguments(self):
-            _sys = (
-                _ExternalDependencyManager().get_singleton().import_module(
-                    path="sys",
-                )
-            )
-
-            return tuple(_sys().argv[1:])
-
 
     _CommandParserManager = __CommandParserManager
     _allocate = lambda: None
@@ -393,73 +351,3 @@ def CommandParserManager():
 
 
 # CommandParserManager()
-
-# _data = {
-#     "qlogicae": {
-#         "solutils": {
-#             "v1": {
-#                 "workflow": {
-#                     "selection": {
-#                         "qlogicae-project-stage-release": {
-#                             "filesystem-path": "",
-#                             "scripts": [
-#                                 {
-#                                     "run": "echo 'qlogicae-project-stage-release'",
-#                                 },
-#                                 {
-#                                     "run": "qlogicae-project-build",
-#                                 },
-#                                 {
-#                                     "run": print_message,
-#                                     "args": [
-#                                         "Hello"
-#                                     ],
-#                                     "kwargs": {
-#                                         "key": "value"
-#                                     },
-#                                 },
-#                                 {
-#                                     "run": "filesystem-create",
-#                                     "kwargs": {
-#                                         "target_filesystem_paths": [
-#                                             "output",
-#                                         ],
-#                                     },
-#                                     "is-enabled": True,
-#                                     "is-failure-optional": True,
-#                                     "platforms-included": set(), # "Linux-x86_64"
-#                                     "platforms-excluded": set(),
-#                                     "return-codes-successful": set(), # 0
-#                                     "return-codes-unsuccessful": set(), # 1, -1
-#                                     "delay": 1,
-#                                     "delay-time-unit": "ms",
-#                                     "is-asynchronous": True,
-#                                 },
-#                             ],
-#                             "is-enabled": True,
-#                             "is-failure-optional": True,
-#                             "platforms-included": set(), # "Linux-x86_64"
-#                             "platforms-excluded": set(),
-#                             "return-codes-successful": set(), # 0
-#                             "return-codes-unsuccessful": set(), # 1, -1
-#                             "delay": 1,
-#                             "delay-time-unit": "ms",
-#                             "is-asynchronous": True,
-#                         },
-#                         "qlogicae-project-build": {
-#                             "filesystem-path": "",
-#                             "scripts": [
-#                                 {
-#                                     "run": {
-#                                         "value": "echo 'qlogicae-project-build'",
-#                                     },
-#                                 },
-#                             ],
-#                         },
-#                     },
-#                 },
-#             }
-#         }
-#     }
-# }
-
