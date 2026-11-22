@@ -67,9 +67,9 @@ def _allocate():
             return True
 
         def setup(self, **kwargs):
-            if not isinstance(kwargs, (dict)) or not kwargs:
-                raise ValueError("'kwargs' must be a non-empty dictionary")
-
+            if not kwargs:
+                return True
+                
             return True
 
         def shutdown(self):
@@ -81,19 +81,15 @@ def _allocate():
             entities,
         ):
             if not isinstance(parent_path, (str, _pathlib().Path)):
-                raise ValueError("'parent_path' must either be a string or Path")
+                raise ValueError("")
 
             if not isinstance(entities, (tuple, list)):
-                raise ValueError(
-                    "'entities' must be a tuple or list"
-                )
+                raise ValueError("")
 
             path = _pathlib().Path(parent_path)
 
             if not path.exists():
-                raise ValueError(
-                    f"filesystem path '{path}' is invalid"
-                )
+                raise ValueError("")
 
             path.mkdir(
                 parents=True,
@@ -131,11 +127,7 @@ def _allocate():
                         )
 
                 else:
-                    raise ValueError(
-                        f"'entities[]' must be either "
-                        "FolderEntityFilesystemTreeSetupOptions' or "
-                        "FileEntityFilesystemTreeSetupOptions'"
-                    )
+                    raise ValueError("")
 
             return True
 
@@ -145,19 +137,15 @@ def _allocate():
             options,
         ):
             if not isinstance(parent_path, (str, _pathlib().Path)):
-                raise ValueError("'parent_path' must either be a string or Path")
+                raise ValueError("")
 
             if not isinstance(options, (_FolderEntityFilesystemTreeSetupOptions())):
-                raise ValueError(
-                    "'options' must be a 'FolderEntityFilesystemTreeSetupOptions'"
-                )
+                raise ValueError("")
 
             path = _pathlib().Path(parent_path)
 
             if not path.exists():
-                raise ValueError(
-                    f"filesystem path '{path}' is invalid"
-                )
+                raise ValueError("")
 
             path.mkdir(
                 parents=True,

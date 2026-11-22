@@ -70,9 +70,9 @@ def _allocate():
             return True
 
         def setup(self, **kwargs):
-            if not isinstance(kwargs, (dict)) or not kwargs:
-                raise ValueError("'kwargs' must be a non-empty dictionary")
-
+            if not kwargs:
+                return True
+                
             return True
 
         def shutdown(self):
@@ -80,67 +80,61 @@ def _allocate():
 
         def throw_if_filesystem_path_invalid(self, value):
             if not isinstance(value, (str, _pathlib().Path)):
-                raise ValueError("'value' must either be a string or Path")
+                raise ValueError("")
 
             path = _pathlib().Path(value)
 
             if not path.exists():
-                raise ValueError(
-                    f"filesystem path '{path}' is invalid"
-                )
+                raise ValueError("")
 
             return False
 
         def throw_if_file_path_invalid(self, value):
             if not isinstance(value, (str, _pathlib().Path)):
-                raise ValueError("'value' must either be a string or Path")
+                raise ValueError("")
 
             path = _pathlib().Path(value)
 
             if not path.is_file():
-                raise ValueError(
-                    f"file path '{path}' is invalid"
-                )
+                raise ValueError("")
 
             return False
 
         def throw_if_folder_path_invalid(self, value):
             if not isinstance(value, (str, _pathlib().Path)):
-                raise ValueError("'value' must either be a string or Path")
+                raise ValueError("")
 
             path = _pathlib().Path(value)
 
             if not path.is_dir():
-                raise ValueError(
-                    f"folder path '{path}' is invalid"
-                )
+                raise ValueError("")
 
             return False
 
         def is_filesystem_path_valid(self, value):
             if not isinstance(value, (str, _pathlib().Path)):
-                raise ValueError("'value' must either be a string or Path")
+                raise ValueError("")
 
             result = _pathlib().Path(value).exists()
             return result
 
         def is_file_path_valid(self, value):
             if not isinstance(value, (str, _pathlib().Path)):
-                raise ValueError("'value' must either be a string or Path")
+                raise ValueError("")
 
             result = _pathlib().Path(value).is_file()
             return result
 
         def is_folder_path_valid(self, value):
             if not isinstance(value, (str, _pathlib().Path)):
-                raise ValueError("'value' must either be a string or Path")
+                raise ValueError("")
 
             result = _pathlib().Path(value).is_dir()
             return result
 
         def create_files(self, **kwargs):
             if not isinstance(kwargs, dict) or not kwargs:
-                raise ValueError("'kwargs' must be defined")
+                raise ValueError("")
 
             target_filesystem_paths = kwargs.get(
                 "target_filesystem_paths",
@@ -157,17 +151,17 @@ def _allocate():
             ) or "utf-8"
 
             if not target_filesystem_paths:
-                raise ValueError("'target_filesystem_paths' must be defined")
+                raise ValueError("")
 
             if not isinstance(content, str):
-                raise TypeError("'content' must be a string")
+                raise TypeError("")
 
             if not isinstance(is_overwrite_enabled, bool):
-                raise TypeError("'is_overwrite_enabled' must be a boolean")
+                raise TypeError("")
 
             for target_filesystem_path in target_filesystem_paths:
                 if not target_filesystem_path:
-                    raise TypeError("'is_overwrite_enabled' must be a boolean")
+                    raise TypeError("")
 
                 path = _pathlib().Path(target_filesystem_path)
 
@@ -188,7 +182,7 @@ def _allocate():
 
         def create_folders(self, **kwargs):
             if not isinstance(kwargs, dict) or not kwargs:
-                raise ValueError("'kwargs' must be defined")
+                raise ValueError("")
 
             target_filesystem_paths = kwargs.get(
                 "target_filesystem_paths",
@@ -196,7 +190,7 @@ def _allocate():
             ) or ()
 
             if not target_filesystem_paths:
-                raise ValueError("'target_filesystem_paths' must be defined")
+                raise ValueError("")
 
             for target_filesystem_path in target_filesystem_paths:
                 if not target_filesystem_path:
@@ -211,7 +205,7 @@ def _allocate():
 
         def remove_paths(self, **kwargs):
             if not isinstance(kwargs, dict) or not kwargs:
-                raise ValueError("'kwargs' must be defined")
+                raise ValueError("")
 
             target_filesystem_paths = kwargs.get("target_filesystem_paths", ()) or ()
             target_regex_patterns = kwargs.get("target_regex_patterns", ()) or ()
@@ -219,7 +213,7 @@ def _allocate():
             excluded_regex_patterns = kwargs.get("excluded_regex_patterns", ()) or ()
 
             if not target_filesystem_paths:
-                raise ValueError("'target_filesystem_paths' must be defined")
+                raise ValueError("")
 
             def normalize(value):
                 if isinstance(value, (str, _pathlib().Path)):
@@ -315,17 +309,17 @@ def _allocate():
 
         def move_path(self, **kwargs):
             if not isinstance(kwargs, dict) or not kwargs:
-                raise ValueError("'kwargs' must be defined")
+                raise ValueError("")
 
             input_filesystem_path = kwargs.get("input_filesystem_path", "") or ""
             output_filesystem_path = kwargs.get("output_filesystem_path", "") or ""
             input_regex_patterns = kwargs.get("input_regex_patterns", ()) or ()
 
             if not input_filesystem_path:
-                raise ValueError("'input_filesystem_path' must be defined")
+                raise ValueError("")
 
             if not output_filesystem_path:
-                raise ValueError("'output_filesystem_path' must be defined")
+                raise ValueError("")
 
             if isinstance(input_regex_patterns, str):
                 input_regex_patterns = (input_regex_patterns,)
@@ -414,17 +408,17 @@ def _allocate():
 
         def copy_paths(self, **kwargs):
             if not isinstance(kwargs, dict) or not kwargs:
-                raise ValueError("'kwargs' must be defined")
+                raise ValueError("")
 
             input_filesystem_paths = kwargs.get("input_filesystem_paths", ()) or ()
             output_filesystem_paths = kwargs.get("output_filesystem_paths", ()) or ()
             input_regex_patterns = kwargs.get("input_regex_patterns", ()) or ()
 
             if not input_filesystem_paths:
-                raise ValueError("'input_filesystem_paths' must be defined")
+                raise ValueError("")
 
             if not output_filesystem_paths:
-                raise ValueError("'output_filesystem_paths' must be defined")
+                raise ValueError("")
 
             def normalize(value):
                 if isinstance(value, (str, _pathlib().Path)):
@@ -436,16 +430,13 @@ def _allocate():
             input_regex_patterns = normalize(input_regex_patterns)
 
             if len(input_filesystem_paths) != len(output_filesystem_paths):
-                raise ValueError(
-                    "'input_filesystem_paths' and 'output_filesystem_paths' "
-                    "must contain the same number of paths"
-                )
+                raise ValueError("")
 
             patterns = tuple(_re().compile(pattern) for pattern in input_regex_patterns)
 
             def copy_item(source, destination):
                 if destination.exists() or destination.is_symlink():
-                    raise FileExistsError(str(destination))
+                    raise FileExistsError(s")
 
                 destination.parent.mkdir(parents=True, exist_ok=True)
 
@@ -525,7 +516,7 @@ def _allocate():
 
         def list_paths(self, **kwargs):
             if not isinstance(kwargs, dict) or not kwargs:
-                raise ValueError("'kwargs' must be defined")
+                raise ValueError("")
 
             target_filesystem_paths = kwargs.get(
                 "target_filesystem_paths",
@@ -537,7 +528,7 @@ def _allocate():
             ) or ()
 
             if not target_filesystem_paths:
-                raise ValueError("'target_filesystem_paths' must be defined")
+                raise ValueError("")
 
             if isinstance(target_filesystem_paths, str):
                 target_filesystem_paths = (target_filesystem_paths,)
@@ -593,126 +584,3 @@ def FilesystemManager():
 
 
 # FilesystemManager()
-
-# def clean_filesystem_path(self, value):
-#     if not isinstance(value, (str, _pathlib().Path)):
-#         raise ValueError("'value' must either be a string or Path")
-
-#     directory = _pathlib().Path(value).resolve()
-
-#     protected_paths = {
-#         _pathlib().Path(""),
-#         _pathlib().Path("/"),
-#         _pathlib().Path.home(),
-#     }
-
-#     if directory in protected_paths:
-#         raise ValueError(
-#             f"folder path '{value}' is protected"
-#         )
-
-#     if not directory.exists():
-#         return True
-
-#     if not directory.is_dir():
-#         raise ValueError(
-#             f"file path '{value}' is not a folder"
-#         )
-
-#     for item in directory.iterdir():
-#         if item.is_file() or item.is_symlink():
-#             item.unlink()
-
-#         elif item.is_dir():
-#             _shutil().rmtree(item)
-
-#     return True
-
-# def copy_filesystem_path(
-#     self,
-#     first_path,
-#     second_path,
-# ):
-#     if not isinstance(first_path, (str, _pathlib().Path)):
-#         raise ValueError("'first_path' must either be a string or Path")
-
-#     if not isinstance(second_path, (str, _pathlib().Path)):
-#         raise ValueError("'second_path' must either be a string or Path")
-
-#     fs_first_path = _pathlib().Path(first_path)
-#     fs_second_path = _pathlib().Path(second_path)
-
-#     if fs_first_path.is_dir():
-#         _shutil().copytree(
-#             fs_first_path,
-#             fs_second_path,
-#             dirs_exist_ok=True,
-#         )
-
-#     elif fs_first_path.is_file():
-#         fs_second_path.parent.mkdir(
-#             parents=True,
-#             exist_ok=True,
-#         )
-
-#         _shutil().copy2(
-#             fs_first_path,
-#             fs_second_path,
-#         )
-
-#     else:
-#         return False
-
-#     return True
-
-# def move_filesystem_path(
-#     self,
-#     first_path,
-#     second_path,
-# ):
-#     if not isinstance(first_path, (str, _pathlib().Path)):
-#         raise ValueError("'first_path' must either be a string or Path")
-
-#     if not isinstance(second_path, (str, _pathlib().Path)):
-#         raise ValueError("'second_path' must either be a string or Path")
-
-#     source = _pathlib().Path(first_path)
-#     destination = _pathlib().Path(second_path)
-
-#     destination.parent.mkdir(
-#         parents=True,
-#         exist_ok=True,
-#     )
-
-#     _shutil().move(
-#         str(source),
-#         str(destination),
-#     )
-
-#     return True
-
-# def rename_filesystem_entity(
-#     self,
-#     source,
-#     destination,
-# ):
-#     if not isinstance(source, (str, _pathlib().Path)):
-#         raise ValueError("'source' must either be a string or Path")
-
-#     if not isinstance(destination, (str, _pathlib().Path)):
-#         raise ValueError("'destination' must either be a string or Path")
-
-#     _pathlib().Path(source).rename(destination)
-
-#     return True
-
-# def setup_filesystem_tree_path(self, directory):
-#     if not isinstance(directory, (str, _pathlib().Path)):
-#         raise ValueError("'directory' must either be a string or Path")
-
-#     _pathlib().Path(directory).mkdir(
-#         parents=True,
-#         exist_ok=True,
-#     )
-
-#     return True

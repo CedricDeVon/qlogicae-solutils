@@ -2,270 +2,19 @@ __all__ = (
     "ExternalDependencyManager",
 )
 
-_importlib = None
 _ImportTarget = None
+# _BuildManager = None
 _ExternalDependencyManager = None
 
 def _allocate():
-    global _allocate
-    global _ImportTarget
-    global _ExternalDependencyManager
-        
-    class __ImportTarget:
-        __slots__ = (
-            "_name",
-            "_path",
-            "_package",
-            "_allocated_module",
-            "_is_pre_allocated",
-            "_is_member_callable",
-            "_is_package",
-            "_member",
-            "_is_optional",
-        )
-
-        def __init__(self, **kwargs):
-            self.construct(**kwargs)
-
-        def __enter__(self):
-            self.allocate()
-            return self
-
-        def __exit__(self, exc_type, exc_value, traceback):
-            self.shutdown()
-
-        @property
-        def name(self):
-            return self._name
-
-        @name.setter
-        def name(self, value):
-            if not value or not isinstance(value, str):
-                raise ValueError("'name' must be a non-empty string")
-
-            self._name = value
-
-        @property
-        def path(self):
-            return self._path
-
-        @path.setter
-        def path(self, value):
-            if not value or not isinstance(value, str):
-                raise ValueError("'path' must be a non-empty string")
-
-            self._path = value
-
-        @property
-        def package(self):
-            return self._package
-
-        @package.setter
-        def package(self, value):
-            if value is not None and not isinstance(value, str):
-                raise TypeError("'package' must be a string or None")
-
-            self._package = value or None
-
-        @property
-        def is_optional(self):
-            return self._is_optional
-
-        @is_optional.setter
-        def is_optional(self, value):
-            if not isinstance(value, bool):
-                raise TypeError("'is_optional' must be a boolean")
-
-            self._is_package = value
-
-        @property
-        def is_package(self):
-            return self._is_package
-
-        @is_package.setter
-        def is_package(self, value):
-            if not isinstance(value, bool):
-                raise TypeError("'is_package' must be a boolean")
-
-            self._is_package = value
-
-        @property
-        def is_member_callable(self):
-            return self._is_member_callable
-
-        @is_member_callable.setter
-        def is_member_callable(self, value):
-            if not isinstance(value, bool):
-                raise TypeError("'is_member_callable' must be a boolean")
-
-            self._is_member_callable = value
-
-        @property
-        def member(self):
-            return self._member
-
-        @member.setter
-        def member(self, value):
-            if value is not None and not isinstance(value, str):
-                raise TypeError("'member' must be a string or None")
-
-            self._member = value or None
-
-        @property
-        def allocated_module(self):
-            return self._allocated_module
-
-        @allocated_module.setter
-        def allocated_module(self, value):
-            self._allocated_module = value
-
-        @property
-        def is_pre_allocated(self):
-            return self._is_pre_allocated
-
-        @is_pre_allocated.setter
-        def is_pre_allocated(self, value):
-            if not isinstance(value, bool):
-                raise TypeError("'is_pre_allocated' must be a boolean")
-
-            self._is_pre_allocated = value
-
-        def construct(self, **kwargs):
-            if not isinstance(kwargs, dict) or not kwargs:
-                raise ValueError("'kwargs' must be a non-empty dictionary")
-
-            path = kwargs.get("path")
-
-            if not isinstance(path, str) or not path:
-                raise ValueError("'kwargs.path' must be a non-empty string")
-
-            self._path = path
-
-            name = kwargs.get("name")
-
-            if name is not None and not isinstance(name, str):
-                raise ValueError("'kwargs.name' must be a string")
-
-            self._name = name or path
-
-            package = kwargs.get("package")
-
-            if package is not None and not isinstance(package, str):
-                raise TypeError("'kwargs.package' must be a string or None")
-
-            self._package = package or None
-
-            is_optional = kwargs.get("is_optional", False)
-
-            if not isinstance(is_optional, bool):
-                raise TypeError("'kwargs.is_optional' must be a boolean")
-
-            is_package = kwargs.get("is_package", False)
-
-            if not isinstance(is_package, bool):
-                raise TypeError("'kwargs.is_package' must be a boolean")
-
-            is_pre_allocated = kwargs.get("is_pre_allocated", False)
-
-            if not isinstance(is_pre_allocated, bool):
-                raise TypeError("'kwargs.is_pre_allocated' must be a boolean")
-
-            member = kwargs.get("member")
-
-            if member is not None and not isinstance(member, str):
-                raise TypeError("'kwargs.member' must be a string or None")
-
-            is_member_callable = kwargs.get("is_member_callable", False)
-
-            if not isinstance(is_member_callable, bool):
-                raise TypeError("'kwargs.is_member_callable' must be a boolean")
-
-            self._member = member or None
-            self._is_package = is_package
-            self._is_optional = is_optional
-            self._is_member_callable = is_member_callable
-            self._is_pre_allocated = is_pre_allocated
-            self._allocated_module = None
-
-            if self._is_pre_allocated:
-                self.allocate()
-
-            return True
-
-        def shutdown(self):
-            self.deallocate()
-            return True
-
-        def setup(self, **kwargs):
-            if not kwargs or not isinstance(kwargs, dict):
-                raise ValueError("'kwargs' must be a non-empty dictionary")
-
-            return True
-
-        def allocate(self):
-            if self._allocated_module is not None:
-                return self._allocated_module
-
-            try:            
-                if self._package:
-                    allocated_module = _importlib.import_module(
-                        self._path,
-                        package=self._package,
-                    )
-                else:
-                    allocated_module = _importlib.import_module(self._path)
-
-                if self._is_package and not hasattr(allocated_module, "__path__"):
-                    raise TypeError(
-                        f"Imported target '{self._path}' is not a package"
-                    )
-
-                if self._member:
-                    for name in self._member.split("."):
-                        if not name:
-                            continue
-
-                        allocated_module = getattr(allocated_module, name)
-
-                if self._is_member_callable:
-                    self._allocated_module = allocated_module()
-                else:
-                    self._allocated_module = allocated_module
-
-            except Exception as error:
-                if self._is_optional:
-                   self._allocated_module = {}
-
-                else:
-                    raise Exception(
-                        f"import path does not exist"
-                    )
-                    
-            return self._allocated_module
-
-
-        def pre_allocate(self):
-            if self._allocated_module is None:
-                self.allocate()
-
-            return self._allocated_module
-
-        def deallocate(self):
-            self._allocated_module = None
-            return self._allocated_module
-
-        def reallocate(self):
-            if self._allocated_module is not None:
-                self.deallocate()
-
-            self.allocate()
-            return self._allocated_module
-
+    global _allocate    
+    global _ExternalDependencyManager        
 
     class __ExternalDependencyManager:
         __slots__ = (
             "_import_targets",
-            "_is_pre_allocated"
+            "_is_pre_allocated",
+            # "_build_manager",
         )
 
         _singleton = None
@@ -286,7 +35,7 @@ def _allocate():
         @is_pre_allocated.setter
         def is_pre_allocated(self, value):
             if not isinstance(value, bool):
-                raise TypeError("'value' must be a boolean")
+                raise TypeError("")
 
             self._is_pre_allocated = value
 
@@ -297,20 +46,14 @@ def _allocate():
         @import_targets.setter
         def import_targets(self, value):
             if not isinstance(value, dict) or not value:
-                raise ValueError(
-                    "'import_targets' must be a non-empty dictionary"
-                )
+                raise TypeError("")
 
             for name, target in value.items():
                 if not isinstance(name, str) or not name:
-                    raise ValueError(
-                        "'import_targets' keys must be non-empty strings"
-                    )
+                    raise TypeError("")
 
                 if not isinstance(target, _ImportTarget):
-                    raise ValueError(
-                        "'import_targets' values must be ImportTarget instances"
-                    )
+                    raise TypeError("")
 
             self._import_targets = value
 
@@ -322,29 +65,37 @@ def _allocate():
             return cls._singleton
 
         def construct(self):
-            global _importlib
+            global _ImportTarget
+            # global _BuildManager
 
-            import importlib
-
-            _importlib = (
-                importlib
+            from qlogicae_cor.v3.library.import_target import (
+                ImportTarget
             )
+
+            _ImportTarget = (
+                ImportTarget()
+            )
+            # _BuildManager = (
+            #     self.import_module(
+            #         path="qlogicae_cor.v3.library.build_manager",
+            #         member="BuildManager",
+            #         is_member_callable=True,
+            #     )
+            # )
 
             self._import_targets = {}
             self._is_pre_allocated = False
+            # self._build_manager = (
+            #     _BuildManager().get_singleton()
+            # )
 
             return True
 
         def setup(self, **kwargs):
-            if not isinstance(kwargs, dict) or not kwargs:
-                raise ValueError("'kwargs' must be a non-empty dictionary")
-
             import_targets = kwargs.get("import_targets", ())
 
             if not isinstance(import_targets, (tuple, list)):
-                raise ValueError(
-                    "'kwargs.import_targets' must be a tuple or list"
-                )
+                raise TypeError("")
 
             is_pre_allocated = kwargs.get(
                 "is_pre_allocated",
@@ -352,17 +103,13 @@ def _allocate():
             )
 
             if not isinstance(is_pre_allocated, bool):
-                raise ValueError(
-                    "'kwargs.is_pre_allocated' must be a boolean"
-                )
+                raise TypeError("")
 
             staged_targets = {}
 
             for target in import_targets:
                 if not isinstance(target, dict) or not target:
-                    raise ValueError(
-                        "'import_targets[]' must contain non-empty dictionaries"
-                    )
+                    raise TypeError("")
 
             try:
                 for target_kwargs in import_targets:
@@ -396,11 +143,11 @@ def _allocate():
             targets
         ):
             if not isinstance(targets, (tuple, list)):
-                raise ValueError("'targets' must be a tuple or list")
+                raise TypeError("")
 
             for target in targets:
                 if not target or not isinstance(target, (dict)):
-                    raise ValueError("'targets[]' must contain non-empty dictionaries")
+                    raise TypeError("")
 
                 self.import_module(
                     **target
@@ -413,7 +160,7 @@ def _allocate():
             **kwargs,
         ):
             if not kwargs or not isinstance(kwargs, (dict)):
-                raise ValueError("'kwargs' must be a non-empty dictionary")
+                raise TypeError("")
 
             target_key = (
                 (kwargs.get("name", "") or "")
@@ -421,7 +168,7 @@ def _allocate():
                 else (kwargs.get("path", "") or "")
             )
             if not isinstance(target_key, (str)):
-                raise ValueError("'kwargs.name' or 'kwargs.path' must be a string")
+                raise TypeError("")
 
             import_target = None
             if target_key not in self._import_targets:
@@ -433,7 +180,7 @@ def _allocate():
                     **kwargs
                 )
                 if not import_target:
-                    raise ValueError("'import_target' must be defined")
+                    raise TypeError("")
 
                 self._import_targets[target_key] = (
                     import_target
@@ -467,11 +214,11 @@ def _allocate():
             names,
         ):
             if not isinstance(names, (tuple, list)):
-                raise ValueError("'names' must be a tuple or list")
+                raise TypeError("")
 
             for name in names:
                 if not name or not isinstance(name, (str)):
-                    raise ValueError("'name' must be a non-empty string")
+                    raise TypeError("")
 
                 self.unload_module(
                     name
@@ -484,10 +231,10 @@ def _allocate():
             name,
         ):
             if not name or not isinstance(name, (str)):
-                raise ValueError("'name' must be a non-empty string")
+                raise TypeError("")
 
             if name not in self._import_targets:
-                raise ValueError(f"'{name}' must be a collection item")
+                raise TypeError("")
 
             self._import_targets[name].deallocate()
 
@@ -508,7 +255,6 @@ def _allocate():
             return True
 
 
-    _ImportTarget = __ImportTarget
     _ExternalDependencyManager = __ExternalDependencyManager
     _allocate = lambda: None
 

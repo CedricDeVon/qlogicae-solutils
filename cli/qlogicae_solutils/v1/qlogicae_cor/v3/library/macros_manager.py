@@ -100,9 +100,9 @@ def _allocate():
             return True
 
         def setup(self, **kwargs):
-            if not isinstance(kwargs, (dict)) or not kwargs:
-                raise ValueError("'kwargs' must be a non-empty dictionary")
-
+            if not kwargs:
+                return True
+                
             return True
 
         def shutdown(self):
@@ -123,16 +123,15 @@ def _allocate():
 
         def resolve_many(self, values):
             if not isinstance(values, _collections_abc().Mapping):
-                raise TypeError("'values' must be a mapping")
+                raise TypeError("")
 
             for key in values:
                 if not isinstance(key, str):
-                    raise TypeError("macro names must be strings")
+                    raise TypeError("")
 
                 if not self._selected_identifier_pattern.fullmatch(key):
-                    raise ValueError(
-                        f"invalid macro name: '{key}'",
-                    )
+                    raise ValueError("")
+# raise ValueError(f"invalid macro name: '{key}'")
 
             cache = {}
 
@@ -152,9 +151,8 @@ def _allocate():
                         continue
 
                     if key not in values:
-                        raise ValueError(
-                            f"key path '{key}' is an unknown macro",
-                        )
+                        raise ValueError("")
+# raise ValueError(f"key path '{key}' is an unknown macro")
 
                     value = values[key]
 
@@ -177,16 +175,12 @@ def _allocate():
                             continue
 
                         if dependency not in values:
-                            raise ValueError(
-                                f"key path '{key}' references unknown macro "
-                                f"'{dependency}'",
-                            )
+                            raise ValueError("")
+# raise ValueError(f"key path '{key}' references unknown macro "f"'{dependency}'")
 
                         if dependency in visiting:
-                            raise ValueError(
-                                f"circular macro reference: "
-                                f"'{key}' -> '{dependency}'",
-                            )
+                            raise ValueError("")
+# raise ValueError(f"circular macro reference: "f"'{key}' -> '{dependency}'")
 
                         if dependency not in dependencies:
                             dependencies.append(dependency)
@@ -246,14 +240,12 @@ def _allocate():
 
                 if not expanded:
                     if current_key in stack:
-                        raise ValueError(
-                            f"key path '{current_key}' is a circular reference",
-                        )
+                        raise ValueError("")
+# raise ValueError(f"key path '{current_key}' is a circular reference")
 
                     if current_key not in values:
-                        raise ValueError(
-                            f"key path '{current_key}' is an unknown macro",
-                        )
+                        raise ValueError("")
+# raise ValueError(f"key path '{current_key}' is an unknown macro")
 
                     value = values[current_key]
 
@@ -275,16 +267,12 @@ def _allocate():
                         dependency = match.group(1)
 
                         if dependency not in values:
-                            raise KeyError(
-                                f"macro '{current_key}' references unknown "
-                                f"macro '{dependency}'",
-                            )
+                            raise KeyError("")
+# raise KeyError(f"macro '{current_key}' references unknown "f"macro '{dependency}'")
 
                         if dependency in stack:
-                            raise ValueError(
-                                f"circular macro reference: "
-                                f"'{current_key}' -> '{dependency}'",
-                            )
+                            raise ValueError("")
+# raise ValueError(f"circular macro reference: "f"'{current_key}' -> '{dependency}'")
 
                         if dependency not in cache:
                             if dependency not in dependencies:
@@ -408,9 +396,8 @@ def _allocate():
                         )
 
                         if not isinstance(parsed_file_data, str):
-                            raise TypeError(
-                                "parsed file data must be a string",
-                            )
+                            raise TypeError("")
+# raise TypeError("parsed file data must be a string")
 
                         if parsed_file_data != file_data:
                             current_path.write_text(
@@ -428,9 +415,8 @@ def _allocate():
                     )
 
                     if not isinstance(parsed_name, str):
-                        raise TypeError(
-                            "parsed file name must be a string",
-                        )
+                        raise TypeError("")
+# raise TypeError("parsed file name must be a string")
 
                     if parsed_name != current_path.name:
                         current_path = current_path.rename(
@@ -446,9 +432,8 @@ def _allocate():
                     )
 
                     if not isinstance(parsed_name, str):
-                        raise TypeError(
-                            "parsed directory name must be a string",
-                        )
+                        raise TypeError("")
+# raise TypeError("parsed directory name must be a string")
 
                     if parsed_name != current_path.name:
                         current_path.rename(

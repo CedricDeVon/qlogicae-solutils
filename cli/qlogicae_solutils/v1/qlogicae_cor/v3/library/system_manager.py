@@ -60,14 +60,10 @@ def _allocate():
             )
 
             if not path.exists():
-                raise ValueError(
-                    f"directory '{path}' does not exist",
-                )
+                raise ValueError("")
 
             if not path.is_dir():
-                raise ValueError(
-                    f"'{path}' is not a directory",
-                )
+                raise ValueError("")
 
             _os().chdir(path)
 
@@ -78,6 +74,10 @@ def _allocate():
         @property
         def operating_system_architecture(self):
             return _platform().machine()
+
+        @property
+        def read_platform(self):
+            return f"{self.operating_system_name}_{self.operating_system_architecture}"
 
         def construct(self):
             global _os
@@ -113,8 +113,8 @@ def _allocate():
             return True
 
         def setup(self, **kwargs):
-            if not isinstance(kwargs, (dict)) or not kwargs:
-                raise ValueError("'kwargs' must be a non-empty dictionary")
+            if not kwargs:
+                return True
 
             return True
 

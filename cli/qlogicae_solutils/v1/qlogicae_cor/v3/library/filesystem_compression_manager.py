@@ -77,8 +77,8 @@ def _allocate():
             return True
 
         def setup(self, **kwargs):
-            if not isinstance(kwargs, (dict)) or not kwargs:
-                raise ValueError("'kwargs' must be a non-empty dictionary")
+            if not kwargs:
+                return True
 
             return True
 
@@ -117,13 +117,13 @@ def _allocate():
             overwrite=False,
         ):
             if not isinstance(archive_path, (str, _pathlib().Path)):
-                raise ValueError("'archive_path' must either be a string or Path")
+                raise TypeError("")
 
             if not isinstance(destination_path, (str, _pathlib().Path)):
-                raise ValueError("'destination_path' must either be a string or Path")
+                raise TypeError("")
 
             if not isinstance(overwrite, (bool)):
-                raise ValueError("'overwrite' must be a boolean")
+                raise TypeError("")
 
             fs_archive_path = _pathlib().Path(archive_path)
             fs_destination_path = _pathlib().Path(
@@ -149,10 +149,7 @@ def _allocate():
                         fs_destination_path not in target.parents
                         and target != fs_destination_path
                     ):
-                        raise ValueError(
-                            f"unsafe archive filesystem path "
-                            f"'{member.filename}'"
-                        )
+                        raise ValueError("")
 
                     if not overwrite and target.exists():
                         continue
@@ -166,7 +163,7 @@ def _allocate():
 
         def compress_paths(self, **kwargs):
             if not isinstance(kwargs, object) or not kwargs:
-                raise ValueError("'kwargs' must be defined")
+                raise ValueError("")
 
             input_filesystem_paths = kwargs.get("input_filesystem_paths", ())
             output_filesystem_paths = kwargs.get("output_filesystem_paths", ())
@@ -180,10 +177,10 @@ def _allocate():
             is_timestamp_strict = kwargs.get("is_timestamp_strict", True)
 
             if not input_filesystem_paths:
-                raise ValueError("'input_filesystem_paths' must be defined")
+                raise ValueError("")
 
             if not output_filesystem_paths:
-                raise ValueError("'output_filesystem_paths' must be defined")
+                raise ValueError("")
 
             def normalize(value):
                 if isinstance(value, (str, _pathlib().Path)):
@@ -197,10 +194,7 @@ def _allocate():
             excluded_regex_patterns = normalize(excluded_regex_patterns)
 
             if len(input_filesystem_paths) != len(output_filesystem_paths):
-                raise ValueError(
-                    "'input_filesystem_paths' and 'output_filesystem_paths' "
-                    "must contain the same number of paths"
-                )
+                raise ValueError("")
 
             if not isinstance(compression_format, str):
                 return False

@@ -42,10 +42,7 @@ def _allocate():
         @selected_time_zone_type.setter
         def selected_time_zone_type(self, value):
             if value not in self._valid_time_zone_types:
-                raise ValueError(
-                    "time zones must include the followwing: "
-                    f"{self._valid_time_zone_types}",
-                )
+                raise ValueError("")
 
             self._selected_time_zone_type = value
 
@@ -94,8 +91,8 @@ def _allocate():
             return True
 
         def setup(self, **kwargs):
-            if not isinstance(kwargs, (dict)) or not kwargs:
-                raise ValueError("'kwargs' must be a non-empty dictionary")
+            if not kwargs:
+                return True
 
             return True
 

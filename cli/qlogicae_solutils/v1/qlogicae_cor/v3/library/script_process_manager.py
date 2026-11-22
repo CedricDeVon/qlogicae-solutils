@@ -5,7 +5,6 @@ __all__ = (
 _shlex = None
 _subprocess = None
 _TextEncodingManager = None
-_ScriptProcess = None
 _ScriptProcessManager = None
 _ExternalDependencyManager = None
 
@@ -57,9 +56,11 @@ def _allocate():
             global _shlex
             global _subprocess
             global _TextEncodingManager
-            global _ScriptProcess
+            global _ExternalDependencyManager
 
-            from .external_dependency_manager import ExternalDependencyManager
+            from qlogicae_cor.v3.library.external_dependency_manager import (
+                ExternalDependencyManager
+            )
 
             _ExternalDependencyManager = (
                 ExternalDependencyManager()
@@ -81,13 +82,6 @@ def _allocate():
                     is_member_callable=True,
                 )
             )
-            _ScriptProcess = (
-                _ExternalDependencyManager().get_singleton().import_module(
-                    path="qlogicae_cor.v3.library.script_process",
-                    member="ScriptProcess",
-                    is_member_callable=True,
-                )
-            )
 
             self._selected_script_process = "subprocess"
             self._valid_script_processes = {
@@ -98,8 +92,8 @@ def _allocate():
             return True
 
         def setup(self, **kwargs):
-            if not isinstance(kwargs, (dict)) or not kwargs:
-                raise ValueError("'kwargs' must be a non-empty dictionary")
+            if not kwargs:
+                return True
 
             return True
 
@@ -109,19 +103,13 @@ def _allocate():
         def execute_command(
             self,
             command,
-            script_process_type=None,
+            script_process_type="subprocess",
         ):
-            ScriptProcess = (
-                _ScriptProcess()
-            )
-
-            if script_process_type is None:
-                script_process_type = ScriptProcess.SUBPROCESS
+            if not script_process_type:
+                script_process_type = "subprocess"
 
             if not command:
-                raise ValueError(
-                    "commands cannot be empty",
-                )
+                raise ValueError("")
 
             encoding = (
                 _TextEncodingManager()
@@ -129,8 +117,8 @@ def _allocate():
                     .selected_encoding
             )
 
-            match script_process_type:
-                case ScriptProcess.SHELL:
+            match script_process_type.lower():
+                case "shell":
                     value = _subprocess().run(  # nosec B604
                         command,
                         encoding=encoding,
@@ -138,7 +126,7 @@ def _allocate():
                         shell=True,
                     )
 
-                case ScriptProcess.SUBPROCESS:
+                case "subprocess":
                     value = _subprocess().run(
                         _shlex().split(command),
                         encoding=encoding,
@@ -146,11 +134,10 @@ def _allocate():
                     )
 
                 case _:
-                    raise ValueError(
-                        "unsupported script process value",
-                    )
+                    raise ValueError("")
 
             return value
+
 
     _ScriptProcessManager = __ScriptProcessManager
     _allocate = lambda: None

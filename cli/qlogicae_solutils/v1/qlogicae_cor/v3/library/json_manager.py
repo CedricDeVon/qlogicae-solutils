@@ -73,9 +73,7 @@ def _allocate():
             value,
         ):
             if value < 0:
-                raise ValueError(
-                    "indent_count must be non-negative.",
-                )
+                raise ValueError("")
 
             self._indent_count = value
 
@@ -117,9 +115,9 @@ def _allocate():
             return True
 
         def setup(self, **kwargs):
-            if not isinstance(kwargs, (dict)) or not kwargs:
-                raise ValueError("'kwargs' must be a non-empty dictionary")
-
+            if not kwargs:
+                return True
+                
             return True
 
         def shutdown(self):

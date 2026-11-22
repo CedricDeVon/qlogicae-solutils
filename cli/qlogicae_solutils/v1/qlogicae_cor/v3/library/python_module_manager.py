@@ -68,8 +68,8 @@ def _allocate():
             self,
             **kwargs,
         ):
-            if not isinstance(kwargs, (dict)) or not kwargs:
-                raise ValueError("'kwargs' must be a non-empty dictionary")
+            if not kwargs:
+                return True
 
             return True
 
@@ -82,14 +82,10 @@ def _allocate():
             is_recursive=True,
         ):
             if not isinstance(target_filesystem_paths, (tuple, list)):
-                raise ValueError(
-                    "'target_filesystem_paths' must either be a tuple or list"
-                )
+                raise ValueError("")
 
             if not isinstance(is_recursive, (bool)):
-                raise ValueError(
-                    "'is_recursive' must be a boolean"
-                )
+                raise ValueError("")
 
             if not target_filesystem_paths:
                 return tuple()
@@ -145,9 +141,7 @@ def _allocate():
                     )
 
                     if spec is None or spec.loader is None:
-                        raise ImportError(
-                            f"Cannot load module from {file_path}"
-                        )
+                        raise ImportError("")
 
                     module = _importlib_util().module_from_spec(spec)
 

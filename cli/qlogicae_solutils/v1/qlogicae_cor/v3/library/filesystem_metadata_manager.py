@@ -178,9 +178,9 @@ def _allocate():
             return True
 
         def setup(self, **kwargs):
-            if not isinstance(kwargs, (dict)) or not kwargs:
-                raise ValueError("'kwargs' must be a non-empty dictionary")
-
+            if not kwargs:
+                return True
+                
             return True
 
         def shutdown(self):
@@ -191,7 +191,7 @@ def _allocate():
             filesystem_path,
         ):
             if not isinstance(filesystem_path, (str, _pathlib().Path)):
-                raise ValueError("'filesystem_path' must either be a string or Path")
+                raise ValueError("")
 
             stat = _pathlib().Path(filesystem_path).stat()
 
@@ -210,7 +210,7 @@ def _allocate():
 
         def read_data(self, **kwargs):
             if not isinstance(kwargs, dict) or not kwargs:
-                raise ValueError("'kwargs' must be defined")
+                raise ValueError("")
         
             target_filesystem_path = kwargs.get(
                 "target_filesystem_path"
@@ -225,7 +225,7 @@ def _allocate():
             )
 
             if not target_filesystem_path:
-                raise ValueError("'target_filesystem_path' must be defined")
+                raise ValueError("")
 
             if isinstance(target_regex_patterns, str):
                 target_regex_patterns = (target_regex_patterns,)
@@ -237,10 +237,7 @@ def _allocate():
                 invalid_properties = set(properties) - self._property_names
 
                 if invalid_properties:
-                    raise ValueError(
-                        f"Unsupported metadata properties: "
-                        f"{', '.join(sorted(invalid_properties))}"
-                    )
+                    raise ValueError("")
 
             root = _pathlib().Path(target_filesystem_path)
 
@@ -359,7 +356,7 @@ def _allocate():
 
         def read_size(self, **kwargs):
             if not isinstance(kwargs, dict) or not kwargs:
-                raise ValueError("'kwargs' must be defined")
+                raise ValueError("")
 
             target_filesystem_paths = kwargs.get(
                 "target_filesystem_paths",
@@ -372,7 +369,7 @@ def _allocate():
             unit = kwargs.get("unit", "B") or "B"
 
             if not target_filesystem_paths:
-                raise ValueError("'target_filesystem_paths' must be defined")
+                raise ValueError("")
 
             if isinstance(target_filesystem_paths, str):
                 target_filesystem_paths = (target_filesystem_paths,)
@@ -381,7 +378,7 @@ def _allocate():
                 target_regex_patterns = (target_regex_patterns,)
 
             if unit not in self._size_units:
-                raise ValueError(f"Unsupported filesystem size unit: {unit}")
+                raise ValueError("")
 
             compiled_patterns = tuple(
                 _re().compile(pattern)
@@ -431,7 +428,7 @@ def _allocate():
 
         def run_filesystem_count_command(self, **kwargs):
             if not isinstance(kwargs, object) or not kwargs:
-                raise ValueError("'kwargs' must be defined")
+                raise ValueError("")
 
             target_filesystem_paths = kwargs.get(
                 "target_filesystem_paths",
@@ -443,7 +440,7 @@ def _allocate():
             ) or ()
 
             if not target_filesystem_paths:
-                raise ValueError("'target_filesystem_paths' must be defined")
+                raise ValueError("")
 
             if isinstance(target_filesystem_paths, str):
                 target_filesystem_paths = (target_filesystem_paths,)

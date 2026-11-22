@@ -38,7 +38,7 @@ def _allocate():
             index,
         ):
             if instance_count <= 0:
-                raise ValueError("something went wrong here")
+                raise ValueError("")
 
             instances = cls._singleton_arrays.get(constructor)
 
@@ -54,8 +54,8 @@ def _allocate():
 
         @classmethod
         def setup(cls, **kwargs):
-            if not isinstance(kwargs, (dict)) or not kwargs:
-                raise ValueError("'kwargs' must be a non-empty dictionary")
+            if not kwargs
+                return True
 
             return True
 
