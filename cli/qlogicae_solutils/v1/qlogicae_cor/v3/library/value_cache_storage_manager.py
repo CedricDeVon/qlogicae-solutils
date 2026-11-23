@@ -30,9 +30,7 @@ def _allocate():
         def construct(self):
             global _ExternalDependencyManager
 
-            from qlogicae_cor.v3.library.external_dependency_manager import (
-                ExternalDependencyManager
-            )
+            from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
                 ExternalDependencyManager()
@@ -101,19 +99,19 @@ def _allocate():
             self._defaults = value
 
         def _normalize_keys(self, **kwargs):
-            keys = kwargs.get("keys")
+            key_path = kwargs.get("key_path")
 
-            if isinstance(keys, str):
-                return (keys,)
+            if isinstance(key_path, str):
+                return (key_path,)
 
-            if isinstance(keys, (tuple, list)):
-                if not keys:
-                    raise ValueError("'keys' cannot be empty")
+            if isinstance(key_path, (tuple, list)):
+                if not key_path:
+                    raise ValueError("'key_path' cannot be empty")
 
-                return tuple(keys)
+                return tuple(key_path)
 
             raise ValueError(
-                "'keys' must be a string, tuple, or list"
+                "'key_path' must be a string, tuple, or list"
             )
 
         def _normalize_typename(self, **kwargs):
@@ -135,14 +133,14 @@ def _allocate():
             return self._defaults
 
         def _get_item_from_cache(self, **kwargs):
-            keys = kwargs["keys"]
+            key_path = kwargs["key_path"]
             typename = kwargs["typename"]
 
             cache = self.read_specified_cache(
                 typename=typename,
             )
 
-            for key in keys:
+            for key in key_path:
                 if isinstance(cache, dict):
                     if key not in cache:
                         return False, None
@@ -162,8 +160,8 @@ def _allocate():
             return True, cache
 
         def _get_item(self, **kwargs):
-            keys = self._normalize_keys(
-                keys=kwargs.get("keys"),
+            key_path = self._normalize_keys(
+                key_path=kwargs.get("key_path"),
             )
 
             typename = self._normalize_typename(
@@ -171,7 +169,7 @@ def _allocate():
             )
 
             found, item = self._get_item_from_cache(
-                keys=keys,
+                key_path=key_path,
                 typename=typename,
             )
 
@@ -179,29 +177,29 @@ def _allocate():
                 return found, item
 
             return self._get_item_from_cache(
-                keys=keys,
+                key_path=key_path,
                 typename="defaults",
             )
 
-        def is_key_item_found(self, **kwargs):
+        def is_key_found(self, **kwargs):
             found, _ = self._get_item(
-                keys=kwargs.get("keys"),
+                key_path=kwargs.get("key_path"),
                 typename=kwargs.get("typename", "values"),
             )
 
             return found
 
-        def get_one_item(self, **kwargs):
+        def read_one_data(self, **kwargs):
             found, item = self._get_item(
-                keys=kwargs.get("keys"),
+                key_path=kwargs.get("key_path"),
                 typename=kwargs.get("typename", "values"),
             )
 
             return item if found else None
 
         def _get_parent(self, **kwargs):
-            keys = self._normalize_keys(
-                keys=kwargs.get("keys"),
+            key_path = self._normalize_keys(
+                key_path=kwargs.get("key_path"),
             )
 
             typename = self._normalize_typename(
@@ -217,7 +215,7 @@ def _allocate():
                 typename=typename,
             )
 
-            for key in keys[:-1]:
+            for key in key_path[:-1]:
                 if isinstance(cache, dict):
                     if key not in cache:
                         if not create_missing:
@@ -250,10 +248,10 @@ def _allocate():
                 else:
                     return None, None
 
-            return cache, keys[-1]
+            return cache, key_path[-1]
 
-        def set_one_item(self, **kwargs):
-            keys = kwargs.get("keys")
+        def write_one_data(self, **kwargs):
+            key_path = kwargs.get("key_path")
             value = kwargs.get("value")
 
             typename = self._normalize_typename(
@@ -261,7 +259,7 @@ def _allocate():
             )
 
             parent, key = self._get_parent(
-                keys=keys,
+                key_path=key_path,
                 typename=typename,
                 create_missing=kwargs.get(
                     "create_missing",
@@ -294,12 +292,12 @@ def _allocate():
 
             return True
 
-        def read_all_items(self):
+        def read_all_data(self):
             return (
                 self._values or {}
             )
 
-        def set_all_items(self, **kwargs):
+        def write_all_data(self, **kwargs):
             value = (
                 kwargs.get(
                     "values",
@@ -316,13 +314,13 @@ def _allocate():
 
             return True
 
-        def remove_one_item(self, **kwargs):
+        def remove_one_data(self, **kwargs):
             typename = self._normalize_typename(
                 typename=kwargs.get("typename", "values"),
             )
 
             parent, key = self._get_parent(
-                keys=kwargs.get("keys"),
+                key_path=kwargs.get("key_path"),
                 typename=typename,
                 create_missing=False,
             )
@@ -353,7 +351,7 @@ def _allocate():
 
             return True
 
-        def remove_all_items(self, **kwargs):
+        def remove_all_data(self, **kwargs):
             cache = self.read_specified_cache(
                 typename=kwargs.get("typename", "values"),
             )
@@ -362,9 +360,9 @@ def _allocate():
 
             return True
 
-        def display_one_item(self, **kwargs):
+        def display_one_data(self, **kwargs):
             found, item = self._get_item(
-                keys=kwargs.get("keys"),
+                key_path=kwargs.get("key_path"),
                 typename=kwargs.get("typename", "values"),
             )
 
@@ -388,7 +386,7 @@ def _allocate():
 
             return True
 
-        def display_all_items(self, **kwargs):
+        def display_all_data(self, **kwargs):
             cache = self.read_specified_cache(
                 typename=kwargs.get("typename", "values"),
             )

@@ -54,7 +54,7 @@ def _allocate():
 
         @classmethod
         def setup(cls, **kwargs):
-            if not kwargs
+            if not kwargs:
                 return True
 
             return True

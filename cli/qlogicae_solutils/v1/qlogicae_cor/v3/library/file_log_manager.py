@@ -2,16 +2,17 @@ __all__ = (
     "FileLogManager",
 )
 
-_logging = None
-_queue = None
-_logging_handlers = None
-_pathlib = None
-_TextEncodingManager = None
-_LogFormat = None
-_LogOptions = None
-_LogOptionsManager = None
 _FileLogManager = None
 _ExternalDependencyManager = None
+
+_queue = None
+_logging = None
+_pathlib = None
+_LogFormat = None
+_LogOptions = None
+_logging_handlers = None
+_LogOptionsManager = None
+_TextEncodingManager = None
 
 
 def _allocate():
@@ -80,18 +81,17 @@ def _allocate():
 
         def construct(self):
             global _ExternalDependencyManager
-            global _logging
+
             global _queue
-            global _logging_handlers
+            global _logging
             global _pathlib
-            global _TextEncodingManager
             global _LogFormat
             global _LogOptions
+            global _logging_handlers
             global _LogOptionsManager
+            global _TextEncodingManager
 
-            from qlogicae_cor.v3.library.external_dependency_manager import (
-                ExternalDependencyManager
-            )
+            from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
                 ExternalDependencyManager()

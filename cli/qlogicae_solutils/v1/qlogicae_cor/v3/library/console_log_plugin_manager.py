@@ -54,9 +54,7 @@ def _allocate():
             global _LogOptions
             global _ConsoleLogManager
 
-            from qlogicae_cor.v3.library.external_dependency_manager import (
-                ExternalDependencyManager,
-            )
+            from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
                 ExternalDependencyManager()
@@ -93,7 +91,8 @@ def _allocate():
                 "qlogicae",
                 "cor",
                 "v3",
-                "console_log",
+                "log",
+                "console",
             )
             
             return True
@@ -137,14 +136,8 @@ def _allocate():
             if not plugin_data:
                 return True
 
-            console_data = (
-                plugin_data.get(
-                    "console",
-                    {}
-                ) or {}
-            )
             is_console_logging_enabled_data = (
-                console_data.get(
+                plugin_data.get(
                     "is_enabled",
                     False
                 )
@@ -159,7 +152,7 @@ def _allocate():
                     console_log_manager
                         .setup(
                             options=_LogOptions()(
-                                **console_data
+                                **plugin_data
                             )
                         ) and result
                 )
@@ -177,14 +170,8 @@ def _allocate():
             if not plugin_data:
                 return True
 
-            console_data = (
-                plugin_data.get(
-                    "console",
-                    {}
-                ) or {}
-            )
             is_console_logging_enabled_data = (
-                console_data.get(
+                plugin_data.get(
                     "is_enabled",
                     False
                 )

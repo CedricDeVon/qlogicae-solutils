@@ -2,12 +2,13 @@ __all__ = (
     "ConsoleLogManager",
 )
 
+_ConsoleLogManager = None
+_ExternalDependencyManager = None
+
 _logging = None
 _LogFormat = None
 _LogOptions = None
 _LogOptionsManager = None
-_ConsoleLogManager = None
-_ExternalDependencyManager = None
 
 
 def _allocate():
@@ -48,14 +49,13 @@ def _allocate():
 
         def construct(self):
             global _ExternalDependencyManager
+
             global _logging
             global _LogFormat
             global _LogOptions
             global _LogOptionsManager
 
-            from qlogicae_cor.v3.library.external_dependency_manager import (
-                ExternalDependencyManager
-            )
+            from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
                 ExternalDependencyManager()

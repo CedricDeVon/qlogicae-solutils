@@ -36,9 +36,7 @@ def _allocate():
         def construct(self):
             global _ExternalDependencyManager
 
-            from qlogicae_cor.v3.library.external_dependency_manager import (
-                ExternalDependencyManager,
-            )
+            from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
                 ExternalDependencyManager()
@@ -81,7 +79,7 @@ def _allocate():
                 self._collection
             )
 
-        def read_function(self, target):
+        def read_one_function(self, target):
             if not isinstance(target, (str)) or not target:
                 raise ValueError("")
 
@@ -96,7 +94,7 @@ def _allocate():
 
             return command
 
-        def write_function(self, target, callable):
+        def write_one_function(self, target, callable):
             if not isinstance(target, (str)) or not target:
                 raise ValueError("")
 
@@ -107,7 +105,7 @@ def _allocate():
 
             return True
 
-        def remove_function(self, target):
+        def remove_one_function(self, target):
             if not isinstance(target, (str)) or not target:
                 raise ValueError("")
 
@@ -115,7 +113,7 @@ def _allocate():
 
             return True
 
-        def run_function(self, target, *args, **kwargs):
+        def run_one_function(self, target, *args, **kwargs):
             if not isinstance(target, (str)) or not target:
                 raise ValueError("")
 

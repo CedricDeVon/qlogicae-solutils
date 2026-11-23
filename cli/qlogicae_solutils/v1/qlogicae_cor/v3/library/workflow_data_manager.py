@@ -1,18 +1,21 @@
 __all__ = (
-    "WorkflowPropertyManager",
+    "WorkflowDataManager",
 )
 
-_SystemManager = None
-_WorkflowPropertyManager = None
+_WorkflowDataManager = None
 _ExternalDependencyManager = None
+
+_PluginDataManager = None
 
 
 def _allocate():
     global _allocate
-    global _WorkflowPropertyManager
+    global _WorkflowDataManager
 
-    class __WorkflowPropertyManager:
-        __slots__ = ()
+    class __WorkflowDataManager:
+        __slots__ = (
+            "_root_key_path",
+        )
 
         _singleton = None
 
@@ -25,6 +28,17 @@ def _allocate():
         def __exit__(self, exc_type, exc_value, traceback):
             self.shutdown()
 
+        @property
+        def root_key_path(self):
+            return self._root_key_path
+
+        @root_key_path.setter
+        def root_key_path(self, value):
+            if not isinstance(value, (tuple, list)):
+                raise ValueError("")
+
+            self._root_key_path = value
+
         @classmethod
         def get_singleton(cls):
             if cls._singleton is None:
@@ -33,25 +47,17 @@ def _allocate():
             return cls._singleton
 
         def construct(self):
-            global _SystemManager
             global _ExternalDependencyManager
 
-            from qlogicae_cor.v3.library.external_dependency_manager import (
-                ExternalDependencyManager,
-            )
+            from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
                 ExternalDependencyManager()
             )
-            _SystemManager = (
-                _ExternalDependencyManager()
-                    .get_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.system_manager",
-                        member="SystemManager",
-                        is_member_callable=True,
-                    )
-            )
+
+            self._root_key_path = (
+                "qlogicae_cor_v3_workflow"
+            )            
 
             return True
 
@@ -64,17 +70,38 @@ def _allocate():
         def shutdown(self):
             return True
 
-        def read_initial_data(self):
-            data = {
-                "selection": {},
-                "callbacks": {
-                    "on_pre_run": None,
-                    "on_post_run": None,
-                },
-            }
+        def setup_plugin_data(self):
+            global _PluginDataManager
+
+            _PluginDataManager = (
+                _ExternalDependencyManager()
+                    .get_singleton()
+                    .import_module(                    
+                        path="qlogicae_cor.v3.library.plugin_data_manager",
+                        member="PluginDataManager",
+                        is_member_callable=True,
+                    )
+            )
+
+            plugin_data_manager = (
+                _PluginDataManager().get_singleton()
+            )
 
             return (
-                data
+                plugin_data_manager
+                    .setup_plugin_data(
+                        root_key_path=self._root_key_path,
+                        layer=0,
+                        data=(
+                            {
+                                "selection": {},
+                                "callbacks": {
+                                    "on_pre_run": None,
+                                    "on_post_run": None,
+                                },
+                            }
+                        )
+                    )
             )
 
         def read_property(self, data, property_name):
@@ -87,7 +114,7 @@ def _allocate():
             match property_name:
                 case "workflow":
                     return (
-                        data.get("workflow", {}) or {}
+                        data.get("workflowp_mana", {}) or {}
                     )
 
                 case "is_enabled":
@@ -164,12 +191,12 @@ def _allocate():
                     raise ValueError("")
 
 
-    _WorkflowPropertyManager = __WorkflowPropertyManager
+    _WorkflowDataManager = __WorkflowDataManager
     _allocate = lambda: None
 
 
-def WorkflowPropertyManager():
-    if _WorkflowPropertyManager is None:
+def WorkflowDataManager():
+    if _WorkflowDataManager is None:
         _allocate()
 
-    return _WorkflowPropertyManager
+    return _WorkflowDataManager

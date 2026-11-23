@@ -49,7 +49,7 @@ def _allocate():
             global _stat
             global _FilesystemMetadata
 
-            _.external_dependency_manager import ExternalDependencyManager
+            from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
                 ExternalDependencyManager()

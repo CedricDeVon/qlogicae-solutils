@@ -55,9 +55,7 @@ def _allocate():
             global _FileLogManager
         
 
-            from qlogicae_cor.v3.library.external_dependency_manager import (
-                ExternalDependencyManager,
-            )
+            from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
                 ExternalDependencyManager()
@@ -94,7 +92,8 @@ def _allocate():
                 "qlogicae",
                 "cor",
                 "v3",
-                "file_log"
+                "log",
+                "file",
             )
             
             return True
@@ -139,14 +138,8 @@ def _allocate():
             if not plugin_data:
                 return True
 
-            file_data = (
-                plugin_data.get(
-                    "file",
-                    {}
-                ) or {}
-            )
             is_file_logging_enabled_data = (
-                file_data.get(
+                plugin_data.get(
                     "is_enabled",
                     False
                 )
@@ -160,7 +153,7 @@ def _allocate():
                     file_log_manager
                         .setup(
                             options=_LogOptions()(
-                                **file_data
+                                **plugin_data
                             )
                         ) and result
                 )
@@ -178,14 +171,8 @@ def _allocate():
             if not plugin_data:
                 return True
 
-            file_data = (
-                plugin_data.get(
-                    "file",
-                    {}
-                ) or {}
-            )
             is_file_logging_enabled_data = (
-                file_data.get(
+                plugin_data.get(
                     "is_enabled",
                     False
                 )

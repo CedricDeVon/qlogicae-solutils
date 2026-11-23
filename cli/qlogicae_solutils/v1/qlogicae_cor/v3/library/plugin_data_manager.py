@@ -1,8 +1,8 @@
 __all__ = (
-    "PluginManager",
+    "PluginDataManager",
 )
 
-_PluginManager = None
+_PluginDataManager = None
 _ExternalDependencyManager = None
 
 _ObjectMergeManager = None
@@ -12,9 +12,9 @@ _ValueCacheStorageManager = None
 
 def _allocate():
     global _allocate
-    global _PluginManager
+    global _PluginDataManager
 
-    class __PluginManager:
+    class __PluginDataManager:
         __slots__ = (
             "_plugin_items",
         )
@@ -50,6 +50,7 @@ def _allocate():
 
         def construct(self):
             global _ExternalDependencyManager
+
             global _ObjectMergeManager
             global _PythonModuleManager
             global _ValueCacheStorageManager
@@ -192,15 +193,14 @@ def _allocate():
             plugin_items.sort(
                 key=(
                     lambda plugin_item: (
-                        ((plugin_item[1] or {}).get('moduli', {}) or {})
-                            .get("layer", 0) or 0
+                        ((plugin_item[1] or {}).get('layer', 0) or 0)
                     )
                 )
             )
 
             merged_plugin_export_data = (
                 object_merge_manager.deep_merge(
-                    self.read_all_items(),
+                    value_cache_storage_manager.read_all_data(),
                     initial_data
                 )
             )
@@ -214,12 +214,26 @@ def _allocate():
                     if not isinstance(plugin_item_export_data, (dict)):
                         raise ValueError("")
 
-                    merged_plugin_export_data = (
-                        object_merge_manager.deep_merge(
-                            merged_plugin_export_data,
-                            plugin_item_export_data
-                        )
+                    plugin_item_export_data_key_path = (
+                        plugin_item_export_data.get(
+                            "root_key_path",
+                            ""
+                        ) or ""
                     )
+                    if plugin_item_export_data_key_path in merged_plugin_export_data:
+                        merged_plugin_export_data = (
+                            object_merge_manager.deep_merge(
+                                merged_plugin_export_data,
+                                plugin_item_export_data
+                            )
+                        )
+                    else:
+                        merged_plugin_export_data[plugin_item_export_data_key_path] = (
+                            plugin_item_export_data.get(
+                                plugin_item_export_data_key_path,
+                                {}
+                            ) or {}
+                        )
 
             if merged_plugin_export_data:
                 value_cache_storage_manager.set_all_items(
@@ -236,46 +250,165 @@ def _allocate():
         def shutdown(self):
             return True
 
-        def run(self, **kwargs):
-            if not isinstance(kwargs, (dict)):
-                raise ValueError("")
+        def read_all_data(
+            self,
+            root_key_path
+        ):
+            if not isinstance(root_key_path, (str)):
+                raise TypeError("")
 
-            if not self._plugin_items:
-                return True
+            value_cache_storage_manager = (
+                _ValueCacheStorageManager()
+                    .get_singleton()
+            )
 
-            is_setup_enabled = (
-                kwargs.get("is_setup_enabled", True)
+            data = (
+                value_cache_storage_manager
+                    .read_one_data(
+                        key_path=(root_key_path,)
+                    )
             )
-            is_run_enabled = (
-                kwargs.get("is_run_enabled", True)
+
+            return (
+                data
             )
-            is_shutdown_enabled = (
-                kwargs.get("is_shutdown_enabled", False)
+
+        def read_one_data(
+            self,
+            root_key_path,
+            key_path,
+        ):
+            if not isinstance(root_key_path, (str)):
+                raise TypeError("")
+
+            if not isinstance(key_path, (tuple, list)):
+                raise TypeError("")
+            
+            value_cache_storage_manager = (
+                _ValueCacheStorageManager()
+                    .get_singleton()
+            )
+
+            data = (
+                value_cache_storage_manager
+                    .read_one_data(
+                        key_path=(root_key_path, *key_path,)
+                    )
+            )
+
+            return (
+                data
+            )
+
+        def write_all_data(
+            self,
+            root_key_path,
+            value
+        ):
+            if not isinstance(root_key_path, (str)):
+                raise TypeError("")
+
+            value_cache_storage_manager = (
+                _ValueCacheStorageManager()
+                    .get_singleton()
             )
 
             result = True
+            result = (
+                value_cache_storage_manager
+                    .write_one_data(
+                        key_path=(root_key_path,),
+                        value=value
+                    ) and result
+            )
 
-            if is_setup_enabled:
-                result = (
-                    self.setup_plugins() and result
-                )
+            return (
+                result
+            )
 
-            if is_run_enabled:
-                result = (
-                    self.run_plugins() and result
-                )
+        def write_one_data(
+            self,
+            root_key_path,
+            key_path,
+            value,
+        ):
+            if not isinstance(root_key_path, (str)):
+                raise TypeError("")
 
-            if is_shutdown_enabled:
-                result = (
-                    self.shutdown_plugins() and result
-                )
+            if not isinstance(key_path, (tuple, list)):
+                raise TypeError("")
+            
+            value_cache_storage_manager = (
+                _ValueCacheStorageManager()
+                    .get_singleton()
+            )
 
-            return result
-    
+            result = True
+            result = (
+                value_cache_storage_manager
+                    .write_one_data(
+                        key_path=(root_key_path, *key_path,),
+                        value=value
+                    ) and result
+            )
+
+            return (
+                result
+            )
+
+        def remove_one_data(
+            self,
+            root_key_path,
+            key_path,
+        ):
+            if not isinstance(root_key_path, (str)):
+                raise TypeError("")
+
+            if not isinstance(key_path, (tuple, list)):
+                raise TypeError("")
+            
+            value_cache_storage_manager = (
+                _ValueCacheStorageManager()
+                    .get_singleton()
+            )
+
+            result = True
+            result = (
+                value_cache_storage_manager
+                    .remove_one_data(
+                        key_path=(root_key_path, *key_path,),
+                    ) and result
+            )
+
+            return (
+                result
+            )
+
+        def remove_all_data(
+            self,
+            root_key_path,
+        ):
+            if not isinstance(root_key_path, (str)):
+                raise TypeError("")
+
+            value_cache_storage_manager = (
+                _ValueCacheStorageManager()
+                    .get_singleton()
+            )
+
+            result = True
+            result = (
+                value_cache_storage_manager
+                    .remove_one_data(
+                        key_path=(root_key_path,),
+                    ) and result
+            )
+
+            return (
+                result
+            )
+
         def write_setup_kwargs(self, **kwargs):
-            if not isinstance(kwargs, (dict)):
-                raise ValueError("")
-
             if "target_filesystem_paths" not in kwargs:
                 kwargs["target_filesystem_paths"] = tuple()
 
@@ -297,62 +430,34 @@ def _allocate():
             if "internal_data" not in kwargs:
                 kwargs["internal_data"] = {}
 
-            if "initial_data" not in kwargs:
-                kwargs["initial_data"] = {}
-
-            return kwargs
-
-        def read_all_items(
+        def setup_plugin_data(
             self,
+            **kwargs
         ):
-            value_cache_storage_manager = (
-                _ValueCacheStorageManager()
-                    .get_singleton()
+            layer = (
+                kwargs.get(
+                    "layer",
+                    0
+                ) or 0
+            )
+            root_key_path = (
+                kwargs.get(
+                    "root_key_path",
+                    ""
+                ) or ""
+            )
+            data = (
+                kwargs.get(
+                    "data",
+                    {}
+                ) or {}
             )
 
-            return (
-                value_cache_storage_manager
-                    .read_all_items()
-            )
-
-        def setup_plugins(self):
-            return (
-                self.run_method_plugins(
-                    self.setup_plugin
-                )
-            )
-
-        def run_plugins(self):
-            return (
-                self.run_method_plugins(
-                    self.run_plugin
-                )
-            )
-
-        def shutdown_plugins(self):
-            return (
-                self.run_method_plugins(
-                    self.shutdown_plugin
-                )
-            )
-
-        def run_method_plugins(
-            self,
-            callback,
-        ):
-            if not self._plugin_items:
-                return True
-
-            result = True
-            for plugin_item in self._plugin_items:
-                if not plugin_item:
-                    raise ValueError("")
-
-                result = (
-                    callback(
-                        plugin_item
-                    )
-                )
+            result = {
+                "root_key_path": root_key_path,
+                "layer": layer,
+                **data
+            }
 
             return result
 
@@ -360,62 +465,14 @@ def _allocate():
             self,
             plugin_item,
         ):
-            return (
-                self.run_optional_plugin_method(
-                    plugin_item,
-                    "export_plugin"
-                )
-            )
-
-        def setup_plugin(
-            self,
-            plugin_item,
-        ):
-            return (
-                self.run_optional_plugin_method(
-                    plugin_item,
-                    "setup_plugin"
-                )
-            )
-
-        def run_plugin(
-            self,
-            plugin_item,
-        ):
-            return (
-                self.run_optional_plugin_method(
-                    plugin_item,
-                    "run_plugin"
-                )
-            )
-
-        def shutdown_plugin(
-            self,
-            plugin_item,
-        ):
-            return (
-                self.run_optional_plugin_method(
-                    plugin_item,
-                    "shutdown_plugin"
-                )
-            )
-
-        def run_optional_plugin_method(
-            self,            
-            plugin_item,
-            method_name,
-        ):
             if not plugin_item:
-                raise ValueError("")
-
-            if isinstance(method_name, (str)):
                 raise ValueError("")
 
             result = True
             plugin_method = (
                 getattr(
                     plugin_item,
-                    method_name
+                    "export_plugin"
                 ) or None
             )
             if plugin_method:
@@ -430,93 +487,15 @@ def _allocate():
                 result
             )
 
-        def setup_data(
-            self,
-            **kwargs
-        ):
-            if not isinstance(kwargs, (dict)):
-                raise ValueError("")
 
-            options = (
-                kwargs.get(
-                    "moduli",
-                    {}
-                ) or {}
-            )
-            key_path = (
-                kwargs.get(
-                    "key_path",
-                    ()
-                ) or ()
-            )
-            data = (
-                kwargs.get(
-                    "data",
-                    {}
-                ) or {}
-            )
-
-            result = {
-                "moduli": {
-                    **options
-                },
-                **data
-            }
-            current = result
-
-            for key in key_path:
-                if not isinstance(key, (str)) or not key:
-                    raise ValueError("")
-                
-                current[key] = {}
-                current = current[key]
-
-            return result
-
-        def read_data(
-            self,
-            **kwargs
-        ):
-            if not isinstance(kwargs, (dict)):
-                raise ValueError("")
-
-            key_path = (
-                kwargs.get(
-                    "key_path",
-                    ()
-                ) or ()
-            )
-
-
-            if not key_path:
-                return (
-                    self.read_all_items()
-                )
-
-            value_cache_storage_manager = (
-                _ValueCacheStorageManager()
-                    .get_singleton()
-            )
-            data = (
-                value_cache_storage_manager
-                    .get_one_item(
-                        keys=key_path
-                    )
-            )
-
-            return (
-                data
-            )
-
-
-    _PluginManager = __PluginManager
+    _PluginDataManager = __PluginDataManager
     _allocate = lambda: None
 
 
-def PluginManager():
-    if _PluginManager is None:
+def PluginDataManager():
+    if _PluginDataManager is None:
         _allocate()
 
-    return _PluginManager
+    return _PluginDataManager
 
-# PluginManager()
+# PluginDataManager()

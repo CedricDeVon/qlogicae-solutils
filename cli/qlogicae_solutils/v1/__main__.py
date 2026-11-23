@@ -1,8 +1,8 @@
 
 def main():
     try:
-        import sys # nosec B404
-        import subprocess # nosec B404
+        import subprocess  # nosec B404
+        import sys  # nosec B404
         from pathlib import Path
 
         result = subprocess.run(

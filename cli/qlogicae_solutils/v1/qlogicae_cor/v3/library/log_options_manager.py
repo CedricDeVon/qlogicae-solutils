@@ -36,9 +36,7 @@ def _allocate():
             global _logging
             global _LogOptions
 
-            from qlogicae_cor.v3.library.external_dependency_manager import (
-                ExternalDependencyManager
-            )
+            from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
                 ExternalDependencyManager()

@@ -6,10 +6,8 @@ _WorkflowManager = None
 _ExternalDependencyManager = None
 
 _SystemManager = None
+_WorkflowDataManager = None
 _ScriptProcessManager = None
-_WorkflowPluginManager = None
-_FunctionStorageManager = None
-_WorkflowPropertyManager = None
 _ScriptProcessDelayManager = None
 
 
@@ -43,14 +41,10 @@ def _allocate():
 
             global _SystemManager
             global _ScriptProcessManager
-            global _WorkflowPluginManager
-            global _FunctionStorageManager
-            global _WorkflowPropertyManager
+            global _WorkflowDataManager
             global _ScriptProcessDelayManager
 
-            from qlogicae_cor.v3.library.external_dependency_manager import (
-                ExternalDependencyManager,
-            )
+            from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
                 ExternalDependencyManager()
@@ -81,34 +75,17 @@ def _allocate():
                         member="ScriptProcessDelayManager",
                         is_member_callable=True,
                     )
-            )
-            _WorkflowPluginManager = (
+            )            
+            _WorkflowDataManager = (
                 _ExternalDependencyManager()
                     .get_singleton()
                     .import_module(                    
-                        path="qlogicae_cor.v3.library.workflow_plugin_manager",
-                        member="WorkflowPluginManager",
+                        path="qlogicae_cor.v3.library.workflow_data_manager",
+                        member="WorkflowDataManager",
                         is_member_callable=True,
                     )
             )
-            _WorkflowPropertyManager = (
-                _ExternalDependencyManager()
-                    .get_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.workflow_property_manager",
-                        member="WorkflowPropertyManager",
-                        is_member_callable=True,
-                    )
-            )
-            _FunctionStorageManager = (
-                _ExternalDependencyManager()
-                    .get_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.function_storage_manager",
-                        member="FunctionStorageManager",
-                        is_member_callable=True,
-                    )
-            )
+
 
             return True
 
@@ -128,28 +105,22 @@ def _allocate():
                     ()
                 ) or ()
             )
-
-            if not workflow_selection_targets:
-                return True
-
-            plugin_manager = (
-                _WorkflowPluginManager()
-                    .get_singleton()
-            )
             root_data = (
-                plugin_manager
-                    .read_data()
+                kwargs.get(
+                    "root_data",
+                    {}
+                ) or {}
             )
-            if not root_data:
+            if not workflow_selection_targets or not root_data:
                 return True
 
-            workflow_property_manager = (
-                _WorkflowPropertyManager()
+            workflow_data_manager = (
+                _WorkflowDataManager()
                     .get_singleton()
             )
 
             root_data_workflow_selection = (
-                workflow_property_manager
+                workflow_data_manager
                     .read_property(
                         root_data,
                         "selection"
@@ -158,16 +129,12 @@ def _allocate():
             if not root_data_workflow_selection:
                 return True
 
-            function_storage_manager = (
-                _FunctionStorageManager()
-                    .get_singleton()
-            )
-
             commands = (
-                function_storage_manager
-                    .read_all_functions()
+                kwargs.get(
+                    "commands",
+                    {}
+                ) or {}
             )
-
 
             def run_workflow(workflow_selection_target):
                 if (
@@ -189,7 +156,7 @@ def _allocate():
                     return True
 
                 workflow_selection_is_enabled = (
-                    workflow_property_manager
+                    workflow_data_manager
                         .read_property(
                             workflow_selection,
                             "is_enabled"
@@ -199,14 +166,14 @@ def _allocate():
                     return True
 
                 workflow_selection_platforms_included = (
-                    workflow_property_manager
+                    workflow_data_manager
                         .read_property(
                             workflow_selection,
                             "platforms_included"
                         )
                 )
                 workflow_selection_platforms_excluded = (
-                    workflow_property_manager
+                    workflow_data_manager
                         .read_property(
                             workflow_selection,
                             "platforms_excluded"
@@ -237,7 +204,7 @@ def _allocate():
                         return True
 
                 workflow_selection_jobs = (
-                    workflow_property_manager
+                    workflow_data_manager
                         .read_property(
                             workflow_selection,
                             "jobs"
@@ -247,7 +214,7 @@ def _allocate():
                     return True
 
                 workflow_selection_is_failure_optional = (
-                    workflow_property_manager
+                    workflow_data_manager
                         .read_property(
                             workflow_selection,
                             "is_failure_optional"
@@ -255,7 +222,7 @@ def _allocate():
                 )
 
                 workflow_selection_delay = (
-                    workflow_property_manager
+                    workflow_data_manager
                         .read_property(
                             workflow_selection,
                             "delay"
@@ -277,7 +244,7 @@ def _allocate():
                         raise ValueError("")
 
                     workflow_selection_job_is_enabled = (
-                        workflow_property_manager
+                        workflow_data_manager
                             .read_property(
                                 workflow_selection_job,
                                 "is_enabled"
@@ -287,14 +254,14 @@ def _allocate():
                         continue
 
                     workflow_selection_job_platforms_included = (
-                        workflow_property_manager
+                        workflow_data_manager
                             .read_property(
                                 workflow_selection_job,
                                 "platforms_included"
                             )
                     )
                     workflow_selection_job_platforms_excluded = (
-                        workflow_property_manager
+                        workflow_data_manager
                             .read_property(
                                 workflow_selection_job,
                                 "platforms_excluded"
@@ -325,7 +292,7 @@ def _allocate():
                             return True
 
                     workflow_selection_job_run = (
-                        workflow_property_manager
+                        workflow_data_manager
                             .read_property(
                                 workflow_selection_job,
                                 "run"
@@ -335,14 +302,14 @@ def _allocate():
                         continue
                                     
                     workflow_selection_job_is_failure_optional = (
-                        workflow_property_manager
+                        workflow_data_manager
                             .read_property(
                                 workflow_selection_job,
                                 "is_failure_optional"
                             )
                     )
                     workflow_selection_job_delay = (
-                        workflow_property_manager
+                        workflow_data_manager
                             .read_property(
                                 workflow_selection_job,
                                 "delay"
@@ -368,21 +335,21 @@ def _allocate():
                         callable(workflow_selection_job_run)
                     ):
                         workflow_selection_job_run_arguments = (
-                            workflow_property_manager
+                            workflow_data_manager
                                 .read_property(
                                     workflow_selection_job,
                                     "arguments"
                                 )
                         )
                         workflow_selection_job_run_arguments_args = (
-                            workflow_property_manager
+                            workflow_data_manager
                                 .read_property(
                                     workflow_selection_job_run_arguments,
                                     "args"
                                 )
                         )
                         workflow_selection_job_run_arguments_kwargs = (
-                            workflow_property_manager
+                            workflow_data_manager
                                 .read_property(
                                     workflow_selection_job_run_arguments,
                                     "kwargs"
@@ -420,21 +387,21 @@ def _allocate():
                         )
 
                         workflow_selection_job_process = (
-                            workflow_property_manager
+                            workflow_data_manager
                                 .read_property(
                                     workflow_selection_job,
                                     "process"
                                 )
                         )
                         workflow_selection_job_successful_return_codes = (
-                            workflow_property_manager
+                            workflow_data_manager
                                 .read_property(
                                     workflow_selection_job,
                                     "successful_return_codes"
                                 )
                         )
                         workflow_selection_job_unsuccessful_return_codes = (
-                            workflow_property_manager
+                            workflow_data_manager
                                 .read_property(
                                     workflow_selection_job,
                                     "unsuccessful_return_codes"

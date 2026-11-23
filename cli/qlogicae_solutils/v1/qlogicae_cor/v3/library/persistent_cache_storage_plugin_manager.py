@@ -1,21 +1,19 @@
 __all__ = (
-    "PluginManager",
+    "PersistentCacheStoragePluginManager",
 )
 
 _ExternalDependencyManager = None
 _PersistentCacheStoragePluginManager = None
 
-_PluginManager = None
 _PersistentCacheStorageManager = None
+_PersistentCacheStorageDataManager = None
 
 def _allocate():
     global _allocate
     global _PersistentCacheStoragePluginManager
 
     class __PersistentCacheStoragePluginManager:
-        __slots__ = (
-            "_key_path",
-        )
+        __slots__ = ()
 
         _singleton = None
 
@@ -28,17 +26,6 @@ def _allocate():
         def __exit__(self, exc_type, exc_value, traceback):
             self.shutdown()
 
-        @property
-        def key_path(self):
-            return self._key_path
-
-        @key_path.setter
-        def key_path(self, value):
-            if not isinstance(value, (tuple, list)):
-                raise ValueError("")
-
-            self._key_path = value
-
         @classmethod
         def get_singleton(cls):
             if cls._singleton is None:
@@ -48,25 +35,14 @@ def _allocate():
 
         def construct(self):
             global _ExternalDependencyManager
-            
-            global _PluginManager
+                    
             global _PersistentCacheStorageManager
+            global _PersistentCacheStorageDataManager
 
-            from qlogicae_cor.v3.library.external_dependency_manager import (
-                ExternalDependencyManager,
-            )
+            from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
                 ExternalDependencyManager()
-            )
-            _PluginManager = (
-                _ExternalDependencyManager()
-                    .get_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.plugin_manager",
-                        member="PluginManager",
-                        is_member_callable=True,
-                    )
             )
             _PersistentCacheStorageManager = (
                 _ExternalDependencyManager()
@@ -77,18 +53,20 @@ def _allocate():
                         is_member_callable=True,
                     )
             )
-
-            self._key_path = (
-                "qlogicae",
-                "cor",
-                "v3",
-                "persistent_cache_storage",
+            _PersistentCacheStorageDataManager = (
+                _ExternalDependencyManager()
+                    .get_singleton()
+                    .import_module(                    
+                        path="qlogicae_cor.v3.library.persistent_cache_data_storage_manager",
+                        member="PersistentCacheStorageDataManager",
+                        is_member_callable=True,
+                    )
             )
-            
+
             return True
 
         def setup(self, **kwargs):
-            if not kwargs
+            if not kwargs:
                 return True
 
             return True
@@ -97,56 +75,34 @@ def _allocate():
             return True
 
         def export_plugin(self):
-            moduli_plugin_manager = (
-                _PluginManager()
+            persistent_cache_data_storage_manager = (
+                _PersistentCacheStorageDataManager()
                     .get_singleton()
             )
             
-            initial_data = (
-                moduli_plugin_manager
-                    .setup_data(
-                        moduli={ "layer": 0 },
-                        key_path=self._key_path,
-                        data={
-                            "root": {
-                                "database_path": "data.db",
-                                "create_missing": True,
-                                "lifespan_in_seconds": 0.0,
-                                "file_mode": 0o600,
-                                "key_encoding": "utf-8",
-                                "auto_remove_expired": True,
-                                "auto_remove_invalid": True,
-                                "sync_on_write": False,
-                            },
-                        },
-                    )
+            return (
+                persistent_cache_data_storage_manager
+                    .setup_plugin_data()
             )
 
-            return initial_data
-
-        def setup_plugin(self):
-            plugin_data = (
-                self.read_data() or {}
-            )
-            if not plugin_data:
-                return True
-                
+        def setup_plugin(self):    
             persistent_cache_storage_manager = (
                 _PersistentCacheStorageManager()
                     .get_singleton()
             )
-            root_data = (
-                plugin_data.get(
-                    "root",
-                    {}
-                ) or {}
+            persistent_cache_data_storage_manager = (
+                _PersistentCacheStorageDataManager()
+                    .get_singleton()
             )
 
             result = True
             result = (
                 persistent_cache_storage_manager
                     .setup(
-                        **root_data
+                        **(
+                            persistent_cache_data_storage_manager
+                                .read_root_data()
+                        )
                     ) and result
             )
 
@@ -177,19 +133,6 @@ def _allocate():
             )
 
             return result
-
-        def read_data(self):
-            moduli_plugin_manager = (
-                _PluginManager()
-                    .get_singleton()
-            )
-
-            return (
-                moduli_plugin_manager
-                    .read_data(
-                        keys=self._key_path,
-                    )
-            )
 
 
     _PersistentCacheStoragePluginManager = __PersistentCacheStoragePluginManager

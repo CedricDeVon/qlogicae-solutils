@@ -1,12 +1,11 @@
 __all__ = (
-    "BuildManager",
+    "BuildPluginManager",
 )
 
 _BuildPluginManager = None
-_ExternalDependencyManager = None
 
-_PluginManager = None
-_BuildManager = None
+_BuildDataManager = None
+_ExternalDependencyManager = None
 
 
 def _allocate():
@@ -14,9 +13,7 @@ def _allocate():
     global _BuildPluginManager
 
     class __BuildPluginManager:
-        __slots__ = (
-            "_data_path",
-        )
+        __slots__ = ()
 
         _singleton = None
 
@@ -29,19 +26,6 @@ def _allocate():
         def __exit__(self, exc_type, exc_value, traceback):
             self.shutdown()
 
-        @property
-        def data_path(self):
-            return self._data_path
-
-        @data_path.setter
-        def data_path(self, value):
-            if not isinstance(value, (tuple, list)):
-                raise TypeError(
-                    "'tuple' or 'list' types required"
-                )
-
-            self._data_path = value
-
         @classmethod
         def get_singleton(cls):
             if cls._singleton is None:
@@ -51,101 +35,47 @@ def _allocate():
 
         def construct(self):
             global _ExternalDependencyManager
+            global _BuildDataManager
 
-            global _PluginManager
-            global _BuildManager
-
-            from qlogicae_cor.v3.library.external_dependency_manager import (
-                ExternalDependencyManager,
-            )
+            from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
                 ExternalDependencyManager()
             )
-            _PluginManager = (
+            _BuildDataManager = (
                 _ExternalDependencyManager()
                     .get_singleton()
                     .import_module(                    
-                        path="qlogicae_cor.v3.library.plugin_manager",
-                        member="PluginManager",
-                        is_member_callable=True,
-                    )
-            )
-            _BuildManager = (
-                _ExternalDependencyManager()
-                    .get_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.build_manager",
-                        member="BuildManager",
+                        path="qlogicae_cor.v3.library.build_data_manager",
+                        member="BuildDataManager",
                         is_member_callable=True,
                     )
             )
 
-            self._data_path = (
-                "qlogicae",
-                "cor",
-                "v3",
-                "build",
-            )
-            
             return True
 
         def setup(self, **kwargs):
             if not kwargs:
                 return True
-                
+
             return True
 
         def shutdown(self):
             return True
 
         def export_plugin(self):
-            moduli_plugin_manager = (
-                _PluginManager()
-                    .get_singleton()
-            )
-            build_manager = (
-                _BuildManager()
+            build_data_manager = (
+                _BuildDataManager()
                     .get_singleton()
             )
             
-            initial_data = (
-                moduli_plugin_manager
-                    .setup_data(
-                        moduli={ "layer": 0 },
-                        key_path=self._key_path,
-                        data=(
-                            build_manager.read_all_items()
-                        ),
-                    )
+            return (
+                build_data_manager
+                    .setup_plugin_data()
             )
-
-            return initial_data
 
         def setup_plugin(self):
-            build_manager = (
-                _BuildManager()
-                    .get_singleton()
-            )
-
-            plugin_data = (
-                self.read_data()
-            )
-
-            plugin_data_build = (
-                plugin_data.get(
-                    "build",
-                    {}
-                ) or {}
-            )        
-
-            result = True     
-            result = (
-                build_manager.write_all_items(
-                    plugin_data_build
-                )
-            )
-
+            result = True
             return result
 
         def run_plugin(self):            
@@ -156,18 +86,6 @@ def _allocate():
             result = True
             return result
 
-        def read_data(self):
-            moduli_plugin_manager = (
-                _PluginManager()
-                    .get_singleton()
-            )
-
-            return (
-                moduli_plugin_manager
-                    .read_data(
-                        keys=self._data_path,
-                    )
-            )
 
     _BuildPluginManager = __BuildPluginManager
     _allocate = lambda: None
@@ -178,3 +96,5 @@ def BuildPluginManager():
         _allocate()
 
     return _BuildPluginManager
+
+

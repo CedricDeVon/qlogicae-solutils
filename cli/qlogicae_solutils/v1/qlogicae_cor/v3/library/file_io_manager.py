@@ -5,7 +5,7 @@ __all__ = (
 _pathlib = None
 _TextEncodingManager = None
 _FileIoManager = None
-_ExternalDependencyManager =.get_singleton() None
+_ExternalDependencyManager = None
 
 
 def _allocate():

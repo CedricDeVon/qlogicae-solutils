@@ -5,8 +5,9 @@ __all__ = (
 _CommandPluginManager = None
 _ExternalDependencyManager = None
 
-_PluginManager = None
-_CommandParserManager = None
+_CommandManager = None
+_PluginDataManager = None
+_CommandDataManager = None
 
 
 def _allocate():
@@ -14,9 +15,7 @@ def _allocate():
     global _CommandPluginManager
 
     class __CommandPluginManager:
-        __slots__ = (
-            "_data_path",
-        )
+        __slots__ = ()
 
         _singleton = None
 
@@ -29,17 +28,6 @@ def _allocate():
         def __exit__(self, exc_type, exc_value, traceback):
             self.shutdown()
 
-        @property
-        def data_path(self):
-            return self._data_path
-
-        @data_path.setter
-        def data_path(self, value):
-            if not isinstance(value, (tuple, list)):
-                raise TypeError("")
-
-            self._data_path = value
-
         @classmethod
         def get_singleton(cls):
             if cls._singleton is None:
@@ -50,42 +38,43 @@ def _allocate():
         def construct(self):
             global _ExternalDependencyManager
 
-            global _PluginManager
-            global _CommandParserManager
+            global _CommandManager
+            global _PluginDataManager
+            global _CommandDataManager
 
-            from qlogicae_cor.v3.library.external_dependency_manager import (
-                ExternalDependencyManager,
-            )
+            from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
                 ExternalDependencyManager()
             )
-            _PluginManager = (
+            _CommandManager = (
                 _ExternalDependencyManager()
                     .get_singleton()
                     .import_module(                    
-                        path="qlogicae_cor.v3.library.plugin_manager",
-                        member="CommandPluginManager",
+                        path="qlogicae_cor.v3.library.command_manager",
+                        member="CommandManager",
                         is_member_callable=True,
                     )
             )
-            _CommandParserManager = (
+            _PluginDataManager = (
                 _ExternalDependencyManager()
                     .get_singleton()
-                    .import_module(
-                        path="qlogicae_cor.v3.library.command_parser_manager",
-                        member="CommandParserManager",
+                    .import_module(                    
+                        path="qlogicae_cor.v3.library.plugin_data_manager",
+                        member="PluginDataManager",
+                        is_member_callable=True,
+                    )
+            )
+            _CommandDataManager = (
+                _ExternalDependencyManager()
+                    .get_singleton()
+                    .import_module(                    
+                        path="qlogicae_cor.v3.library.command_data_manager",
+                        member="CommandDataManager",
                         is_member_callable=True,
                     )
             )
 
-            self._data_path = (
-                "qlogicae",
-                "cor",
-                "v3",
-                "command"
-            )
-            
             return True
 
         def setup(self, **kwargs):
@@ -98,88 +87,66 @@ def _allocate():
             return True
 
         def export_plugin(self):
-            moduli_plugin_manager = (
-                _PluginManager()
+            command_data_manager = (
+                _CommandDataManager()
                     .get_singleton()
             )
             
-            initial_data = (
-                moduli_plugin_manager
-                    .setup_data(
-                        moduli={ "layer": 0 },
-                        key_path=self._key_path,
-                        data={
-                            "is_parser_enabled": True,
-                            "options": {
-                                "args": (),
-                                "kwargs": {
-                                    "prog": "name",
-                                    "description": "description",
-                                    "add_help": True,
-                                    "allow_abbrev": True,
-                                },
-                                "commands": [],
-                                "subparsers": {
-                                    "args": (),
-                                    "kwargs": {
-                                        "dest": "command",
-                                        "required": True,
-                                        "title": "commands",
-                                        "description": None,
-                                        "metavar": "",
-                                    },
-                                },
-                            },
-                            "callbacks": {
-                                "on_pre_run": None,
-                                "on_post_run": None,
-                                "on_pre_setup": None,
-                                "on_post_setup": None,
-                            },
-                        }
-                    )
+            return (
+                command_data_manager
+                    .setup_plugin_data()
             )
-
-            return initial_data
 
         def setup_plugin(self):
-            plugin_data = (
-                self.read_data() or {}
-            )
-            if not plugin_data:
-                return True            
-
-            command_parser_manager = (
-                _CommandParserManager()
+            plugin_data_manager = (
+                _PluginDataManager()
                     .get_singleton()
             )
-            
+            command_data_manager = (
+                _CommandDataManager()
+                    .get_singleton()
+            )
+            command_manager = (
+                _CommandManager()
+                    .get_singleton()
+            )
+
             result = True
             result = (
-                command_parser_manager.setup(
-                    **plugin_data
-                )
+                command_manager
+                    .setup(
+                        plugin_data_manager.read_all_data(
+                            command_data_manager.root_key_path
+                        )
+                        
+                    ) and result
             )
 
             return result
 
-        def run_plugin(self):            
-            plugin_data = (
-                self.read_data() or {}
+        def run_plugin(self):       
+            plugin_data_manager = (
+                _PluginDataManager()
+                    .get_singleton()
             )
-            if not plugin_data:
-                return True
-
-            command_parser_manager = (
-                _CommandParserManager()
+            command_data_manager = (
+                _CommandDataManager()
+                    .get_singleton()
+            )
+            command_manager = (
+                _CommandManager()
                     .get_singleton()
             )
 
             result = True
             result = (
-                command_parser_manager.run(
-                    **plugin_data
-                )
+                command_manager
+                    .run(
+                        plugin_data_manager.read_all_data(
+                            command_data_manager.root_key_path
+                        )
+                        
+                    ) and result
             )
 
             return result
@@ -187,19 +154,6 @@ def _allocate():
         def shutdown_plugin(self):            
             result = True
             return result
-
-        def read_data(self):
-            moduli_plugin_manager = (
-                _PluginManager()
-                    .get_singleton()
-            )
-
-            return (
-                moduli_plugin_manager
-                    .read_data(
-                        keys=self._data_path,
-                    )
-            )
 
 
     _CommandPluginManager = __CommandPluginManager

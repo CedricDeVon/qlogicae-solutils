@@ -4,6 +4,7 @@ __all__ = (
 
 _ExternalDependencyManager = None
 _PersistentCacheStorageManager = None
+_PersistentCacheStorageDataManager = None
 
 _dbm = None
 _time = None
@@ -58,14 +59,14 @@ def _allocate():
             return cls._singleton
 
         def construct(self):
-            global _dbm
-            global _pickle
-            global _time
             global _ExternalDependencyManager
 
-            from qlogicae_cor.v3.library.external_dependency_manager import (
-                ExternalDependencyManager
-            )
+            global _dbm
+            global _time
+            global _pickle
+            global _PersistentCacheStorageDataManager
+
+            from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
                 ExternalDependencyManager()
@@ -89,57 +90,64 @@ def _allocate():
                         path="time"
                     )
             )
+            _PersistentCacheStorageDataManager = (
+                _ExternalDependencyManager()
+                    .get_singleton()
+                    .import_module(                    
+                        path="qlogicae_cor.v3.library.persistent_cache_storage_data_manager",
+                        member="PersistentCacheStorageDataManager",
+                        is_member_callable=True,
+                    )
+            )
 
-            self._database = None
-            self._database_path = "cache.db"
-            self._create_missing = True
-            self._lifespan_in_seconds = 0.0
-            self._file_mode = 0o600
-            self._key_encoding = "utf-8"
-            self._pickle_protocol = _pickle().HIGHEST_PROTOCOL
-            self._auto_remove_expired = True
-            self._auto_remove_invalid = True
-            self._sync_on_write = False
+            self.setup_properties({})
 
             return True
 
         def setup(self, **kwargs):
+            self.setup_properties(kwargs)
+
+            return True
+
+        def setup_properties(self, kwargs):
+            persistent_cache_storage_data_manager = (
+                _PersistentCacheStorageDataManager().get_singleton()
+            )
+
+            kwargs = (
+                persistent_cache_storage_data_manager
+                    .write_setup_kwargs(kwargs)
+            )
+
             self._database_path = kwargs.get(
-                "database_path",
-                "cache.db"
-            ) or "cache.db"
+                "database_path"
+            )
             self._create_missing = kwargs.get(
-                "create_missing",
-                True
-            ) or True
+                "create_missing"
+            )
             self._lifespan_in_seconds = kwargs.get(
-                "lifespan_in_seconds",
-                0.0
-            ) or 0.0
+                "lifespan_in_seconds"
+            )
             self._file_mode = kwargs.get(
-                "file_mode",
-                0o600
-            ) or 0o600
+                "file_mode"
+            )
             self._key_encoding = kwargs.get(
-                "key_encoding",
-                "utf-8"
-            ) or "utf-8"
+                "key_encoding"
+            )
             self._pickle_protocol = kwargs.get(
-                "pickle_protocol",
-                _pickle().HIGHEST_PROTOCOL
-            ) or _pickle().HIGHEST_PROTOCOL
+                "pickle_protocol"
+            )
             self._auto_remove_expired = kwargs.get(
-                "auto_remove_expired",
-                True
-            ) or True
+                "auto_remove_expired"
+            )
             self._auto_remove_invalid = kwargs.get(
-                "auto_remove_invalid",
-                True
-            ) or True
+                "auto_remove_invalid"
+            )
             self._sync_on_write = kwargs.get(
-                "sync_on_write",
-                False
-            ) or False
+                "sync_on_write"
+            )
+
+            return True
 
         def shutdown(self):
             self.close()

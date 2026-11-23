@@ -436,7 +436,7 @@ def _allocate():
 
             def copy_item(source, destination):
                 if destination.exists() or destination.is_symlink():
-                    raise FileExistsError(s")
+                    raise FileExistsError("")
 
                 destination.parent.mkdir(parents=True, exist_ok=True)
 

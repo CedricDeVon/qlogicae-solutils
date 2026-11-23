@@ -1,8 +1,8 @@
 __all__ = (
-    "CommandParserManager",
+    "CommandManager",
 )
 
-_CommandParserManager = None
+_CommandManager = None
 _ExternalDependencyManager = None
 
 _argparse = None
@@ -11,10 +11,10 @@ _FunctionStorageManager = None
 
 def _allocate():
     global _allocate
-    global _CommandParserManager
+    global _CommandManager
 
 
-    class __CommandParserManager:
+    class __CommandManager:
         __slots__ = (
             "_parser",
             "_commands",
@@ -46,10 +46,7 @@ def _allocate():
             global _argparse
             global _FunctionStorageManager
 
-
-            from qlogicae_cor.v3.library.external_dependency_manager import (
-                ExternalDependencyManager,
-            )
+            from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
                 ExternalDependencyManager()
@@ -71,7 +68,10 @@ def _allocate():
 
             return True
 
-        def setup(self, **kwargs):
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
+                raise TypeError("")
+
             options = (
                 kwargs.get(
                     "options",
@@ -147,9 +147,9 @@ def _allocate():
         def shutdown(self):
             return True
 
-        def run(self, **kwargs):
-            if not kwargs:
-                raise ValueError("")
+        def run(self, kwargs):
+            if not isinstance(kwargs, (dict)):
+                raise TypeError("")
 
             command_callbacks = (
                 kwargs.get(
@@ -157,8 +157,6 @@ def _allocate():
                     {}
                 ) or {}
             )
-            if not isinstance(command_callbacks, (dict)):
-                raise TypeError("")
 
             command_callback_on_pre_run = (
                 command_callbacks.get(
@@ -201,9 +199,6 @@ def _allocate():
             )
 
         def setup_parser(self, kwargs):
-            if not isinstance(kwargs, dict):
-                raise TypeError("")
-
             _argparse = (
                 _ExternalDependencyManager().get_singleton().import_module(
                     path="argparse",
@@ -322,15 +317,15 @@ def _allocate():
             return result
 
 
-    _CommandParserManager = __CommandParserManager
+    _CommandManager = __CommandManager
     _allocate = lambda: None
 
 
-def CommandParserManager():
-    if _CommandParserManager is None:
+def CommandManager():
+    if _CommandManager is None:
         _allocate()
 
-    return _CommandParserManager
+    return _CommandManager
 
 
-# CommandParserManager()
+# CommandManager()

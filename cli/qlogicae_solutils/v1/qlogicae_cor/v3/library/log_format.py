@@ -17,9 +17,7 @@ def _allocate():
 
     import logging
 
-    from qlogicae_cor.v3.library.external_dependency_manager import (
-        ExternalDependencyManager
-    )
+    from .external_dependency_manager import ExternalDependencyManager
 
     _logging = logging
     _ExternalDependencyManager = (

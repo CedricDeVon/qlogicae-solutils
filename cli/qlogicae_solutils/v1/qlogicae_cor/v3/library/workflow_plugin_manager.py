@@ -3,10 +3,11 @@ __all__ = (
 )
 
 _WorkflowPluginManager = None
-
-_PluginManager = None
-_WorkflowPropertyManager = None
 _ExternalDependencyManager = None
+
+_WorkflowManager = None
+_PluginDataManager = None
+_WorkflowDataManager = None
 
 
 def _allocate():
@@ -14,9 +15,7 @@ def _allocate():
     global _WorkflowPluginManager
 
     class __WorkflowPluginManager:
-        __slots__ = (
-            "_key_path",
-        )
+        __slots__ = ()
 
         _singleton = None
 
@@ -29,17 +28,6 @@ def _allocate():
         def __exit__(self, exc_type, exc_value, traceback):
             self.shutdown()
 
-        @property
-        def key_path(self):
-            return self._key_path
-
-        @key_path.setter
-        def key_path(self, value):
-            if not isinstance(value, (tuple, list)):
-                raise ValueError("")
-
-            self._key_path = value
-
         @classmethod
         def get_singleton(cls):
             if cls._singleton is None:
@@ -50,42 +38,52 @@ def _allocate():
         def construct(self):
             global _ExternalDependencyManager
 
-            global _PluginManager
-            global _WorkflowPropertyManager
+            global _WorkflowManager
+            global _PluginDataManager
+            global _WorkflowDataManager
 
-            from qlogicae_cor.v3.library.external_dependency_manager import (
-                ExternalDependencyManager,
-            )
+            from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
                 ExternalDependencyManager()
             )
-            _WorkflowPropertyManager = (
+            _PluginDataManager = (
                 _ExternalDependencyManager()
                     .get_singleton()
                     .import_module(                    
-                        path="qlogicae_cor.v3.library.workflow_property_manager",
-                        member="WorkflowPropertyManager",
+                        path="qlogicae_cor.v3.library.plugin_data_manager",
+                        member="PluginDataManager",
                         is_member_callable=True,
                     )
             )
-            _PluginManager = (
+            _WorkflowDataManager = (
                 _ExternalDependencyManager()
                     .get_singleton()
                     .import_module(                    
-                        path="qlogicae_cor.v3.library.plugin_manager",
-                        member="PluginManager",
+                        path="qlogicae_cor.v3.library.workflow_data_manager",
+                        member="WorkflowDataManager",
+                        is_member_callable=True,
+                    )
+            )
+            _WorkflowManager = (
+                _ExternalDependencyManager()
+                    .get_singleton()
+                    .import_module(                    
+                        path="qlogicae_cor.v3.library.workflow_manager",
+                        member="WorkflowManager",
+                        is_member_callable=True,
+                    )
+            )
+            _FunctionStorageManager = (
+                _ExternalDependencyManager()
+                    .get_singleton()
+                    .import_module(                    
+                        path="qlogicae_cor.v3.library.function_storage_manager",
+                        member="FunctionStorageManager",
                         is_member_callable=True,
                     )
             )
 
-            self._key_path = (
-                "qlogicae",
-                "cor",
-                "v3",
-                "workflow",
-            )
-            
             return True
 
         def setup(self, **kwargs):
@@ -97,29 +95,53 @@ def _allocate():
         def shutdown(self):
             return True
 
-        def export_plugin(self):
-            moduli_plugin_manager = (
-                _PluginManager()
+        def run_workflows(self, targets):
+            workflow_manager = (
+                _WorkflowManager()
                     .get_singleton()
             )
-            workflow_property_manager = (
-                _WorkflowPropertyManager()
+            function_storage_manager = (
+                _FunctionStorageManager()
+                    .get_singleton()
+            )
+            workflow_data_manager = (
+                _WorkflowDataManager()
+                    .get_singleton()
+            )
+            plugin_data_manager = (
+                _PluginDataManager()
+                    .get_singleton()
+            )
+
+            result = True
+            result = (
+                workflow_manager.run(
+                    targets=targets,
+                    root_data=(
+                        plugin_data_manager.read_all_data(
+                            workflow_data_manager.root_key_path
+                        )
+                    ),
+                    commands=(
+                        function_storage_manager
+                            .read_all_functions()
+                    ),
+
+                )
+            )
+
+            return result
+
+        def export_plugin(self):
+            workflow_data_manager = (
+                _WorkflowDataManager()
                     .get_singleton()
             )
             
-            initial_data = (
-                moduli_plugin_manager
-                    .setup_data(
-                        moduli={ "layer": 0 },
-                        key_path=self._key_path,
-                        data=(
-                            workflow_property_manager
-                                .read_initial_data()
-                        )
-                    )
+            return (
+                workflow_data_manager
+                    .setup_plugin_data()
             )
-
-            return initial_data
 
         def setup_plugin(self):
             result = True
@@ -129,22 +151,10 @@ def _allocate():
             result = True
             return result
 
+
         def shutdown_plugin(self):            
             result = True
             return result
-
-        def read_data(self):
-            moduli_plugin_manager = (
-                _PluginManager()
-                    .get_singleton()
-            )
-
-            return (
-                moduli_plugin_manager
-                    .read_data(
-                        keys=self._key_path,
-                    )
-            )
 
 
     _WorkflowPluginManager = __WorkflowPluginManager
@@ -156,8 +166,4 @@ def WorkflowPluginManager():
         _allocate()
 
     return _WorkflowPluginManager
-
-
-
-# PluginManager()
 
