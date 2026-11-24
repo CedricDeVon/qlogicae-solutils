@@ -2,12 +2,13 @@ __all__ = (
     "AsynchronousManager",
 )
 
+_AsynchronousManager = None
+_ExternalDependencyManager = None
+
 _asyncio = None
 _threading = None
 _functools = None
 _concurrent_futures = None
-_AsynchronousManager = None
-_ExternalDependencyManager = None
 
 
 def _allocate():
@@ -54,6 +55,7 @@ def _allocate():
 
         def construct(self):
             global _ExternalDependencyManager
+            
             global _asyncio
             global _threading
             global _functools
@@ -99,8 +101,8 @@ def _allocate():
 
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
                 
             return True

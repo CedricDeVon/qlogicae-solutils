@@ -1,8 +1,8 @@
 __all__ = (
-    "PluginExecutionManager",
+    "PluginManager",
 )
 
-_PluginExecutionManager = None
+_PluginManager = None
 _ExternalDependencyManager = None
 
 _PluginDataManager = None
@@ -10,9 +10,9 @@ _PluginDataManager = None
 
 def _allocate():
     global _allocate
-    global _PluginExecutionManager
+    global _PluginManager
 
-    class __PluginExecutionManager:
+    class __PluginManager:
         __slots__ = ()
 
         _singleton = None
@@ -35,7 +35,8 @@ def _allocate():
 
         def construct(self):
             global _ExternalDependencyManager
-            global _PluginExecutionManager
+            
+            global _PluginDataManager
 
             from qlogicae_cor.v3.library.external_dependency_manager import (
                 ExternalDependencyManager,
@@ -52,15 +53,14 @@ def _allocate():
                         member="PluginDataManager",
                         is_member_callable=True,
                     )
-            )            
+            )        
 
             return True
 
         def setup(
-            self,
-            **kwargs,
+            self, kwargs,
         ):        
-            if not kwargs:
+            if not isinstance(kwargs, (dict)):
                 return True
 
             return True
@@ -68,10 +68,17 @@ def _allocate():
         def shutdown(self):
             return True
 
-        def run(self, **kwargs):
+        def run(self, kwargs):
+            if not isinstance(kwargs, (dict)):
+                raise TypeError("")
+
             plugin_data_manager = (
                 _PluginDataManager()
                     .get_singleton()
+            )
+
+            plugin_data_manager.setup(
+                kwargs
             )
 
             plugin_items = (
@@ -85,12 +92,20 @@ def _allocate():
             is_setup_enabled = (
                 kwargs.get("is_setup_enabled", True)
             )
+            if not isinstance(is_setup_enabled, (bool)):
+                raise TypeError("")
+
             is_run_enabled = (
                 kwargs.get("is_run_enabled", True)
             )
+            if not isinstance(is_run_enabled, (bool)):
+                raise TypeError("")
+
             is_shutdown_enabled = (
                 kwargs.get("is_shutdown_enabled", False)
             )
+            if not isinstance(is_shutdown_enabled, (bool)):
+                raise TypeError("")
 
             result = True
 
@@ -138,6 +153,12 @@ def _allocate():
             callback,
             is_reversed=False,
         ):
+            if not callable(callback):
+                raise TypeError("")
+
+            if not isinstance(is_reversed, (bool)):
+                raise TypeError("")
+
             plugin_data_manager = (
                 _PluginDataManager().get_singleton()
             )
@@ -152,12 +173,12 @@ def _allocate():
             result = True
             plugin_items = (
                 reversed(plugin_items)
-                if is_recursive
+                if is_reversed
                 else plugin_items
             )
             for plugin_item in plugin_items:
                 if not plugin_item:
-                    raise ValueError("")
+                    raise TypeError("")
 
                 result = (
                     callback(
@@ -171,6 +192,9 @@ def _allocate():
             self,
             plugin_item,
         ):
+            if not plugin_item:
+                raise TypeError("")
+                
             return (
                 self.run_optional_plugin_method(
                     plugin_item,
@@ -182,6 +206,9 @@ def _allocate():
             self,
             plugin_item,
         ):
+            if not plugin_item:
+                raise TypeError("")
+
             return (
                 self.run_optional_plugin_method(
                     plugin_item,
@@ -193,6 +220,9 @@ def _allocate():
             self,
             plugin_item,
         ):
+            if not plugin_item:
+                raise TypeError("")
+
             return (
                 self.run_optional_plugin_method(
                     plugin_item,
@@ -206,21 +236,22 @@ def _allocate():
             method_name,
         ):
             if not plugin_item:
-                raise ValueError("")
+                raise TypeError("")
 
-            if isinstance(method_name, (str)):
-                raise ValueError("")
+            if not isinstance(method_name, (str)):
+                raise TypeError("")
 
             result = True
             plugin_method = (
                 getattr(
                     plugin_item,
-                    method_name
+                    method_name,
+                    None
                 ) or None
             )
             if plugin_method:
                 if not callable(plugin_method):
-                    raise ValueError("")
+                    raise TypeError("")
                 
                 result = (
                     plugin_method() and result
@@ -231,14 +262,14 @@ def _allocate():
             )
 
 
-    _PluginExecutionManager = __PluginExecutionManager
+    _PluginManager = __PluginManager
     _allocate = lambda: None
 
 
-def PluginExecutionManager():
-    if _PluginExecutionManager is None:
+def PluginManager():
+    if _PluginManager is None:
         _allocate()
 
-    return _PluginExecutionManager
+    return _PluginManager
 
-# PluginExecutionManager()
+# PluginManager()

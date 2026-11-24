@@ -1,18 +1,18 @@
 __all__ = (
-    "SystemDataManager",
+    "PersistentCacheStoragePluginDataManager",
 )
 
 _ExternalDependencyManager = None
-_SystemDataManager = None
+_PersistentCacheStoragePluginDataManager = None
 
 _PluginDataManager = None
 
 
 def _allocate():
     global _allocate
-    global _SystemDataManager
+    global _PersistentCacheStoragePluginDataManager
 
-    class __SystemDataManager:
+    class __PersistentCacheStoragePluginDataManager:
         __slots__ = (
             "_root_key_path",
         )
@@ -66,7 +66,7 @@ def _allocate():
             )
 
             self._root_key_path = (
-                "qlogicae_cor_v3_system"
+                "qlogicae_cor_v3_persistent_cache_storage"
             )
 
             return True
@@ -92,18 +92,63 @@ def _allocate():
                         root_key_path=self._root_key_path,
                         layer=0,
                         data=(
-                            {}
+                            {
+                                "root": (
+                                    self.write_setup_kwargs({})
+                                )
+                            }
                         )
                     )
             )
 
+        def read_root_data(self):
+            plugin_data_manager = (
+                _PluginDataManager()
+                    .get_singleton()
+            )
 
-    _SystemDataManager = __SystemDataManager
+            return (
+                plugin_data_manager
+                    .read_one_data(
+                        root_key_path=self._root_key_path,
+
+                    )
+            )
+
+        def write_setup_kwargs(self, kwargs):
+            if "database_path" not in kwargs:
+                kwargs["database_path"] = "data.db"
+
+            if "create_missing" not in kwargs:
+                kwargs["create_missing"] = True
+
+            if "lifespan_in_seconds" not in kwargs:
+                kwargs["lifespan_in_seconds"] = 0.0
+
+            if "file_mode" not in kwargs:
+                kwargs["file_mode"] = 0o600
+
+            if "key_encoding" not in kwargs:
+                kwargs["key_encoding"] = "utf-8"
+
+            if "auto_remove_expired" not in kwargs:
+                kwargs["auto_remove_expired"] = True
+
+            if "auto_remove_invalid" not in kwargs:
+                kwargs["auto_remove_invalid"] = True
+
+            if "sync_on_write" not in kwargs:
+                kwargs["sync_on_write"] = False
+
+            return kwargs
+
+
+    _PersistentCacheStoragePluginDataManager = __PersistentCacheStoragePluginDataManager
     _allocate = lambda: None
 
 
-def SystemDataManager():
-    if _SystemDataManager is None:
+def PersistentCacheStoragePluginDataManager():
+    if _PersistentCacheStoragePluginDataManager is None:
         _allocate()
 
-    return _SystemDataManager
+    return _PersistentCacheStoragePluginDataManager

@@ -2,8 +2,8 @@ __all__ = (
     "TimeDataManager",
 )
 
-_ExternalDependencyManager = None
 _TimeDataManager = None
+_ExternalDependencyManager = None
 
 _PluginDataManager = None
 
@@ -48,25 +48,15 @@ def _allocate():
 
         def construct(self):
             global _ExternalDependencyManager
-            global _PluginDataManager
 
             from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
                 ExternalDependencyManager()
             )
-            _PluginDataManager = (
-                _ExternalDependencyManager()
-                    .get_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.plugin_data_manager",
-                        member="PluginDataManager",
-                        is_member_callable=True,
-                    )
-            )
 
             self._root_key_path = (
-                "qlogicae_cor_v3_system"
+                "qlogicae_cor_v3_time"
             )
 
             return True
@@ -81,6 +71,18 @@ def _allocate():
             return True
 
         def setup_plugin_data(self):
+            global _PluginDataManager
+
+            _PluginDataManager = (
+                _ExternalDependencyManager()
+                    .get_singleton()
+                    .import_module(                    
+                        path="qlogicae_cor.v3.library.plugin_data_manager",
+                        member="PluginDataManager",
+                        is_member_callable=True,
+                    )
+            )
+
             plugin_data_manager = (
                 _PluginDataManager()
                     .get_singleton()
@@ -92,10 +94,22 @@ def _allocate():
                         root_key_path=self._root_key_path,
                         layer=0,
                         data=(
-                            {}
+                            self.write_setup_kwargs({})
                         )
                     )
             )
+
+        def write_setup_kwargs(self, kwargs):
+            if not isinstance(kwargs, (dict)):
+                raise TypeError("")
+
+            if "selected_time_zone_type" not in kwargs:
+                kwargs["selected_time_zone_type"] = "local"
+
+            if "valid_time_zone_types" not in kwargs:
+                kwargs["valid_time_zone_types"] = { "local", "utc" }
+
+            return kwargs
 
 
     _TimeDataManager = __TimeDataManager

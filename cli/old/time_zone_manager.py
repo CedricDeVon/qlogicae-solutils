@@ -2,10 +2,12 @@ __all__ = (
     "TimeZoneManager",
 )
 
-_EnumConversionValue = None
-_TimeZoneEnumManager = None
 _TimeZoneManager = None
 _ExternalDependencyManager = None
+
+_TimeDataManager = None
+_EnumConversionValue = None
+_TimeZoneEnumManager = None
 
 def _allocate():
     global _allocate
@@ -54,9 +56,11 @@ def _allocate():
             )
 
         def construct(self):
+            global _ExternalDependencyManager
+
+            global _TimeDataManager
             global _EnumConversionValue
             global _TimeZoneEnumManager
-            global _ExternalDependencyManager
 
             from .external_dependency_manager import ExternalDependencyManager
 
@@ -71,7 +75,6 @@ def _allocate():
                     is_member_callable=True,
                 )
             )
-
             _TimeZoneEnumManager = (
                 _ExternalDependencyManager().get_singleton().import_module(
                     path="qlogicae_cor.v3.library.time_zone_enum_manager",
@@ -79,14 +82,15 @@ def _allocate():
                     is_member_callable=True,
                 )
             )
-
-            self._selected_time_zone_type = (
-                "local"
+            _TimeDataManager = (
+                _ExternalDependencyManager().get_singleton().import_module(
+                    path="qlogicae_cor.v3.library.time_data_manager",
+                    member="TimeDataManager",
+                    is_member_callable=True,
+                )
             )
-            self._valid_time_zone_types = {
-                "local",
-                "utc",
-            }
+
+            self.setup_properties({})
 
             return True
 
@@ -94,9 +98,38 @@ def _allocate():
             if not kwargs:
                 return True
 
-            return True
+            self.setup_properties(
+                kwargs
+            )
+
+            return True            
 
         def shutdown(self):
+            return True
+
+        def setup_properties(self, kwargs):
+            time_data_manager = (
+                _TimeDataManager()
+                    .get_singleton()
+            )
+
+            kwargs = (
+                time_data_manager.write_setup_kwargs(
+                    kwargs
+                )
+            )
+
+            self._selected_time_zone_type = (
+                kwargs.get(
+                    "selected_time_zone_type",
+                )
+            )
+            self._valid_time_zone_types = (
+                kwargs.get(
+                    "valid_time_zone_types",
+                )
+            )
+
             return True
 
 

@@ -37,7 +37,7 @@ def _allocate():
         @plugin_items.setter
         def plugin_items(self, value):
             if not isinstance(value, (tuple, list)):
-                raise ValueError("")
+                raise TypeError("")
 
             self._plugin_items = value
 
@@ -97,8 +97,11 @@ def _allocate():
 
         def setup(
             self,
-            **kwargs,
-        ):        
+            kwargs,
+        ):  
+            if not isinstance(kwargs, (dict)):
+                raise TypeError("")
+
             kwargs = (
                 self.write_setup_kwargs(
                     kwargs
@@ -108,50 +111,51 @@ def _allocate():
             target_filesystem_paths = (
                 kwargs.get("target_filesystem_paths", tuple()) or tuple()
             )
+
             if not isinstance(target_filesystem_paths, (tuple, list)):
-                raise ValueError("")
+                raise TypeError("")
 
             is_recursive = (
                 kwargs.get("is_recursive", True)
             )
             if not isinstance(is_recursive, (bool)):
-                raise ValueError("")
+                raise TypeError("")
 
             is_export_call_enabled = (
                 kwargs.get("is_export_call_enabled", True)
             )
             if not isinstance(is_export_call_enabled, (bool)):
-                raise ValueError("")
+                raise TypeError("")
 
             internal_objects = (
                 kwargs.get("internal_objects", tuple()) or tuple()
             )
             if not isinstance(internal_objects, (tuple, list)):
-                raise ValueError("")
+                raise TypeError("")
 
             internal_modules = (
                 kwargs.get("internal_modules", tuple()) or tuple()
             )
             if not isinstance(internal_modules, (tuple, list)):
-                raise ValueError("")
+                raise TypeError("")
 
             external_objects = (
                 kwargs.get("external_objects", tuple()) or tuple()
             )
             if not isinstance(external_objects, (tuple, list)):
-                raise ValueError("")
+                raise TypeError("")
 
             internal_data = (
                 kwargs.get("internal_data", tuple()) or tuple()
             )
             if not isinstance(internal_data, (tuple, list)):
-                raise ValueError("")
+                raise TypeError("")
 
             initial_data = (
                 kwargs.get("initial_data", {}) or {}
             )
             if not isinstance(initial_data, (dict)):
-                raise ValueError("")
+                raise TypeError("")
 
             object_merge_manager = (
                 _ObjectMergeManager()
@@ -207,12 +211,12 @@ def _allocate():
 
             if is_export_call_enabled:
                 for plugin_item in plugin_items:
-                    if not isinstance(plugin_item, (dict)):
-                        raise ValueError("")
+                    if not isinstance(plugin_item, (tuple, list)):
+                        raise TypeError("")
 
                     plugin_item_export_data = plugin_item[1]
                     if not isinstance(plugin_item_export_data, (dict)):
-                        raise ValueError("")
+                        raise TypeError("")
 
                     plugin_item_export_data_key_path = (
                         plugin_item_export_data.get(
@@ -236,8 +240,8 @@ def _allocate():
                         )
 
             if merged_plugin_export_data:
-                value_cache_storage_manager.set_all_items(
-                    values=merged_plugin_export_data
+                value_cache_storage_manager.write_all_data(
+                    merged_plugin_export_data
                 )
 
             self._plugin_items = (
@@ -245,7 +249,7 @@ def _allocate():
                 for plugin_item in plugin_items
             )
 
-            return result
+            return True
 
         def shutdown(self):
             return True
@@ -408,7 +412,10 @@ def _allocate():
                 result
             )
 
-        def write_setup_kwargs(self, **kwargs):
+        def write_setup_kwargs(self, kwargs):
+            if not isinstance(kwargs, (dict)):
+                raise TypeError("")
+
             if "target_filesystem_paths" not in kwargs:
                 kwargs["target_filesystem_paths"] = tuple()
 
@@ -430,10 +437,15 @@ def _allocate():
             if "internal_data" not in kwargs:
                 kwargs["internal_data"] = {}
 
+            return kwargs
+
         def setup_plugin_data(
             self,
-            **kwargs
+            kwargs
         ):
+            if not isinstance(kwargs, (dict)):
+                raise TypeError("")
+
             layer = (
                 kwargs.get(
                     "layer",
@@ -456,7 +468,7 @@ def _allocate():
             result = {
                 "root_key_path": root_key_path,
                 "layer": layer,
-                **data
+                root_key_path: data,
             }
 
             return result
@@ -466,7 +478,7 @@ def _allocate():
             plugin_item,
         ):
             if not plugin_item:
-                raise ValueError("")
+                raise TypeError("")
 
             result = True
             plugin_method = (
@@ -477,10 +489,10 @@ def _allocate():
             )
             if plugin_method:
                 if not callable(plugin_method):
-                    raise ValueError("")
+                    raise TypeError("")
                 
                 result = (
-                    plugin_method() and result
+                    plugin_method()
                 )
 
             return (

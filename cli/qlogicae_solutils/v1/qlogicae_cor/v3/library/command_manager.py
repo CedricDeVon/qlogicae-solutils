@@ -6,7 +6,7 @@ _CommandManager = None
 _ExternalDependencyManager = None
 
 _argparse = None
-_FunctionStorageManager = None
+_CommandFunctionManager = None
 
 
 def _allocate():
@@ -44,19 +44,19 @@ def _allocate():
             global _ExternalDependencyManager
 
             global _argparse
-            global _FunctionStorageManager
+            global _CommandFunctionManager
 
             from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
                 ExternalDependencyManager()
             )
-            _FunctionStorageManager = (
+            _CommandFunctionManager = (
                 _ExternalDependencyManager()
                     .get_singleton()
                     .import_module(
-                        path="qlogicae_cor.v3.library.function_storage_manager",
-                        member="FunctionStorageManager",
+                        path="qlogicae_cor.v3.library.command_function_manager",
+                        member="CommandFunctionManager",
                         is_member_callable=True,
                     )
             )
@@ -118,16 +118,15 @@ def _allocate():
             ):
                 callback_on_pre_setup()
 
-            function_storage_manager = (
-                _FunctionStorageManager()
+            command_function_manager = (
+                _CommandFunctionManager()
                     .get_singleton()
             )
+
             result = True
             result = (
-                function_storage_manager
-                    .setup_functions(
-                        options
-                    ) and result
+                command_function_manager
+                    .setup_functions() and result
             )
             if is_parser_enabled:
                 result = (
@@ -199,6 +198,9 @@ def _allocate():
             )
 
         def setup_parser(self, kwargs):
+            if not isinstance(kwargs, (dict)):
+                raise TypeError("")
+                
             _argparse = (
                 _ExternalDependencyManager().get_singleton().import_module(
                     path="argparse",

@@ -6,7 +6,6 @@ _CommandPluginManager = None
 _ExternalDependencyManager = None
 
 _CommandManager = None
-_PluginDataManager = None
 _CommandDataManager = None
 
 
@@ -39,7 +38,6 @@ def _allocate():
             global _ExternalDependencyManager
 
             global _CommandManager
-            global _PluginDataManager
             global _CommandDataManager
 
             from .external_dependency_manager import ExternalDependencyManager
@@ -56,15 +54,6 @@ def _allocate():
                         is_member_callable=True,
                     )
             )
-            _PluginDataManager = (
-                _ExternalDependencyManager()
-                    .get_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.plugin_data_manager",
-                        member="PluginDataManager",
-                        is_member_callable=True,
-                    )
-            )
             _CommandDataManager = (
                 _ExternalDependencyManager()
                     .get_singleton()
@@ -77,8 +66,8 @@ def _allocate():
 
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
 
             return True
@@ -98,10 +87,6 @@ def _allocate():
             )
 
         def setup_plugin(self):
-            plugin_data_manager = (
-                _PluginDataManager()
-                    .get_singleton()
-            )
             command_data_manager = (
                 _CommandDataManager()
                     .get_singleton()
@@ -115,9 +100,7 @@ def _allocate():
             result = (
                 command_manager
                     .setup(
-                        plugin_data_manager.read_all_data(
-                            command_data_manager.root_key_path
-                        )
+                        command_data_manager.read_all_data()
                         
                     ) and result
             )
@@ -125,10 +108,6 @@ def _allocate():
             return result
 
         def run_plugin(self):       
-            plugin_data_manager = (
-                _PluginDataManager()
-                    .get_singleton()
-            )
             command_data_manager = (
                 _CommandDataManager()
                     .get_singleton()
@@ -142,9 +121,7 @@ def _allocate():
             result = (
                 command_manager
                     .run(
-                        plugin_data_manager.read_all_data(
-                            command_data_manager.root_key_path
-                        )
+                        command_data_manager.read_all_data()
                         
                     ) and result
             )

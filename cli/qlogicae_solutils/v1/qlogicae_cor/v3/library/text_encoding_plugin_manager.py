@@ -5,8 +5,6 @@ __all__ = (
 _TextEncodingPluginManager = None
 _ExternalDependencyManager = None
 
-_TextEncodingManager = None
-_PluginDataManager = None
 _TextEncodingDataManager = None
 
 
@@ -38,32 +36,12 @@ def _allocate():
         def construct(self):
             global _ExternalDependencyManager
 
-            global _WorkflowManager
-            global _PluginDataManager
             global _TextEncodingDataManager
 
             from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
                 ExternalDependencyManager()
-            )
-            _TextEncodingManager = (
-                _ExternalDependencyManager()
-                    .get_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.text_encoding_manager",
-                        member="TextEncodingManager",
-                        is_member_callable=True,
-                    )
-            )
-            _PluginDataManager = (
-                _ExternalDependencyManager()
-                    .get_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.plugin_data_manager",
-                        member="PluginDataManager",
-                        is_member_callable=True,
-                    )
             )
             _TextEncodingDataManager = (
                 _ExternalDependencyManager()
@@ -77,8 +55,8 @@ def _allocate():
             
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
 
             return True
@@ -104,7 +82,6 @@ def _allocate():
         def run_plugin(self):            
             result = True
             return result
-
 
         def shutdown_plugin(self):            
             result = True

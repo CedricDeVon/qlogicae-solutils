@@ -2,9 +2,10 @@ __all__ = (
     "ObjectMergeManager",
 )
 
-_copy = None
 _ObjectMergeManager = None
 _ExternalDependencyManager = None
+
+_copy = None
 
 
 def _allocate():
@@ -31,8 +32,9 @@ def _allocate():
             return cls._singleton
 
         def construct(self):
-            global _copy
             global _ExternalDependencyManager
+            
+            global _copy
 
             from .external_dependency_manager import ExternalDependencyManager
 
@@ -48,8 +50,8 @@ def _allocate():
 
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
 
             return True
@@ -59,19 +61,19 @@ def _allocate():
 
         def deep_merge(
             self,
-            left,
-            right,
+            left_object,
+            right_object,
         ):
-            if left is None:
-                return _copy().deepcopy(right)
+            if not left_object:
+                return _copy().deepcopy(right_object)
 
-            if right is None:
-                return _copy().deepcopy(left)
+            if not right_object:
+                return _copy().deepcopy(left_object)
 
-            if isinstance(left, dict) and isinstance(right, dict):
-                result = _copy().deepcopy(left)
+            if isinstance(left_object, dict) and isinstance(right_object, dict):
+                result = _copy().deepcopy(left_object)
 
-                for key, value in right.items():
+                for key, value in right_object.items():
                     if key in result:
                         result[key] = self.deep_merge(
                             result[key],
@@ -82,26 +84,26 @@ def _allocate():
 
                 return result
 
-            if isinstance(left, list) and isinstance(right, list):
-                return _copy().deepcopy(left) + _copy().deepcopy(right)
+            if isinstance(left_object, list) and isinstance(right_object, list):
+                return _copy().deepcopy(left_object) + _copy().deepcopy(right_object)
 
-            return _copy().deepcopy(right)
+            return _copy().deepcopy(right_object)
 
         def deep_merge_fragments(
             self,
-            left,
-            right,
+            left_object,
+            right_object,
         ):
-            if left is None:
-                return _copy().deepcopy(right)
+            if not left_object:
+                return _copy().deepcopy(right_object)
 
-            if right is None:
-                return _copy().deepcopy(left)
+            if not right_object:
+                return _copy().deepcopy(left_object)
 
-            if isinstance(left, dict) and isinstance(right, dict):
-                result = _copy().deepcopy(left)
+            if isinstance(left_object, dict) and isinstance(right_object, dict):
+                result = _copy().deepcopy(left_object)
 
-                for key, value in right.items():
+                for key, value in right_object.items():
                     if key in result:
                         result[key] = self.deep_merge_fragments(
                             result[key],
@@ -112,10 +114,10 @@ def _allocate():
 
                 return result
 
-            if isinstance(left, list) and isinstance(right, list):
-                return _copy().deepcopy(right)
+            if isinstance(left_object, list) and isinstance(right_object, list):
+                return _copy().deepcopy(right_object)
 
-            return _copy().deepcopy(right)
+            return _copy().deepcopy(right_object)
 
 
     _ObjectMergeManager = __ObjectMergeManager
@@ -123,7 +125,7 @@ def _allocate():
 
 
 def ObjectMergeManager():
-    if _ObjectMergeManager is None:
+    if not _ObjectMergeManager:
         _allocate()
 
     return _ObjectMergeManager

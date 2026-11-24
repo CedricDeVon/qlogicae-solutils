@@ -7,8 +7,8 @@ _ImportTarget = None
 
 def _allocate():
     global _allocate
-    global _ImportTarget
     global _importlib
+    global _ImportTarget
     
     import importlib
 
@@ -20,17 +20,17 @@ def _allocate():
         __slots__ = (
             "_name",
             "_path",
+            "_member",
             "_package",
+            "_is_package",
+            "_is_optional",
             "_allocated_module",
             "_is_pre_allocated",
             "_is_member_callable",
-            "_is_package",
-            "_member",
-            "_is_optional",
         )
 
-        def __init__(self, **kwargs):
-            self.construct(**kwargs)
+        def __init__(self, kwargs):
+            self.construct(kwargs)
 
         def __enter__(self):
             self.allocate()
@@ -46,7 +46,7 @@ def _allocate():
         @name.setter
         def name(self, value):
             if not value or not isinstance(value, str):
-                raise ValueError("")
+                raise TypeError("")
 
             self._name = value
 
@@ -57,7 +57,7 @@ def _allocate():
         @path.setter
         def path(self, value):
             if not value or not isinstance(value, str):
-                raise ValueError("")
+                raise TypeError("")
 
             self._path = value
 
@@ -135,21 +135,21 @@ def _allocate():
 
             self._is_pre_allocated = value
 
-        def construct(self, **kwargs):
+        def construct(self, kwargs):
             if not isinstance(kwargs, dict) or not kwargs:
-                raise ValueError("")
+                raise TypeError("")
 
             path = kwargs.get("path")
 
             if not isinstance(path, str) or not path:
-                raise ValueError("")
+                raise TypeError("")
 
             self._path = path
 
             name = kwargs.get("name")
 
             if name is not None and not isinstance(name, str):
-                raise ValueError("")
+                raise TypeError("")
 
             self._name = name or path
 
@@ -197,15 +197,15 @@ def _allocate():
 
             return True
 
-        def setup(self, **kwargs):
+        def setup(self, kwargs):
             if not kwargs:
                 return True
                 
             return True
 
         def shutdown(self):
-            self.deallocate()
-            return True
+            result = self.deallocate()
+            return result
 
         def allocate(self):
             if self._allocated_module is not None:

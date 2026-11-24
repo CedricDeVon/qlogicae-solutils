@@ -6,7 +6,7 @@ _re = None
 _pathlib = None
 _collections_abc = None
 _MacrosManager = None
-_TextEncodingManager = None
+_TextEncodingDataManager = None
 _ExternalDependencyManager = None
 
 
@@ -15,10 +15,7 @@ def _allocate():
     global _MacrosManager
 
     class __MacrosManager:
-        __slots__ = (
-            "_selected_identifier_pattern",
-            "_selected_macros_pattern",
-        )
+        __slots__ = ()
 
         _singleton = None
 
@@ -38,27 +35,11 @@ def _allocate():
 
             return cls._singleton
 
-        @property
-        def selected_identifier_pattern(self):
-            return self._selected_identifier_pattern
-
-        @selected_identifier_pattern.setter
-        def selected_identifier_pattern(self, value):
-            self._selected_identifier_pattern = _re().compile(value)
-
-        @property
-        def selected_macros_pattern(self):
-            return self._selected_macros_pattern
-
-        @selected_macros_pattern.setter
-        def selected_macros_pattern(self, value):
-            self._selected_macros_pattern = _re().compile(value)
-
         def construct(self):
             global _re
             global _pathlib
             global _collections_abc
-            global _TextEncodingManager
+            global _TextEncodingDataManager
             global _ExternalDependencyManager
 
             from .external_dependency_manager import ExternalDependencyManager
@@ -82,37 +63,30 @@ def _allocate():
                     path="collections.abc"
                 )
             )
-            _TextEncodingManager = (
+            _MacrosDataManager = (
                 _ExternalDependencyManager().get_singleton().import_module(
-                    path="qlogicae_cor.v3.library.text_encoding_manager",
-                    member="TextEncodingManager",
+                    path="qlogicae_cor.v3.library.macros_data_manager",
+                    member="MacrosDataManager",
+                    is_member_callable=True
+                )
+            )
+            _TextEncodingDataManager = (
+                _ExternalDependencyManager().get_singleton().import_module(
+                    path="qlogicae_cor.v3.library.text_encoding_data_manager",
+                    member="TextEncodingDataManager",
                     is_member_callable=True
                 )
             )
 
-            self._selected_identifier_pattern = (
-                _re().compile(r"^[A-Za-z0-9._-]+$")
-            )
-            self._selected_macros_pattern = (
-                _re().compile(r"\$\{\{\s*([A-Za-z0-9._-]+)\s*\}\}")
-            )
-
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
                 
             return True
 
         def shutdown(self):
-            self._selected_identifier_pattern = (
-                _re().compile(r"^[A-Za-z0-9._-]+$")
-            )
-            self._selected_macros_pattern = (
-                _re().compile(r"\$\{\{\s*([A-Za-z0-9._-]+)\s*\}\}")
-            )
-
             return True
 
         def _resolve_value(self, value):
@@ -122,6 +96,20 @@ def _allocate():
             return value
 
         def resolve_many(self, values):
+            macros_data_manager = (
+                _MacrosDataManager()
+                    .get_singleton()
+            )
+
+            selected_identifier_pattern = (
+                macros_data_manager
+                    .read_selected_identifier_pattern()
+            )
+            selected_macros_pattern = (
+                macros_data_manager
+                    .read_selected_macros_pattern()
+            )
+
             if not isinstance(values, _collections_abc().Mapping):
                 raise TypeError("")
 
@@ -129,9 +117,8 @@ def _allocate():
                 if not isinstance(key, str):
                     raise TypeError("")
 
-                if not self._selected_identifier_pattern.fullmatch(key):
-                    raise ValueError("")
-# raise ValueError(f"invalid macro name: '{key}'")
+                if not selected_identifier_pattern.fullmatch(key):
+                    raise ValueError(f"'{key}' is an invalid macro name")
 
             cache = {}
 
@@ -151,8 +138,7 @@ def _allocate():
                         continue
 
                     if key not in values:
-                        raise ValueError("")
-# raise ValueError(f"key path '{key}' is an unknown macro")
+                        raise ValueError(f"'{key}' is an unknown macro")
 
                     value = values[key]
 
@@ -166,7 +152,7 @@ def _allocate():
 
                     dependencies = []
 
-                    for match in self._selected_macros_pattern.finditer(
+                    for match in selected_macros_pattern.finditer(
                         value,
                     ):
                         dependency = match.group(1)
@@ -175,12 +161,10 @@ def _allocate():
                             continue
 
                         if dependency not in values:
-                            raise ValueError("")
-# raise ValueError(f"key path '{key}' references unknown macro "f"'{dependency}'")
+                            raise ValueError(f"'{key}' references unknown macro "f"'{dependency}'")
 
                         if dependency in visiting:
-                            raise ValueError("")
-# raise ValueError(f"circular macro reference: "f"'{key}' -> '{dependency}'")
+                            raise ValueError(f""f"'{key}' is a circular macro reference to '{dependency}'")
 
                         if dependency not in dependencies:
                             dependencies.append(dependency)
@@ -193,7 +177,7 @@ def _allocate():
                         dependency = match.group(1)
                         return str(cache[dependency])
 
-                    cache[key] = self._selected_macros_pattern.sub(
+                    cache[key] = selected_macros_pattern.sub(
                         replace,
                         value,
                     )
@@ -231,6 +215,14 @@ def _allocate():
             frames = [
                 (key, False),
             ]
+            macros_data_manager = (
+                _MacrosDataManager()
+                    .get_singleton()
+            )
+            selected_macros_pattern = (
+                macros_data_manager
+                    .read_selected_macros_pattern()
+            )
 
             while frames:
                 current_key, expanded = frames.pop()
@@ -240,12 +232,10 @@ def _allocate():
 
                 if not expanded:
                     if current_key in stack:
-                        raise ValueError("")
-# raise ValueError(f"key path '{current_key}' is a circular reference")
+                        raise ValueError(f"'{current_key}' is a circular reference")
 
                     if current_key not in values:
-                        raise ValueError("")
-# raise ValueError(f"key path '{current_key}' is an unknown macro")
+                        raise ValueError(f"'{current_key}' is an unknown macros")
 
                     value = values[current_key]
 
@@ -261,18 +251,16 @@ def _allocate():
 
                     dependencies = []
 
-                    for match in self._selected_macros_pattern.finditer(
+                    for match in selected_macros_pattern.finditer(
                         value,
                     ):
                         dependency = match.group(1)
 
                         if dependency not in values:
-                            raise KeyError("")
-# raise KeyError(f"macro '{current_key}' references unknown "f"macro '{dependency}'")
+                            raise KeyError(f"'{current_key}' references unknown '{dependency}' macros")
 
                         if dependency in stack:
-                            raise ValueError("")
-# raise ValueError(f"circular macro reference: "f"'{current_key}' -> '{dependency}'")
+                            raise ValueError(f"'{current_key}' is a circular macro reference to '{dependency}'")
 
                         if dependency not in cache:
                             if dependency not in dependencies:
@@ -290,7 +278,7 @@ def _allocate():
                         cache[current_key] = self._resolve_value(value)
                     else:
                         cache[current_key] = (
-                            self._selected_macros_pattern.sub(
+                            selected_macros_pattern.sub(
                                 lambda match: str(cache[match.group(1)]),
                                 value,
                             )
@@ -308,7 +296,15 @@ def _allocate():
 
         def parse_one(self, value, resolved):
             if isinstance(value, str):
-
+                macros_data_manager = (
+                    _MacrosDataManager()
+                        .get_singleton()
+                )
+                selected_macros_pattern = (
+                    macros_data_manager
+                        .read_selected_macros_pattern()
+                )
+                
                 def replace(match):
                     key = match.group(1)
 
@@ -321,7 +317,7 @@ def _allocate():
                         )
                     )
 
-                return self._selected_macros_pattern.sub(
+                return selected_macros_pattern.sub(
                     replace,
                     value,
                 )
@@ -371,6 +367,11 @@ def _allocate():
         ):
             root = _pathlib().Path(filesystem_path)
 
+            text_encoding_data_manager = (
+                _TextEncodingDataManager()
+                    .get_singleton()
+            )
+
             for current_root, directories, files in root.walk(
                 top_down=False,
             ):
@@ -382,9 +383,8 @@ def _allocate():
                     try:
                         file_data = current_path.read_text(
                             encoding=(
-                                _TextEncodingManager()
-                                    .get_singleton()
-                                    .selected_encoding
+                                text_encoding_data_manager
+                                    .read_selected_type()
                             ),
                         )
                     except UnicodeDecodeError:
@@ -396,16 +396,14 @@ def _allocate():
                         )
 
                         if not isinstance(parsed_file_data, str):
-                            raise TypeError("")
-# raise TypeError("parsed file data must be a string")
+                            raise TypeError("parsed file data must be a string")
 
                         if parsed_file_data != file_data:
                             current_path.write_text(
                                 parsed_file_data,
                                 encoding=(
-                                    _TextEncodingManager()
-                                        .get_singleton()
-                                        .selected_encoding
+                                    text_encoding_data_manager
+                                        .read_selected_type()
                                 ),
                             )
 
@@ -415,8 +413,8 @@ def _allocate():
                     )
 
                     if not isinstance(parsed_name, str):
-                        raise TypeError("")
-# raise TypeError("parsed file name must be a string")
+                        raise TypeError("parsed file name must be a string")
+
 
                     if parsed_name != current_path.name:
                         current_path = current_path.rename(
@@ -432,8 +430,8 @@ def _allocate():
                     )
 
                     if not isinstance(parsed_name, str):
-                        raise TypeError("")
-# raise TypeError("parsed directory name must be a string")
+                        raise TypeError("parsed directory name must be a string")
+
 
                     if parsed_name != current_path.name:
                         current_path.rename(

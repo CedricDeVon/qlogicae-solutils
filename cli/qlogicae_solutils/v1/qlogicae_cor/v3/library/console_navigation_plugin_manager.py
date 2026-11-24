@@ -1,20 +1,18 @@
 __all__ = (
-    "TimePluginManager",
+    "ConsoleNavigationPluginManager",
 )
 
-_TimePluginManager = None
-_ExternalDependencyManager = None
+_ConsoleNavigationPluginManager = None
 
-_TimeZoneManager = None
-_PluginDataManager = None
-_TimeDataManager = None
+_ConsoleNavigationDataManager = None
+_ExternalDependencyManager = None
 
 
 def _allocate():
     global _allocate
-    global _TimePluginManager
+    global _ConsoleNavigationPluginManager
 
-    class __TimePluginManager:
+    class __ConsoleNavigationPluginManager:
         __slots__ = ()
 
         _singleton = None
@@ -37,48 +35,27 @@ def _allocate():
 
         def construct(self):
             global _ExternalDependencyManager
-
-            global _WorkflowManager
-            global _PluginDataManager
-            global _TimeDataManager
+            global _ConsoleNavigationDataManager
 
             from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
                 ExternalDependencyManager()
             )
-            _TimeZoneManager = (
+            _ConsoleNavigationDataManager = (
                 _ExternalDependencyManager()
                     .get_singleton()
                     .import_module(                    
-                        path="qlogicae_cor.v3.library.time_zone_manager",
-                        member="TimeZoneManager",
+                        path="qlogicae_cor.v3.library.console_navigation_data_manager",
+                        member="ConsoleNavigationDataManager",
                         is_member_callable=True,
                     )
             )
-            _PluginDataManager = (
-                _ExternalDependencyManager()
-                    .get_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.plugin_data_manager",
-                        member="PluginDataManager",
-                        is_member_callable=True,
-                    )
-            )
-            _TimeDataManager = (
-                _ExternalDependencyManager()
-                    .get_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.time_data_manager",
-                        member="TimeDataManager",
-                        is_member_callable=True,
-                    )
-            )
-            
+
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
 
             return True
@@ -87,13 +64,13 @@ def _allocate():
             return True
 
         def export_plugin(self):
-            time_data_manager = (
-                _TimeDataManager()
+            console_navigation_data_manager = (
+                _ConsoleNavigationDataManager()
                     .get_singleton()
             )
             
             return (
-                time_data_manager
+                console_navigation_data_manager
                     .setup_plugin_data()
             )
 
@@ -105,19 +82,19 @@ def _allocate():
             result = True
             return result
 
-
         def shutdown_plugin(self):            
             result = True
             return result
 
 
-    _TimePluginManager = __TimePluginManager
+    _ConsoleNavigationPluginManager = __ConsoleNavigationPluginManager
     _allocate = lambda: None
 
 
-def TimePluginManager():
-    if _TimePluginManager is None:
+def ConsoleNavigationPluginManager():
+    if _ConsoleNavigationPluginManager is None:
         _allocate()
 
-    return _TimePluginManager
+    return _ConsoleNavigationPluginManager
+
 

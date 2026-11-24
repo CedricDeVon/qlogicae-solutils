@@ -2,11 +2,12 @@ __all__ = (
     "PythonModuleManager",
 )
 
+_PythonModuleManager = None
+_ExternalDependencyManager = None
+
 _sys = None
 _pathlib = None
 _importlib_util = None
-_PythonModuleManager = None
-_ExternalDependencyManager = None
 
 
 def _allocate():
@@ -36,6 +37,7 @@ def _allocate():
 
         def construct(self):
             global _ExternalDependencyManager
+
             global _sys
             global _pathlib
             global _importlib_util
@@ -66,9 +68,9 @@ def _allocate():
 
         def setup(
             self,
-            **kwargs,
+            kwargs,
         ):
-            if not kwargs:
+            if not isinstance(kwargs, (dict)):
                 return True
 
             return True
@@ -82,10 +84,10 @@ def _allocate():
             is_recursive=True,
         ):
             if not isinstance(target_filesystem_paths, (tuple, list)):
-                raise ValueError("")
+                raise TypeError("")
 
             if not isinstance(is_recursive, (bool)):
-                raise ValueError("")
+                raise TypeError("")
 
             if not target_filesystem_paths:
                 return tuple()

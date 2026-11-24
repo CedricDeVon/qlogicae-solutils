@@ -3,7 +3,6 @@ __all__ = (
 )
 
 _ImportTarget = None
-# _BuildManager = None
 _ExternalDependencyManager = None
 
 def _allocate():
@@ -14,7 +13,6 @@ def _allocate():
         __slots__ = (
             "_import_targets",
             "_is_pre_allocated",
-            # "_build_manager",
         )
 
         _singleton = None
@@ -66,7 +64,6 @@ def _allocate():
 
         def construct(self):
             global _ImportTarget
-            # global _BuildManager
 
             from qlogicae_cor.v3.library.import_target import (
                 ImportTarget
@@ -75,23 +72,16 @@ def _allocate():
             _ImportTarget = (
                 ImportTarget()
             )
-            # _BuildManager = (
-            #     self.import_module(
-            #         path="qlogicae_cor.v3.library.build_manager",
-            #         member="BuildManager",
-            #         is_member_callable=True,
-            #     )
-            # )
 
             self._import_targets = {}
             self._is_pre_allocated = False
-            # self._build_manager = (
-            #     _BuildManager().get_singleton()
-            # )
 
             return True
 
-        def setup(self, **kwargs):
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
+                raise TypeError("")
+
             import_targets = kwargs.get("import_targets", ())
 
             if not isinstance(import_targets, (tuple, list)):
@@ -116,7 +106,7 @@ def _allocate():
                     target_kwargs = dict(target_kwargs)
                     target_kwargs["is_pre_allocated"] = is_pre_allocated
 
-                    target = _ImportTarget(**target_kwargs)
+                    target = _ImportTarget(target_kwargs)
 
                     if target.name not in self._import_targets:
                         staged_targets.setdefault(target.name, target)
@@ -159,7 +149,7 @@ def _allocate():
             self,
             **kwargs,
         ):
-            if not kwargs or not isinstance(kwargs, (dict)):
+            if not isinstance(kwargs, (dict)) or not kwargs:
                 raise TypeError("")
 
             target_key = (
@@ -177,7 +167,7 @@ def _allocate():
                 )
 
                 import_target = _ImportTarget(
-                    **kwargs
+                    kwargs
                 )
                 if not import_target:
                     raise TypeError("")

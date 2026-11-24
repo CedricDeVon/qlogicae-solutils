@@ -90,10 +90,10 @@ def _allocate():
 
             return (
                 plugin_data_manager
-                    .setup_plugin_data(
-                        root_key_path=self._root_key_path,
-                        layer=0,
-                        data=(
+                    .setup_plugin_data({
+                        "root_key_path": self._root_key_path,
+                        "layer": 0,
+                        "data": (
                             {
                                 "company_name": "",
                                 "project_name": "",
@@ -104,7 +104,120 @@ def _allocate():
                                 "current_active_major_version_label": "",
                             }
                         )
+                    })
+            )
+
+        def read_all_data(
+            self
+        ):
+            data = (
+                _PluginDataManager()
+                    .get_singleton()
+                    .read_all_data(
+                        self._root_key_path
                     )
+            )
+
+            return (
+                data
+            )
+
+        def read_one_data(
+            self,
+            key_path,
+        ):
+            if not isinstance(key_path, (tuple, list)):
+                raise TypeError("")
+            
+            data = (
+                _PluginDataManager()
+                    .get_singleton()
+                    .read_one_data(
+                        self._root_key_path,
+                        key_path
+                    )
+            )
+
+            return (
+                data
+            )
+
+        def write_all_data(
+            self,
+            value
+        ):
+            result = True
+            result = (
+                _PluginDataManager()
+                    .get_singleton()
+                    .write_all_data(
+                        self._root_key_path,
+                        value
+                    ) and result
+            )
+
+            return (
+                result
+            )
+
+        def write_one_data(
+            self,
+            key_path,
+            value,
+        ):
+            if not isinstance(key_path, (tuple, list)):
+                raise TypeError("")
+            
+            result = True
+            result = (
+                _PluginDataManager()
+                    .get_singleton()
+                    .write_one_data(
+                        self._root_key_path,
+                        key_path,
+                        value
+                    ) and result
+            )
+
+            return (
+                result
+            )
+
+        def remove_one_data(
+            self,
+            key_path,
+        ):
+            if not isinstance(key_path, (tuple, list)):
+                raise TypeError("")
+            
+            result = True
+            result = (
+                _PluginDataManager()
+                    .get_singleton()
+                    .remove_one_data(
+                        self._root_key_path,
+                        key_path,
+                    ) and result
+            )
+
+            return (
+                result
+            )
+
+        def remove_all_data(
+            self,
+        ):
+            result = True
+            result = (
+                _PluginDataManager()
+                    .get_singleton()
+                    .remove_all_data(
+                        self._root_key_path,
+                    ) and result
+            )
+
+            return (
+                result
             )
 
 

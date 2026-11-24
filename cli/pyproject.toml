@@ -263,7 +263,7 @@ v1-build-local-install = """
 """
 
 v1-archive-output = """
-    python3 -c "import shutil,sys; shutil.copytree(sys.argv[1], sys.argv[2], dirs_exist_ok=True)" output archive/v1.0.0a1/2026-11-22T21-06-18.694142959+08-00
+    python3 -c "import shutil,sys; shutil.copytree(sys.argv[1], sys.argv[2], dirs_exist_ok=True)" output archive/v1.0.0a1/2026-11-24T17-57-26.513231958+08-00
 """
 
 v1-test-check-and-apply-format = """

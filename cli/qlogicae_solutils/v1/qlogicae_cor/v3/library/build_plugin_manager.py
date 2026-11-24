@@ -54,8 +54,8 @@ def _allocate():
 
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
 
             return True

@@ -1,6 +1,8 @@
+
 __all__ = (
     "ValueCacheStorageManager",
 )
+
 
 _ValueCacheStorageManager = None
 _ExternalDependencyManager = None
@@ -32,18 +34,20 @@ def _allocate():
 
             from .external_dependency_manager import ExternalDependencyManager
 
-            _ExternalDependencyManager = (
-                ExternalDependencyManager()
-            )
+            _ExternalDependencyManager = ExternalDependencyManager()
 
             self._values = {}
             self._defaults = {}
 
             return True
 
-        def setup(self, **kwargs):
-            values = kwargs.get("values", {})
-            defaults = kwargs.get("defaults", {})
+        def setup(self, kwargs):
+            values = (
+                kwargs.get("values", {}) or {}
+            )
+            defaults = (
+                kwargs.get("defaults", {}) or {}
+            )
 
             if values is None:
                 values = {}
@@ -52,14 +56,10 @@ def _allocate():
                 defaults = {}
 
             if not isinstance(values, dict):
-                raise ValueError(
-                    "'kwargs.values' must be a dictionary"
-                )
+                raise ValueError("'values' must be a dictionary")
 
             if not isinstance(defaults, dict):
-                raise ValueError(
-                    "'kwargs.defaults' must be a dictionary"
-                )
+                raise ValueError("'defaults' must be a dictionary")
 
             self._values = values
             self._defaults = defaults
@@ -98,9 +98,7 @@ def _allocate():
 
             self._defaults = value
 
-        def _normalize_keys(self, **kwargs):
-            key_path = kwargs.get("key_path")
-
+        def _normalize_keys(self, key_path):
             if isinstance(key_path, str):
                 return (key_path,)
 
@@ -114,31 +112,31 @@ def _allocate():
                 "'key_path' must be a string, tuple, or list"
             )
 
-        def _normalize_typename(self, **kwargs):
-            typename = kwargs.get("typename", "values")
-
+        def _normalize_typename(self, typename="values"):
             if typename not in ("values", "defaults"):
-                raise ValueError(
-                    "'typename' must be either 'values' or 'defaults'"
-                )
+                raise ValueError("")
 
             return typename
 
-        def read_specified_cache(self, **kwargs):
-            typename = self._normalize_typename(**kwargs)
+        def read_specified_cache(self, typename="values"):
+            if not isinstance(typename, (str)) or not typename:
+                raise TypeError("")
+                
+            typename = self._normalize_typename(typename)
 
             if typename == "values":
                 return self._values
 
             return self._defaults
 
-        def _get_item_from_cache(self, **kwargs):
-            key_path = kwargs["key_path"]
-            typename = kwargs["typename"]
+        def _get_item_from_cache(self, key_path, typename):
+            if not isinstance(key_path, (tuple, list)):
+                raise TypeError("")
 
-            cache = self.read_specified_cache(
-                typename=typename,
-            )
+            if not isinstance(typename, (str)) or not typename:
+                raise TypeError("")
+
+            cache = self.read_specified_cache(typename)
 
             for key in key_path:
                 if isinstance(cache, dict):
@@ -159,61 +157,76 @@ def _allocate():
 
             return True, cache
 
-        def _get_item(self, **kwargs):
-            key_path = self._normalize_keys(
-                key_path=kwargs.get("key_path"),
-            )
+        def _get_item(self, key_path, typename="values"):
+            if not isinstance(key_path, (tuple, list)):
+                raise TypeError("")
 
-            typename = self._normalize_typename(
-                typename=kwargs.get("typename", "values"),
-            )
+            if not isinstance(typename, (str)) or not typename:
+                raise TypeError("")
+
+            key_path = self._normalize_keys(key_path)
+            typename = self._normalize_typename(typename)
 
             found, item = self._get_item_from_cache(
-                key_path=key_path,
-                typename=typename,
+                key_path,
+                typename,
             )
 
             if found or typename == "defaults":
                 return found, item
 
             return self._get_item_from_cache(
-                key_path=key_path,
-                typename="defaults",
+                key_path,
+                "defaults",
             )
 
-        def is_key_found(self, **kwargs):
+        def is_key_found(self, key_path, typename="values"):
+            if not isinstance(key_path, (tuple, list)):
+                raise TypeError("")
+
+            if not isinstance(typename, (str)) or not typename:
+                raise TypeError("")
+
             found, _ = self._get_item(
-                key_path=kwargs.get("key_path"),
-                typename=kwargs.get("typename", "values"),
+                key_path,
+                typename,
             )
 
             return found
 
-        def read_one_data(self, **kwargs):
+        def read_one_data(self, key_path, typename="values"):
+            if not isinstance(key_path, (tuple, list)):
+                raise TypeError("")
+
+            if not isinstance(typename, (str)) or not typename:
+                raise TypeError("")
+
             found, item = self._get_item(
-                key_path=kwargs.get("key_path"),
-                typename=kwargs.get("typename", "values"),
+                key_path,
+                typename,
             )
 
             return item if found else None
 
-        def _get_parent(self, **kwargs):
-            key_path = self._normalize_keys(
-                key_path=kwargs.get("key_path"),
-            )
+        def _get_parent(
+            self,
+            key_path,
+            typename="values",
+            create_missing=True,
+        ):
+            if not isinstance(key_path, (tuple, list)):
+                raise TypeError("")
 
-            typename = self._normalize_typename(
-                typename=kwargs.get("typename", "values"),
-            )
+            if not isinstance(typename, (str)) or not typename:
+                raise TypeError("")
 
-            create_missing = kwargs.get(
-                "create_missing",
-                True,
-            )
+            if not isinstance(create_missing, (bool)):
+                raise TypeError("")
 
-            cache = self.read_specified_cache(
-                typename=typename,
-            )
+            key_path = self._normalize_keys(key_path)
+            typename = self._normalize_typename(typename)
+
+            cache = self.read_specified_cache(typename)
 
             for key in key_path[:-1]:
                 if isinstance(cache, dict):
@@ -223,10 +236,7 @@ def _allocate():
 
                         cache[key] = {}
 
-                    elif not isinstance(
-                        cache[key],
-                        (dict, list),
-                    ):
+                    elif not isinstance(cache[key], (dict, list)):
                         return None, None
 
                     cache = cache[key]
@@ -250,21 +260,28 @@ def _allocate():
 
             return cache, key_path[-1]
 
-        def write_one_data(self, **kwargs):
-            key_path = kwargs.get("key_path")
-            value = kwargs.get("value")
+        def write_one_data(
+            self,
+            key_path,
+            value=None,
+            typename="values",
+            create_missing=True,
+        ):
+            if not isinstance(key_path, (tuple, list)):
+                raise TypeError("")
 
-            typename = self._normalize_typename(
-                typename=kwargs.get("typename", "values"),
-            )
+            if not isinstance(typename, (str)) or not typename:
+                raise TypeError("")
+
+            if not isinstance(create_missing, (bool)):
+                raise TypeError("")
+
+            typename = self._normalize_typename(typename)
 
             parent, key = self._get_parent(
-                key_path=key_path,
-                typename=typename,
-                create_missing=kwargs.get(
-                    "create_missing",
-                    True,
-                ),
+                key_path,
+                typename,
+                create_missing,
             )
 
             if parent is None:
@@ -293,36 +310,33 @@ def _allocate():
             return True
 
         def read_all_data(self):
-            return (
-                self._values or {}
-            )
+            return self._values or {}
 
-        def write_all_data(self, **kwargs):
-            value = (
-                kwargs.get(
-                    "values",
-                    {}
-                ) or {}
-            )
+        def write_all_data(self, values=None):
+            value = values or {}
 
             if not isinstance(value, dict):
                 raise TypeError(
-                    "'kwargs.value' must be a dictionary"
+                    "'values' must be a dictionary"
                 )
 
             self._values = value
 
             return True
 
-        def remove_one_data(self, **kwargs):
-            typename = self._normalize_typename(
-                typename=kwargs.get("typename", "values"),
-            )
+        def remove_one_data(self, key_path, typename="values"):
+            if not isinstance(key_path, (tuple, list)):
+                raise TypeError("")
+
+            if not isinstance(typename, (str)) or not typename:
+                raise TypeError("")
+
+            typename = self._normalize_typename(typename)
 
             parent, key = self._get_parent(
-                key_path=kwargs.get("key_path"),
-                typename=typename,
-                create_missing=False,
+                key_path,
+                typename,
+                False,
             )
 
             if parent is None:
@@ -351,19 +365,26 @@ def _allocate():
 
             return True
 
-        def remove_all_data(self, **kwargs):
-            cache = self.read_specified_cache(
-                typename=kwargs.get("typename", "values"),
-            )
+        def remove_all_data(self, typename="values"):
+            if not isinstance(typename, (str)) or not typename:
+                raise TypeError("")
+
+            cache = self.read_specified_cache(typename)
 
             cache.clear()
 
             return True
 
-        def display_one_data(self, **kwargs):
+        def display_one_data(self, key_path, typename="values"):
+            if not isinstance(key_path, (tuple, list)):
+                raise TypeError("")
+                
+            if not isinstance(typename, (str)) or not typename:
+                raise TypeError("")
+
             found, item = self._get_item(
-                key_path=kwargs.get("key_path"),
-                typename=kwargs.get("typename", "values"),
+                key_path,
+                typename,
             )
 
             if not found:
@@ -386,10 +407,11 @@ def _allocate():
 
             return True
 
-        def display_all_data(self, **kwargs):
-            cache = self.read_specified_cache(
-                typename=kwargs.get("typename", "values"),
-            )
+        def display_all_data(self, typename="values"):
+            if not isinstance(typename, (str)) or not typename:
+                raise TypeError("")
+
+            cache = self.read_specified_cache(typename)
 
             _json = (
                 _ExternalDependencyManager().get_singleton()

@@ -48,21 +48,11 @@ def _allocate():
 
         def construct(self):
             global _ExternalDependencyManager
-            global _PluginDataManager
 
             from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
                 ExternalDependencyManager()
-            )
-            _PluginDataManager = (
-                _ExternalDependencyManager()
-                    .get_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.plugin_data_manager",
-                        member="PluginDataManager",
-                        is_member_callable=True,
-                    )
             )
 
             self._root_key_path = (
@@ -81,6 +71,18 @@ def _allocate():
             return True
 
         def setup_plugin_data(self):
+            global _PluginDataManager
+
+            _PluginDataManager = (
+                _ExternalDependencyManager()
+                    .get_singleton()
+                    .import_module(                    
+                        path="qlogicae_cor.v3.library.plugin_data_manager",
+                        member="PluginDataManager",
+                        is_member_callable=True,
+                    )
+            )
+
             plugin_data_manager = (
                 _PluginDataManager()
                     .get_singleton()
@@ -88,13 +90,134 @@ def _allocate():
 
             return (
                 plugin_data_manager
-                    .setup_plugin_data(
-                        root_key_path=self._root_key_path,
-                        layer=0,
-                        data=(
-                            {}
-                        )
+                    .setup_plugin_data({
+                        "root_key_path": self._root_key_path,
+                        "layer": 0,
+                        "data": {
+                            "selected_type": "utf-8"
+                        }
+                    })
+            )
+        
+        def read_selected_type(self):
+            return (
+                self.read_one_data(
+                    ("selected_type",)
+                )
+            )
+
+        
+        def read_all_data(
+            self
+        ):
+            data = (
+                _PluginDataManager()
+                    .get_singleton()
+                    .read_all_data(
+                        self._root_key_path
                     )
+            )
+
+            return (
+                data
+            )
+
+        def read_one_data(
+            self,
+            key_path,
+        ):
+            if not isinstance(key_path, (tuple, list)):
+                raise TypeError("")
+            
+            data = (
+                _PluginDataManager()
+                    .get_singleton()
+                    .read_one_data(
+                        self._root_key_path,
+                        key_path
+                    )
+            )
+
+            return (
+                data
+            )
+
+        def write_all_data(
+            self,
+            value
+        ):
+            result = True
+            result = (
+                _PluginDataManager()
+                    .get_singleton()
+                    .write_all_data(
+                        self._root_key_path,
+                        value
+                    ) and result
+            )
+
+            return (
+                result
+            )
+
+        def write_one_data(
+            self,
+            key_path,
+            value,
+        ):
+            if not isinstance(key_path, (tuple, list)):
+                raise TypeError("")
+            
+            result = True
+            result = (
+                _PluginDataManager()
+                    .get_singleton()
+                    .write_one_data(
+                        self._root_key_path,
+                        key_path,
+                        value
+                    ) and result
+            )
+
+            return (
+                result
+            )
+
+        def remove_one_data(
+            self,
+            key_path,
+        ):
+            if not isinstance(key_path, (tuple, list)):
+                raise TypeError("")
+            
+            result = True
+            result = (
+                _PluginDataManager()
+                    .get_singleton()
+                    .remove_one_data(
+                        self._root_key_path,
+                        key_path,
+                    ) and result
+            )
+
+            return (
+                result
+            )
+
+        def remove_all_data(
+            self,
+        ):
+            result = True
+            result = (
+                _PluginDataManager()
+                    .get_singleton()
+                    .remove_all_data(
+                        self._root_key_path,
+                    ) and result
+            )
+
+            return (
+                result
             )
 
 

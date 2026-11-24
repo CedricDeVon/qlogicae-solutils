@@ -4,7 +4,6 @@ __all__ = (
 
 _GroupSelectionManager = None
 
-
 def _allocate():
     global _allocate
     global _GroupSelectionManager
@@ -32,7 +31,7 @@ def _allocate():
             return True
 
         def setup(self, **kwargs):
-            if not kwargs:
+            if not isinstance(kwargs, (dict)):
                 return True
                 
             return True
@@ -46,10 +45,10 @@ def _allocate():
             data,
         ):
             if not target:
-                raise ValueError("")
+                raise TypeError("")
 
             if not data:
-                raise ValueError("")
+                raise TypeError("")
 
             resolved = []
             visited = set()

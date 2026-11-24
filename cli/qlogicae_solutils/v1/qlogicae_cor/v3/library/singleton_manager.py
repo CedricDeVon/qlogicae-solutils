@@ -53,8 +53,8 @@ def _allocate():
             return instances[abs(index) % instance_count]
 
         @classmethod
-        def setup(cls, **kwargs):
-            if not kwargs:
+        def setup(cls, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
 
             return True
