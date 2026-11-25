@@ -13,44 +13,36 @@ def _allocate():
     )
 
     class __BuildDataManager(BaseDataManager()):
-        _singleton = None
-
         def __init__(self):
-            super().__init__("qlogicae_cor_v3_build")
-
-        @classmethod
-        def read_singleton(cls):
-            if cls._singleton is None:
-                cls._singleton = cls()
-
-            return cls._singleton
+            super().__init__(
+                "qlogicae_cor_v3_build"
+            )
 
         def setup_plugin_data(self):
             return (
-                super()
-                    .setup_plugin_data({
-                        "root_key_path": self._root_key_path,
-                        "layer": 0,
-                        "data": (
-                            {
-                                "company_name": "",
-                                "project_name": "",
-                                "project_description": "",
-                                "brand_base_name": "",
-                                "brand_source_name": "",
-                                "current_version_label": "",
-                                "current_active_major_version_label": "",
-                                "callbacks": {
-                                    "on_pre_setup": None,
-                                    "on_post_setup": None,
-                                    "on_pre_run": None,
-                                    "on_post_run": None,
-                                    "on_pre_shutdown": None,
-                                    "on_post_shutdown": None,
-                                },
-                            }
-                        )
-                    })
+                self.base_setup_plugin_data({
+                    "root_key_path": self._root_key_path,
+                    "layer": 0,
+                    "data": (
+                        {
+                            "company_name": "",
+                            "project_name": "",
+                            "project_description": "",
+                            "brand_base_name": "",
+                            "brand_source_name": "",
+                            "current_version_label": "",
+                            "current_active_major_version_label": "",
+                            "callbacks": {
+                                "on_pre_setup": None,
+                                "on_post_setup": None,
+                                "on_pre_run": None,
+                                "on_post_run": None,
+                                "on_pre_shutdown": None,
+                                "on_post_shutdown": None,
+                            },
+                        }
+                    )
+                })
             )
 
         def read_company_name(self):

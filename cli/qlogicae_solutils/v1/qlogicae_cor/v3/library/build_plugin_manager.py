@@ -12,13 +12,17 @@ def _allocate():
     global _allocate
     global _BuildPluginManager
 
-    class __BuildPluginManager:
+    from .base_plugin_manager import BasePluginManager
+
+    class __BuildPluginManager(BasePluginManager()):
         __slots__ = ()
 
         _singleton = None
 
         def __init__(self):
-            self.construct()
+            super().__init__()
+
+            self.construct()        
 
         def __enter__(self):
             return self
@@ -52,39 +56,11 @@ def _allocate():
                     )
             )
 
-            return True
-
-        def setup(self, kwargs):
-            if not isinstance(kwargs, (dict)):
-                return True
-
-            return True
-
-        def shutdown(self):
-            return True
-
-        def export_plugin(self):
-            build_data_manager = (
-                _BuildDataManager()
-                    .read_singleton()
-            )
-            
-            return (
-                build_data_manager
-                    .setup_plugin_data()
+            self._data_manager = (
+                _BuildDataManager
             )
 
-        def setup_plugin(self):
-            result = True
-            return result
-
-        def run_plugin(self):            
-            result = True
-            return result
-
-        def shutdown_plugin(self):            
-            result = True
-            return result
+            return True
 
 
     _BuildPluginManager = __BuildPluginManager

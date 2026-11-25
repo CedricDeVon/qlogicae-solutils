@@ -15,29 +15,19 @@ def _allocate():
     global _allocate
     global _AsynchronousManager
 
-    class __AsynchronousManager:
+    from .abstract_manager import AbstractManager
+
+    class __AsynchronousManager(AbstractManager()):
         __slots__ = (
             "_thread_executor",
             "_process_executor",
         )
 
-        _singleton = None
-
         def __init__(self):
             self.construct()
 
-        def __enter__(self):
-            return self
-
         def __exit__(self, exc_type, exc_value, traceback):
             self.shutdown()
-
-        @classmethod
-        def read_singleton(cls):
-            if cls._singleton is None:
-                cls._singleton = cls()
-
-            return cls._singleton
 
         @property
         def thread_executor(self):
@@ -99,12 +89,6 @@ def _allocate():
             self._thread_executor = None
             self._process_executor = None
 
-            return True
-
-        def setup(self, kwargs):
-            if not isinstance(kwargs, (dict)):
-                return True
-                
             return True
 
         def shutdown(

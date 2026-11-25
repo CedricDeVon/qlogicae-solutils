@@ -32,6 +32,13 @@ def _allocate():
         def shutdown(self):
             return True
 
+        @classmethod
+        def read_singleton(cls):
+            if cls.__dict__.get("_singleton") is None:
+                cls._singleton = cls()
+
+            return cls._singleton
+
 
     _AbstractManager = __AbstractManager
     _allocate = lambda: None

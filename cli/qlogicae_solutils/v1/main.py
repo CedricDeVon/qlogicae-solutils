@@ -68,9 +68,9 @@ def main():
             FileLogPluginManager().read_singleton(),
             CommandPluginManager().read_singleton(),
         ),
-        "is_setup_enabled": False,
-        "is_run_enabled": False,
-        "is_shutdown_enabled": False,
+        "is_setup_enabled": True,
+        "is_run_enabled": True,
+        "is_shutdown_enabled": True,
     })
 
     ValueCacheStorageManager().read_singleton().display_all_data()

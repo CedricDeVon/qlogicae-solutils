@@ -23,17 +23,16 @@ def _allocate():
             self.base_construct(root_key_path)
 
         @property
-        def key_path(self):
+        def root_key_path(self):
             return self._root_key_path
 
-        @key_path.setter
-        def key_path(self, value):
+        @root_key_path.setter
+        def root_key_path(self, value):
             if not isinstance(value, (tuple, list)):
                 raise ValueError("")
 
             self._root_key_path = value
 
-        @classmethod
         def base_construct(self, root_key_path):
             global _ExternalDependencyManager
             global _PluginDataManager
@@ -59,8 +58,7 @@ def _allocate():
 
             return True
 
-        @classmethod
-        def setup_plugin_data(self, kwargs):
+        def base_setup_plugin_data(self, kwargs):
             if not isinstance(kwargs, (dict)):
                 raise TypeError("")
 
@@ -74,7 +72,17 @@ def _allocate():
                     .setup_plugin_data(kwargs)
             )
 
-        @classmethod
+        def read_callback(self, callback_name):
+            data = (
+                self.read_one_data(
+                        (callback_name,)
+                    )
+            )
+
+            return (
+                data
+            )
+
         def read_all_data(
             self
         ):
@@ -90,7 +98,6 @@ def _allocate():
                 data
             )
 
-        @classmethod
         def read_one_data(
             self,
             key_path,
@@ -111,7 +118,6 @@ def _allocate():
                 data
             )
 
-        @classmethod
         def write_all_data(
             self,
             value
@@ -130,7 +136,6 @@ def _allocate():
                 result
             )
 
-        @classmethod
         def write_one_data(
             self,
             key_path,
@@ -154,7 +159,6 @@ def _allocate():
                 result
             )
 
-        @classmethod
         def remove_one_data(
             self,
             key_path,
@@ -176,7 +180,6 @@ def _allocate():
                 result
             )
 
-        @classmethod
         def remove_all_data(
             self,
         ):
