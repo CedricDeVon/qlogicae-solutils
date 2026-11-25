@@ -34,7 +34,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -53,7 +53,7 @@ def _allocate():
             )
             _CommandFunctionManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(
                         path="qlogicae_cor.v3.library.command_function_manager",
                         member="CommandFunctionManager",
@@ -120,7 +120,7 @@ def _allocate():
 
             command_function_manager = (
                 _CommandFunctionManager()
-                    .get_singleton()
+                    .read_singleton()
             )
 
             result = True
@@ -202,7 +202,7 @@ def _allocate():
                 raise TypeError("")
                 
             _argparse = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="argparse",
                 )
             )

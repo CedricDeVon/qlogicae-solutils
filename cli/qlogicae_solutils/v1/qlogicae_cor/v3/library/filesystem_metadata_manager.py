@@ -33,7 +33,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -57,32 +57,32 @@ def _allocate():
             )
 
             _datetime = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="datetime",
                 )
             )
             _json = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="json",
                 )
             )
             _re = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="re",
                 )
             )
             _stat = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="stat",
                 )
             )
             _pathlib = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="pathlib",
                 )
             )
             _FilesystemMetadata = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="qlogicae_cor.v3.library.filesystem_metadata",
                     member="FilesystemMetadata",
                     is_member_callable=True
@@ -90,7 +90,7 @@ def _allocate():
             )
             _FilesystemMetadataDataManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(                    
                         path="qlogicae_cor.v3.library.filesystem_metadata_data_manager",
                         member="FilesystemMetadataDataManager",
@@ -152,7 +152,7 @@ def _allocate():
             if properties:
                 filesystem_metadata_data_manager = (
                     _FilesystemMetadataDataManager()
-                        .get_singleton()
+                        .read_singleton()
                 )
                 property_names = (
                     filesystem_metadata_data_manager

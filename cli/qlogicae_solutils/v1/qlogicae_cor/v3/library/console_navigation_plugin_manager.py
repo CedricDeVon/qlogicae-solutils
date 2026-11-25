@@ -27,7 +27,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -44,7 +44,7 @@ def _allocate():
             )
             _ConsoleNavigationDataManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(                    
                         path="qlogicae_cor.v3.library.console_navigation_data_manager",
                         member="ConsoleNavigationDataManager",
@@ -66,7 +66,7 @@ def _allocate():
         def export_plugin(self):
             console_navigation_data_manager = (
                 _ConsoleNavigationDataManager()
-                    .get_singleton()
+                    .read_singleton()
             )
             
             return (

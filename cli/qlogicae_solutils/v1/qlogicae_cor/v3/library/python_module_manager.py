@@ -29,7 +29,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -49,17 +49,17 @@ def _allocate():
             )
 
             _sys = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="sys",
                 )
             )
             _pathlib = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="pathlib",
                 )
             )
             _importlib_util = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="importlib.util",
                 )
             )

@@ -1,10 +1,6 @@
 
 def main():
-    from importlib.metadata import version
-
-    print(
-        version("qlogicae-cor")
-    )
+    print("Confirmed!")
 
     return 0
 

@@ -21,7 +21,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 

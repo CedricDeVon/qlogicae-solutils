@@ -27,7 +27,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -44,7 +44,7 @@ def _allocate():
             )
             _HardwareDataManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(                    
                         path="qlogicae_cor.v3.library.hardware_data_manager",
                         member="HardwareDataManager",
@@ -66,7 +66,7 @@ def _allocate():
         def export_plugin(self):
             hardware_data_manager = (
                 _HardwareDataManager()
-                    .get_singleton()
+                    .read_singleton()
             )
             
             return (

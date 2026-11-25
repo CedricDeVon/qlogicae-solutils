@@ -27,7 +27,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -44,7 +44,7 @@ def _allocate():
             )
             _BuildDataManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(                    
                         path="qlogicae_cor.v3.library.build_data_manager",
                         member="BuildDataManager",
@@ -66,7 +66,7 @@ def _allocate():
         def export_plugin(self):
             build_data_manager = (
                 _BuildDataManager()
-                    .get_singleton()
+                    .read_singleton()
             )
             
             return (

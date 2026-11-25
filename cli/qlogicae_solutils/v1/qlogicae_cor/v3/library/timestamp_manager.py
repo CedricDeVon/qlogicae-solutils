@@ -29,7 +29,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -52,38 +52,38 @@ def _allocate():
             )
 
             _time = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="time"
                 )
             )
             _datetime = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="datetime",
                 )
             )
             _TimeUnit = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="qlogicae_cor.v3.library.time_unit",
                     member="TimeUnit",
                     is_member_callable=True,
                 )
             )
             _TimeZoneDataManager = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="qlogicae_cor.v3.library.time_zone_data_manager",
                     member="TimeZoneDataManager",
                     is_member_callable=True,
                 )
             )
             _TimestampDataManager = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="qlogicae_cor.v3.library.timestamp_data_manager",
                     member="TimestampDataManager",
                     is_member_callable=True,
                 )
             )
             _Timestamp = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="qlogicae_cor.v3.library.timestamp",
                     member="Timestamp",
                     is_member_callable=True,
@@ -124,13 +124,13 @@ def _allocate():
             current = _datetime().datetime.fromtimestamp(
                 timestamp_nanoseconds / 1_000_000_000,
                 _TimeZoneDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .read_selected_time_zone_type(),
             )
 
             timestamp_data_manager = (
                 _TimestampDataManager()
-                    .get_singleton()
+                    .read_singleton()
             )
 
             match time_unit:

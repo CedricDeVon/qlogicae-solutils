@@ -47,7 +47,7 @@ def _allocate():
             self._plugin_items = value
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -70,7 +70,7 @@ def _allocate():
 
             _ObjectMergeManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(
                         path="qlogicae_cor.v3.library.object_merge_manager",
                         member="ObjectMergeManager",
@@ -79,7 +79,7 @@ def _allocate():
             )
             _PythonModuleManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(
                         path="qlogicae_cor.v3.library.python_module_manager",
                         member="PythonModuleManager",
@@ -88,7 +88,7 @@ def _allocate():
             )
             _ValueCacheStorageManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(
                         path="qlogicae_cor.v3.library.value_cache_storage_manager",
                         member="ValueCacheStorageManager",
@@ -164,18 +164,18 @@ def _allocate():
 
             object_merge_manager = (
                 _ObjectMergeManager()
-                    .get_singleton()
+                    .read_singleton()
             )
             value_cache_storage_manager = (
                 _ValueCacheStorageManager()
-                    .get_singleton()
+                    .read_singleton()
             )
 
             external_modules = tuple()        
             if target_filesystem_paths:
                 external_modules = tuple(
                     _PythonModuleManager()
-                        .get_singleton()
+                        .read_singleton()
                         .read_imported_modules(
                             target_filesystem_paths,
                             is_recursive
@@ -268,7 +268,7 @@ def _allocate():
 
             value_cache_storage_manager = (
                 _ValueCacheStorageManager()
-                    .get_singleton()
+                    .read_singleton()
             )
 
             data = (
@@ -295,7 +295,7 @@ def _allocate():
             
             value_cache_storage_manager = (
                 _ValueCacheStorageManager()
-                    .get_singleton()
+                    .read_singleton()
             )
 
             data = (
@@ -319,7 +319,7 @@ def _allocate():
 
             value_cache_storage_manager = (
                 _ValueCacheStorageManager()
-                    .get_singleton()
+                    .read_singleton()
             )
 
             result = True
@@ -349,7 +349,7 @@ def _allocate():
             
             value_cache_storage_manager = (
                 _ValueCacheStorageManager()
-                    .get_singleton()
+                    .read_singleton()
             )
 
             result = True
@@ -378,7 +378,7 @@ def _allocate():
             
             value_cache_storage_manager = (
                 _ValueCacheStorageManager()
-                    .get_singleton()
+                    .read_singleton()
             )
 
             result = True
@@ -402,7 +402,7 @@ def _allocate():
 
             value_cache_storage_manager = (
                 _ValueCacheStorageManager()
-                    .get_singleton()
+                    .read_singleton()
             )
 
             result = True

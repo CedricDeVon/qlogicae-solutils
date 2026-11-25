@@ -28,7 +28,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -49,24 +49,24 @@ def _allocate():
             )
 
             _json = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="json",
                 )
             )
             _pathlib = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="pathlib",
                 )
             )
             _JsonIoDataManager = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="qlogicae_cor.v3.library.json_io_data_manager",
                     member="JsonIoDataManager",
                     is_member_callable=True,
                 )
             )
             _TextEncodingDataManager = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="qlogicae_cor.v3.library.text_encoding_manager",
                     member="TextEncodingDataManager",
                     is_member_callable=True,
@@ -96,7 +96,7 @@ def _allocate():
                 mode="r",
                 encoding=(
                     _TextEncodingDataManager()
-                        .get_singleton()
+                        .read_singleton()
                         .read_selected_encoding_type()
                 ),
             ) as file:
@@ -117,11 +117,11 @@ def _allocate():
 
             json_io_data_manager = (
                 _JsonIoDataManager()
-                    .get_singleton()
+                    .read_singleton()
             )
             text_encoding_manager = (
                 _TextEncodingDataManager()
-                    .get_singleton()
+                    .read_singleton()
             )
 
             with path.open(

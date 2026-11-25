@@ -29,7 +29,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -49,17 +49,17 @@ def _allocate():
             )
 
             _os = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="os"
                 )
             )
             _pathlib = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="pathlib"
                 )
             )
             _ConsoleNavigationDataManager = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="qlogicae_cor.v3.library.console_navigation_data_manager",
                     member="ConsoleNavigationDataManager",
                     is_member_callable=True
@@ -83,7 +83,7 @@ def _allocate():
 
             console_navigation_data_manager = (
                 _ConsoleNavigationDataManager()
-                    .get_singleton()
+                    .read_singleton()
             )
 
             console_navigation_data_manager.write_previous_executing_filesystem_path(
@@ -119,4 +119,4 @@ def ConsoleNavigationManager():
 
     return _ConsoleNavigationManager
 
-# ConsoleNavigationManager().get_singleton()
+# ConsoleNavigationManager().read_singleton()

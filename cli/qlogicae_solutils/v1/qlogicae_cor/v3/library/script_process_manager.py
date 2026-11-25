@@ -29,7 +29,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -48,24 +48,24 @@ def _allocate():
                 ExternalDependencyManager()
             )
             _shlex = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="shlex",
                 )
             )
             _subprocess = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="subprocess",
                 )
             )
             _TextEncodingDataManager = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="qlogicae_cor.v3.library.text_encoding_data_manager",
                     member="TextEncodingDataManager",
                     is_member_callable=True,
                 )
             )
             _ScriptProcessDataManager = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="qlogicae_cor.v3.library.script_process_data_manager",
                     member="ScriptProcessDataManager",
                     is_member_callable=True,
@@ -92,12 +92,12 @@ def _allocate():
 
             script_process_type = (
                 _ScriptProcessDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .read_script_process_type()
             )
             valid_script_process_types = (
                 _ScriptProcessDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .read_valid_script_process_types()
             )
 
@@ -106,7 +106,7 @@ def _allocate():
 
             encoding = (
                 _TextEncodingDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .read_selected_encoding_type()
             )
 

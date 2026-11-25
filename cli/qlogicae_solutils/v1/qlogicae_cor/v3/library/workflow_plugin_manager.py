@@ -28,7 +28,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -47,7 +47,7 @@ def _allocate():
             )
             _WorkflowDataManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(                    
                         path="qlogicae_cor.v3.library.workflow_data_manager",
                         member="WorkflowDataManager",
@@ -56,7 +56,7 @@ def _allocate():
             )
             _WorkflowManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(                    
                         path="qlogicae_cor.v3.library.workflow_manager",
                         member="WorkflowManager",
@@ -78,7 +78,7 @@ def _allocate():
         def run_workflows(self, targets):
             workflow_manager = (
                 _WorkflowManager()
-                    .get_singleton()
+                    .read_singleton()
             )
 
             result = True
@@ -93,7 +93,7 @@ def _allocate():
         def export_plugin(self):
             workflow_data_manager = (
                 _WorkflowDataManager()
-                    .get_singleton()
+                    .read_singleton()
             )
             
             return (

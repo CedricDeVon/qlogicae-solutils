@@ -28,7 +28,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -49,26 +49,26 @@ def _allocate():
             )
 
             _logging = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="logging",
                 )
             )
             _ConsoleLogManager = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="qlogicae_cor.v3.library.console_log_manager",
                     member="ConsoleLogManager",
                     is_member_callable=True,
                 )
             )
             _FileLogManager = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="qlogicae_cor.v3.library.file_log_manager",
                     member="FileLogManager",
                     is_member_callable=True,
                 )
             )
             _LogOptionsManager = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="qlogicae_cor.v3.library.log_options_manager",
                     member="LogOptionsManager",
                     is_member_callable=True,
@@ -84,8 +84,8 @@ def _allocate():
             return True
 
         def shutdown(self):
-            _ConsoleLogManager().get_singleton().shutdown()
-            _FileLogManager().get_singleton().shutdown()
+            _ConsoleLogManager().read_singleton().shutdown()
+            _FileLogManager().read_singleton().shutdown()
 
             return True
 
@@ -95,12 +95,12 @@ def _allocate():
             console_options,
             file_options,
         ):
-            _ConsoleLogManager().get_singleton().log(
+            _ConsoleLogManager().read_singleton().log(
                 message,
                 console_options,
             )
 
-            _FileLogManager().get_singleton().log(
+            _FileLogManager().read_singleton().log(
                 message,
                 file_options,
             )
@@ -110,12 +110,12 @@ def _allocate():
         def log_debug(self, message):
             return self.log(
                 message,
-                _LogOptionsManager().get_singleton().generate_modified_defaults(
-                    _ConsoleLogManager().get_singleton().options,
+                _LogOptionsManager().read_singleton().generate_modified_defaults(
+                    _ConsoleLogManager().read_singleton().options,
                     log_level=_logging().DEBUG,
                 ),
-                _LogOptionsManager().get_singleton().generate_modified_defaults(
-                    _FileLogManager().get_singleton().options,
+                _LogOptionsManager().read_singleton().generate_modified_defaults(
+                    _FileLogManager().read_singleton().options,
                     log_level=_logging().DEBUG,
                 ),
             )
@@ -123,12 +123,12 @@ def _allocate():
         def log_info(self, message):
             return self.log(
                 message,
-                _LogOptionsManager().get_singleton().generate_modified_defaults(
-                    _ConsoleLogManager().get_singleton().options,
+                _LogOptionsManager().read_singleton().generate_modified_defaults(
+                    _ConsoleLogManager().read_singleton().options,
                     log_level=_logging().INFO,
                 ),
-                _LogOptionsManager().get_singleton().generate_modified_defaults(
-                    _FileLogManager().get_singleton().options,
+                _LogOptionsManager().read_singleton().generate_modified_defaults(
+                    _FileLogManager().read_singleton().options,
                     log_level=_logging().INFO,
                 ),
             )
@@ -136,12 +136,12 @@ def _allocate():
         def log_warning(self, message):
             return self.log(
                 message,
-                _LogOptionsManager().get_singleton().generate_modified_defaults(
-                    _ConsoleLogManager().get_singleton().options,
+                _LogOptionsManager().read_singleton().generate_modified_defaults(
+                    _ConsoleLogManager().read_singleton().options,
                     log_level=_logging().WARNING,
                 ),
-                _LogOptionsManager().get_singleton().generate_modified_defaults(
-                    _FileLogManager().get_singleton().options,
+                _LogOptionsManager().read_singleton().generate_modified_defaults(
+                    _FileLogManager().read_singleton().options,
                     log_level=_logging().WARNING,
                 ),
             )
@@ -149,12 +149,12 @@ def _allocate():
         def log_error(self, message):
             return self.log(
                 message,
-                _LogOptionsManager().get_singleton().generate_modified_defaults(
-                    _ConsoleLogManager().get_singleton().options,
+                _LogOptionsManager().read_singleton().generate_modified_defaults(
+                    _ConsoleLogManager().read_singleton().options,
                     log_level=_logging().ERROR,
                 ),
-                _LogOptionsManager().get_singleton().generate_modified_defaults(
-                    _FileLogManager().get_singleton().options,
+                _LogOptionsManager().read_singleton().generate_modified_defaults(
+                    _FileLogManager().read_singleton().options,
                     log_level=_logging().ERROR,
                 ),
             )
@@ -162,12 +162,12 @@ def _allocate():
         def log_critical(self, message):
             return self.log(
                 message,
-                _LogOptionsManager().get_singleton().generate_modified_defaults(
-                    _ConsoleLogManager().get_singleton().options,
+                _LogOptionsManager().read_singleton().generate_modified_defaults(
+                    _ConsoleLogManager().read_singleton().options,
                     log_level=_logging().CRITICAL,
                 ),
-                _LogOptionsManager().get_singleton().generate_modified_defaults(
-                    _FileLogManager().get_singleton().options,
+                _LogOptionsManager().read_singleton().generate_modified_defaults(
+                    _FileLogManager().read_singleton().options,
                     log_level=_logging().CRITICAL,
                 ),
             )

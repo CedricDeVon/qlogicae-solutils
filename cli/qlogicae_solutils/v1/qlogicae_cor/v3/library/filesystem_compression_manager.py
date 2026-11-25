@@ -31,7 +31,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -54,33 +54,33 @@ def _allocate():
             )
 
             _os = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="os",
                 )
             )
             _re = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="re",
                 )
             )
             _tempfile = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="tempfile",
                 )
             )
             _zipfile = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="zipfile",
                 )
             )            
             _pathlib = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="pathlib",
                 )
             )
             _FilesystemCompressionDataManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(                    
                         path="qlogicae_cor.v3.library.filesystem_compression_data_manager",
                         member="FilesystemCompressionDataManager",
@@ -196,7 +196,7 @@ def _allocate():
 
             filesystem_compression_data_manager = (
                 _FilesystemCompressionDataManager()
-                    .get_singleton()
+                    .read_singleton()
             )
 
             normalized_type = compression_type.lower()

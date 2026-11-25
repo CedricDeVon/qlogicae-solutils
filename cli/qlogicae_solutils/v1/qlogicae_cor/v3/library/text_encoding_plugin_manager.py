@@ -27,7 +27,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -45,7 +45,7 @@ def _allocate():
             )
             _TextEncodingDataManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(                    
                         path="qlogicae_cor.v3.library.text_encoding_data_manager",
                         member="TextEncodingDataManager",
@@ -67,7 +67,7 @@ def _allocate():
         def export_plugin(self):
             text_encoding_data_manager = (
                 _TextEncodingDataManager()
-                    .get_singleton()
+                    .read_singleton()
             )
             
             return (

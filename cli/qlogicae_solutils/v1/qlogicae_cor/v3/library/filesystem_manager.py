@@ -30,7 +30,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -53,28 +53,28 @@ def _allocate():
             )
 
             _os = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="os",
                 )
             )
             _re = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="re",
                 )
             )
             _shutil = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="shutil",
                 )
             )
             _pathlib = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="pathlib",
                 )
             )
             _FilesystemDataManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(                    
                         path="qlogicae_cor.v3.library.filesystem_data_manager",
                         member="FilesystemDataManager",
@@ -83,7 +83,7 @@ def _allocate():
             )
             _TextEncodingDataManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(                    
                         path="qlogicae_cor.v3.library.text_encoding_data_manager",
                         member="TextEncodingDataManager",
@@ -171,7 +171,7 @@ def _allocate():
             )
             selected_encoding_type = (
                 _TextEncodingDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .read_selected_encoding_type()
             )
 
@@ -241,7 +241,7 @@ def _allocate():
 
             filesystem_data_manager = (
                 _FilesystemDataManager()
-                    .get_singleton()
+                    .read_singleton()
             )
             default_remove_excluded_filesystem_paths = (
                 filesystem_data_manager

@@ -27,7 +27,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -45,7 +45,7 @@ def _allocate():
             )
             _TimeZoneDataManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(                    
                         path="qlogicae_cor.v3.library.time_zone_data_manager",
                         member="TimeZoneDataManager",
@@ -67,7 +67,7 @@ def _allocate():
         def export_plugin(self):
             time_zone_data_manager = (
                 _TimeZoneDataManager()
-                    .get_singleton()
+                    .read_singleton()
             )
             
             return (

@@ -33,7 +33,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -69,28 +69,28 @@ def _allocate():
 
             _asyncio = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(
                         path="asyncio",
                     )
             )
             _threading = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(
                         path="threading",
                     )
             )
             _functools = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(
                         path="functools",
                     )
             )
             _concurrent_futures = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(
                         path="concurrent.futures",
                     )

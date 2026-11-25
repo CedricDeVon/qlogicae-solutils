@@ -26,7 +26,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -45,12 +45,12 @@ def _allocate():
             )
 
             _pathlib = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="pathlib",
                 )
             )
             _TextEncodingDataManager = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="qlogicae_cor.v3.library.text_encoding_data_manager",
                     member="TextEncodingDataManager",
                     is_member_callable=True,
@@ -74,7 +74,7 @@ def _allocate():
             with path.open(
                 mode="r",
                 encoding=_TextEncodingDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .read_selected_encoding_type(),
             ) as file:
                 return file.read() or ""
@@ -90,7 +90,7 @@ def _allocate():
             with path.open(
                 mode="w",
                 encoding=_TextEncodingDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .read_selected_encoding_type(),
             ) as file:
                 file.write(str(data))

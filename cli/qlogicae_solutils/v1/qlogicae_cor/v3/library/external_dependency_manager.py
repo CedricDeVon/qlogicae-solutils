@@ -56,7 +56,7 @@ def _allocate():
             self._import_targets = value
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 

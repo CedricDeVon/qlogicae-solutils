@@ -38,7 +38,7 @@ def _allocate():
                 self._database = None
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
             
@@ -56,26 +56,26 @@ def _allocate():
                 ExternalDependencyManager()
             )
             _dbm = (
-                _ExternalDependencyManager().get_singleton()
+                _ExternalDependencyManager().read_singleton()
                     .import_module(
                         path="dbm"
                     )
             )
             _pickle = (
-                _ExternalDependencyManager().get_singleton()
+                _ExternalDependencyManager().read_singleton()
                     .import_module(
                         path="pickle"
                     )
             )
             _time = (
-                _ExternalDependencyManager().get_singleton()
+                _ExternalDependencyManager().read_singleton()
                     .import_module(
                         path="time"
                     )
             )
             _PersistentCacheStorageDataManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(                    
                         path="qlogicae_cor.v3.library.persistent_cache_storage_data_manager",
                         member="PersistentCacheStorageDataManager",
@@ -94,7 +94,7 @@ def _allocate():
 
         def setup_properties(self, kwargs):
             persistent_cache_storage_data_manager = (
-                _PersistentCacheStorageDataManager().get_singleton()
+                _PersistentCacheStorageDataManager().read_singleton()
             )
             persistent_cache_storage_data_manager.write_setup_kwargs(kwargs)
             return True
@@ -111,7 +111,7 @@ def _allocate():
         def database_path(self):
             return (
                 _PersistentCacheStorageDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .read_root_database_path()
             )
 
@@ -124,7 +124,7 @@ def _allocate():
             self._ensure_closed()
             (
                 _PersistentCacheStorageDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .write_root_database_path(value)
             )
 
@@ -132,7 +132,7 @@ def _allocate():
         def create_missing(self):
             return (
                 _PersistentCacheStorageDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .read_root_create_missing()
             )
 
@@ -145,7 +145,7 @@ def _allocate():
             self._ensure_closed()
             (
                 _PersistentCacheStorageDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .write_root_create_missing(value)
             )
 
@@ -153,7 +153,7 @@ def _allocate():
         def lifespan_in_seconds(self):
             return (
                 _PersistentCacheStorageDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .read_root_lifespan_in_seconds()
             )
 
@@ -169,14 +169,14 @@ def _allocate():
                 )
             (
                 _PersistentCacheStorageDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .write_root_lifespan_in_seconds(float(value))
             )
         @property
         def file_mode(self):
             return (
                 _PersistentCacheStorageDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .read_root_file_mode()
             )
 
@@ -193,7 +193,7 @@ def _allocate():
             self._ensure_closed()
             (
                 _PersistentCacheStorageDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .write_root_file_mode(value)
             )
 
@@ -201,7 +201,7 @@ def _allocate():
         def key_encoding(self):
             return (
                 _PersistentCacheStorageDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .read_root_key_encoding()
             )
 
@@ -219,7 +219,7 @@ def _allocate():
                 ) from exception
             (
                 _PersistentCacheStorageDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .write_root_key_encoding(value)
             )
 
@@ -227,7 +227,7 @@ def _allocate():
         def pickle_protocol(self):
             return (
                 _PersistentCacheStorageDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .read_root_pickle_protocol()
             )
 
@@ -247,7 +247,7 @@ def _allocate():
                 )
             (
                 _PersistentCacheStorageDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .write_root_pickle_protocol(value)
             )
 
@@ -255,7 +255,7 @@ def _allocate():
         def auto_remove_expired(self):
             return (
                 _PersistentCacheStorageDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .read_root_auto_remove_expired()
             )
 
@@ -267,7 +267,7 @@ def _allocate():
                 )
             (
                 _PersistentCacheStorageDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .write_root_auto_remove_expired(value)
             )
 
@@ -275,7 +275,7 @@ def _allocate():
         def auto_remove_invalid(self):
             return (
                 _PersistentCacheStorageDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .read_root_auto_remove_invalid()
             )
 
@@ -287,7 +287,7 @@ def _allocate():
                 )
             (
                 _PersistentCacheStorageDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .write_root_auto_remove_invalid(value)
             )
 
@@ -295,7 +295,7 @@ def _allocate():
         def sync_on_write(self):
             return (
                 _PersistentCacheStorageDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .read_root_sync_on_write()
             )
 
@@ -307,7 +307,7 @@ def _allocate():
                 )
             (
                 _PersistentCacheStorageDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .write_sync_on_write(value)
             )
 
@@ -331,7 +331,7 @@ def _allocate():
                 return False
 
             persistent_cache_storage_data_manager = (
-                _PersistentCacheStorageDataManager().get_singleton()
+                _PersistentCacheStorageDataManager().read_singleton()
             )
             database_path = (
                 persistent_cache_storage_data_manager
@@ -362,7 +362,7 @@ def _allocate():
 
         def _sync_database(self, database):
             persistent_cache_storage_data_manager = (
-                _PersistentCacheStorageDataManager().get_singleton()
+                _PersistentCacheStorageDataManager().read_singleton()
             )
             sync_on_write = (
                 persistent_cache_storage_data_manager
@@ -377,7 +377,7 @@ def _allocate():
                     "'key_path' must be a string",
                 )
             persistent_cache_storage_data_manager = (
-                _PersistentCacheStorageDataManager().get_singleton()
+                _PersistentCacheStorageDataManager().read_singleton()
             )
             key_encoding = (
                 persistent_cache_storage_data_manager
@@ -389,7 +389,7 @@ def _allocate():
 
         def _decode_key(self, key_path):
             persistent_cache_storage_data_manager = (
-                _PersistentCacheStorageDataManager().get_singleton()
+                _PersistentCacheStorageDataManager().read_singleton()
             )
             key_encoding = (
                 persistent_cache_storage_data_manager
@@ -401,7 +401,7 @@ def _allocate():
 
         def _serialize(self, value):
             persistent_cache_storage_data_manager = (
-                _PersistentCacheStorageDataManager().get_singleton()
+                _PersistentCacheStorageDataManager().read_singleton()
             )
             pickle_protocol = (
                 persistent_cache_storage_data_manager
@@ -418,7 +418,7 @@ def _allocate():
 
         def _is_expired(self, created_at, current_time):
             persistent_cache_storage_data_manager = (
-                _PersistentCacheStorageDataManager().get_singleton()
+                _PersistentCacheStorageDataManager().read_singleton()
             )
             lifespan_in_seconds = (
                 persistent_cache_storage_data_manager
@@ -439,7 +439,7 @@ def _allocate():
             if encoded_key not in database:
                 return None
             persistent_cache_storage_data_manager = (
-                _PersistentCacheStorageDataManager().get_singleton()
+                _PersistentCacheStorageDataManager().read_singleton()
             )
             auto_remove_invalid = (
                 persistent_cache_storage_data_manager
@@ -513,7 +513,7 @@ def _allocate():
             current_time = _time().time()
             result = {}
             persistent_cache_storage_data_manager = (
-                _PersistentCacheStorageDataManager().get_singleton()
+                _PersistentCacheStorageDataManager().read_singleton()
             )
             auto_remove_invalid = (
                 persistent_cache_storage_data_manager
@@ -641,7 +641,7 @@ def _allocate():
             current_time = _time().time()
             removed = 0
             persistent_cache_storage_data_manager = (
-                _PersistentCacheStorageDataManager().get_singleton()
+                _PersistentCacheStorageDataManager().read_singleton()
             )
             auto_remove_invalid = (
                 persistent_cache_storage_data_manager

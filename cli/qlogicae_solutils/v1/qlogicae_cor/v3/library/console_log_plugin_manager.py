@@ -29,7 +29,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -50,7 +50,7 @@ def _allocate():
             )
             _LogOptions = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(                    
                         path="qlogicae_cor.v3.library.log_options",
                         member="LogOptions",
@@ -59,7 +59,7 @@ def _allocate():
             )
             _ConsoleLogManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(                    
                         path="qlogicae_cor.v3.library.console_log_manager",
                         member="ConsoleLogManager",
@@ -68,7 +68,7 @@ def _allocate():
             )
             _ConsoleLogDataManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(                    
                         path="qlogicae_cor.v3.library.console_log_data_manager",
                         member="ConsoleLogDataManager",
@@ -90,7 +90,7 @@ def _allocate():
         def export_plugin(self):
             console_log_data_manager = (
                 _ConsoleLogDataManager()
-                    .get_singleton()
+                    .read_singleton()
             )
             
             return (
@@ -101,7 +101,7 @@ def _allocate():
         def setup_plugin(self):            
             console_log_data_manager = (
                 _ConsoleLogDataManager()
-                    .get_singleton()
+                    .read_singleton()
             )
             
             plugin_data = (
@@ -122,7 +122,7 @@ def _allocate():
             if is_console_logging_enabled_data:
                 console_log_manager = (
                     _ConsoleLogManager()
-                        .get_singleton()
+                        .read_singleton()
                 )
 
                 result = (
@@ -144,7 +144,7 @@ def _allocate():
         def shutdown_plugin(self):                        
             console_log_data_manager = (
                 _ConsoleLogDataManager()
-                    .get_singleton()
+                    .read_singleton()
             )
             
             plugin_data = (
@@ -165,7 +165,7 @@ def _allocate():
             if is_console_logging_enabled_data:
                 console_log_manager = (
                     _ConsoleLogManager()
-                        .get_singleton()
+                        .read_singleton()
                 )
 
                 result = (

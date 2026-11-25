@@ -46,37 +46,37 @@ def main():
         WorkflowPluginManager,
     )
 
-    PluginManager().get_singleton().run({
+    PluginManager().read_singleton().run({
         "internal_objects": (
-            HardwarePluginManager().get_singleton(),
-            ConsoleNavigationPluginManager().get_singleton(),
-            BuildPluginManager().get_singleton(),
-            TimestampPluginManager().get_singleton(),
-            TimeZonePluginManager().get_singleton(),
-            PlaceholderPluginManager().get_singleton(),
-            TextEncodingPluginManager().get_singleton(),
-            ScriptProcessPluginManager().get_singleton(),
-            MacrosPluginManager().get_singleton(),
-            JsonIoPluginManager().get_singleton(),
-            TextIoPluginManager().get_singleton(),
-            FilesystemPluginManager().get_singleton(),
-            FilesystemMetadataPluginManager().get_singleton(),
-            FilesystemCompressionPluginManager().get_singleton(),
-            PersistentCacheStoragePluginManager().get_singleton(),
-            WorkflowPluginManager().get_singleton(),
-            ConsoleLogPluginManager().get_singleton(),
-            FileLogPluginManager().get_singleton(),
-            CommandPluginManager().get_singleton(),
+            HardwarePluginManager().read_singleton(),
+            ConsoleNavigationPluginManager().read_singleton(),
+            BuildPluginManager().read_singleton(),
+            TimestampPluginManager().read_singleton(),
+            TimeZonePluginManager().read_singleton(),
+            PlaceholderPluginManager().read_singleton(),
+            TextEncodingPluginManager().read_singleton(),
+            ScriptProcessPluginManager().read_singleton(),
+            MacrosPluginManager().read_singleton(),
+            JsonIoPluginManager().read_singleton(),
+            TextIoPluginManager().read_singleton(),
+            FilesystemPluginManager().read_singleton(),
+            FilesystemMetadataPluginManager().read_singleton(),
+            FilesystemCompressionPluginManager().read_singleton(),
+            PersistentCacheStoragePluginManager().read_singleton(),
+            WorkflowPluginManager().read_singleton(),
+            ConsoleLogPluginManager().read_singleton(),
+            FileLogPluginManager().read_singleton(),
+            CommandPluginManager().read_singleton(),
         ),
         "is_setup_enabled": False,
         "is_run_enabled": False,
         "is_shutdown_enabled": False,
     })
 
-    ValueCacheStorageManager().get_singleton().display_all_data()
+    ValueCacheStorageManager().read_singleton().display_all_data()
     # for item in (
     #     ExternalDependencyManager()
-    #         .get_singleton()
+    #         .read_singleton()
     #         .import_targets
     # ):
     #     print(item)

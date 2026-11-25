@@ -29,7 +29,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -49,29 +49,29 @@ def _allocate():
             )
 
             _re = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="re"
                 )
             )
             _pathlib = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="pathlib"
                 )
             )
             _collections_abc = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="collections.abc"
                 )
             )
             _MacrosDataManager = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="qlogicae_cor.v3.library.macros_data_manager",
                     member="MacrosDataManager",
                     is_member_callable=True
                 )
             )
             _TextEncodingDataManager = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="qlogicae_cor.v3.library.text_encoding_data_manager",
                     member="TextEncodingDataManager",
                     is_member_callable=True
@@ -98,7 +98,7 @@ def _allocate():
         def resolve_many(self, values):
             macros_data_manager = (
                 _MacrosDataManager()
-                    .get_singleton()
+                    .read_singleton()
             )
 
             selected_identifier_pattern = (
@@ -217,7 +217,7 @@ def _allocate():
             ]
             macros_data_manager = (
                 _MacrosDataManager()
-                    .get_singleton()
+                    .read_singleton()
             )
             selected_macros_pattern = (
                 macros_data_manager
@@ -298,7 +298,7 @@ def _allocate():
             if isinstance(value, str):
                 macros_data_manager = (
                     _MacrosDataManager()
-                        .get_singleton()
+                        .read_singleton()
                 )
                 selected_macros_pattern = (
                     macros_data_manager
@@ -369,7 +369,7 @@ def _allocate():
 
             text_encoding_data_manager = (
                 _TextEncodingDataManager()
-                    .get_singleton()
+                    .read_singleton()
             )
 
             for current_root, directories, files in root.walk(
@@ -450,4 +450,4 @@ def MacrosManager():
 
     return _MacrosManager
 
-# MacrosManager().get_singleton()
+# MacrosManager().read_singleton()

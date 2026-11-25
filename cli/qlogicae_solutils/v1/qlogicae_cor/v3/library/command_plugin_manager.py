@@ -28,7 +28,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -47,7 +47,7 @@ def _allocate():
             )
             _CommandManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(                    
                         path="qlogicae_cor.v3.library.command_manager",
                         member="CommandManager",
@@ -56,7 +56,7 @@ def _allocate():
             )
             _CommandDataManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(                    
                         path="qlogicae_cor.v3.library.command_data_manager",
                         member="CommandDataManager",
@@ -78,7 +78,7 @@ def _allocate():
         def export_plugin(self):
             command_data_manager = (
                 _CommandDataManager()
-                    .get_singleton()
+                    .read_singleton()
             )
             
             return (
@@ -89,11 +89,11 @@ def _allocate():
         def setup_plugin(self):
             command_data_manager = (
                 _CommandDataManager()
-                    .get_singleton()
+                    .read_singleton()
             )
             command_manager = (
                 _CommandManager()
-                    .get_singleton()
+                    .read_singleton()
             )
 
             result = True
@@ -110,11 +110,11 @@ def _allocate():
         def run_plugin(self):       
             command_data_manager = (
                 _CommandDataManager()
-                    .get_singleton()
+                    .read_singleton()
             )
             command_manager = (
                 _CommandManager()
-                    .get_singleton()
+                    .read_singleton()
             )
 
             result = True

@@ -27,7 +27,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -47,7 +47,7 @@ def _allocate():
             )
             _PluginDataManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(
                         path="qlogicae_cor.v3.library.plugin_data_manager",
                         member="PluginDataManager",
@@ -74,7 +74,7 @@ def _allocate():
 
             plugin_data_manager = (
                 _PluginDataManager()
-                    .get_singleton()
+                    .read_singleton()
             )
 
             plugin_data_manager.setup(
@@ -153,7 +153,6 @@ def _allocate():
             callback,
             is_reversed=False,
         ):
-
             if not callable(callback):
                 raise TypeError("")
 
@@ -162,7 +161,7 @@ def _allocate():
             
 
             plugin_data_manager = (
-                _PluginDataManager().get_singleton()
+                _PluginDataManager().read_singleton()
             )
             plugin_items = (
                 plugin_data_manager

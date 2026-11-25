@@ -27,7 +27,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -46,7 +46,7 @@ def _allocate():
             )
             _PersistentCacheStorageManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(                    
                         path="qlogicae_cor.v3.library.persistent_cache_storage_manager",
                         member="PersistentCacheStorageManager",
@@ -55,7 +55,7 @@ def _allocate():
             )
             _PersistentCacheStorageDataManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(                    
                         path="qlogicae_cor.v3.library.persistent_cache_storage_data_manager",
                         member="PersistentCacheStorageDataManager",
@@ -77,7 +77,7 @@ def _allocate():
         def export_plugin(self):
             persistent_cache_storage_data_manager = (
                 _PersistentCacheStorageDataManager()
-                    .get_singleton()
+                    .read_singleton()
             )
             
             return (
@@ -92,7 +92,7 @@ def _allocate():
         def run_plugin(self):
             persistent_cache_storage_manager = (
                 _PersistentCacheStorageManager()
-                    .get_singleton()
+                    .read_singleton()
             )
 
             result = True
@@ -105,7 +105,7 @@ def _allocate():
         def shutdown_plugin(self):
             persistent_cache_storage_manager = (
                 _PersistentCacheStorageManager()
-                    .get_singleton()
+                    .read_singleton()
             )
 
             result = True

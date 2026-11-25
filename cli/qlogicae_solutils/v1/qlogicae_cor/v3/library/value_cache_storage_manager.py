@@ -70,7 +70,7 @@ def _allocate():
             return True
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -391,7 +391,7 @@ def _allocate():
                 return False
 
             _json = (
-                _ExternalDependencyManager().get_singleton()
+                _ExternalDependencyManager().read_singleton()
                 .import_module(path="json")
             )
 
@@ -414,7 +414,7 @@ def _allocate():
             cache = self.read_specified_cache(typename)
 
             _json = (
-                _ExternalDependencyManager().get_singleton()
+                _ExternalDependencyManager().read_singleton()
                 .import_module(path="json")
             )
 

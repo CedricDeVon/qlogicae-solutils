@@ -32,7 +32,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -60,7 +60,7 @@ def _allocate():
         def current_second(self):
             return _datetime().now(
                 _TimeZoneManager()
-                    .get_singleton()
+                    .read_singleton()
                     .selected_time_zone,
             ).second
 
@@ -68,7 +68,7 @@ def _allocate():
         def current_minute(self):
             return _datetime().now(
                 _TimeZoneManager()
-                    .get_singleton()
+                    .read_singleton()
                     .selected_time_zone,
             ).minute
 
@@ -76,7 +76,7 @@ def _allocate():
         def current_hour(self):
             return _datetime().now(
                 _TimeZoneManager()
-                    .get_singleton()
+                    .read_singleton()
                     .selected_time_zone,
             ).hour
 
@@ -84,7 +84,7 @@ def _allocate():
         def current_day(self):
             return _datetime().now(
                 _TimeZoneManager()
-                    .get_singleton()
+                    .read_singleton()
                     .selected_time_zone,
             ).day
 
@@ -96,7 +96,7 @@ def _allocate():
         def current_month(self):
             return _datetime().now(
                 _TimeZoneManager()
-                    .get_singleton()
+                    .read_singleton()
                     .selected_time_zone,
             ).month
 
@@ -104,7 +104,7 @@ def _allocate():
         def current_year(self):
             return _datetime().now(
                 _TimeZoneManager()
-                    .get_singleton()
+                    .read_singleton()
                     .selected_time_zone,
             ).year
 
@@ -139,24 +139,24 @@ def _allocate():
             )
 
             _time = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="time",
                 )
             )
             _datetime = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="datetime",
                 )
             )
             _TimeUnit = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="qlogicae_cor.v3.library.time_unit",
                     member="TimeUnit",
                     is_member_callable=True,
                 )
             )
             _TimeZoneManager = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="qlogicae_cor.v3.library.time_zone_manager",
                     member="TimeZoneManager",
                     is_member_callable=True,

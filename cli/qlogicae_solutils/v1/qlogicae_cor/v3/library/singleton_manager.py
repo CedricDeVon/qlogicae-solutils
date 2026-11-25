@@ -21,7 +21,7 @@ def _allocate():
             return True
 
         @classmethod
-        def get_singleton(cls, constructor):
+        def read_singleton(cls, constructor):
             instance = cls._singletons.get(constructor)
 
             if instance is None:

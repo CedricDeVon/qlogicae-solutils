@@ -27,7 +27,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -44,7 +44,7 @@ def _allocate():
             )
             _CommandDataManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(
                         path="qlogicae_cor.v3.library.command_data_manager",
                         member="CommandDataManager",
@@ -69,7 +69,7 @@ def _allocate():
 
             command_data_manager = (
                 _CommandDataManager()
-                    .get_singleton()                    
+                    .read_singleton()                    
             )
 
             collection = (
@@ -86,7 +86,7 @@ def _allocate():
         def read_all_functions(self):
             command_data_manager = (
                 _CommandDataManager()
-                    .get_singleton()                    
+                    .read_singleton()                    
             )
 
             return (
@@ -102,7 +102,7 @@ def _allocate():
 
             command_data_manager = (
                 _CommandDataManager()
-                    .get_singleton()                    
+                    .read_singleton()                    
             )
 
             command = (
@@ -125,7 +125,7 @@ def _allocate():
 
             command_data_manager = (
                 _CommandDataManager()
-                    .get_singleton()                    
+                    .read_singleton()                    
             )
 
             command_data_manager.write_one_data(
@@ -141,7 +141,7 @@ def _allocate():
 
             command_data_manager = (
                 _CommandDataManager()
-                    .get_singleton()                    
+                    .read_singleton()                    
             )
 
             command_data_manager.remove_one_data(
@@ -162,7 +162,7 @@ def _allocate():
 
             command_data_manager = (
                 _CommandDataManager()
-                    .get_singleton()                    
+                    .read_singleton()                    
             )
 
             command = (
@@ -187,7 +187,7 @@ def _allocate():
         def setup_functions(self):
             command_data_manager = (
                 _CommandDataManager()
-                    .get_singleton()                    
+                    .read_singleton()                    
             )
             commands = (
                 command_data_manager.read_one_data(

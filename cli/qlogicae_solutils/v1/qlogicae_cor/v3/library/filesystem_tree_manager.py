@@ -27,7 +27,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -47,19 +47,19 @@ def _allocate():
             )
 
             _pathlib = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="pathlib",
                 )
             )
             _FileEntityFilesystemTreeSetupOptions = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="qlogicae_cor.v3.library.file_entity_filesystem_tree_setup_options",
                     member="FileEntityFilesystemTreeSetupOptions",
                     is_member_callable=True,
                 )
             )
             _FolderEntityFilesystemTreeSetupOptions = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="qlogicae_cor.v3.library.folder_entity_filesystem_tree_setup_options",
                     member="FolderEntityFilesystemTreeSetupOptions",
                     is_member_callable=True,

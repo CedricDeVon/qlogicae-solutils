@@ -40,7 +40,7 @@ def _allocate():
             self._root_key_path = value
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -77,7 +77,7 @@ def _allocate():
 
             _PluginDataManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(                    
                         path="qlogicae_cor.v3.library.plugin_data_manager",
                         member="PluginDataManager",
@@ -87,7 +87,7 @@ def _allocate():
 
             plugin_data_manager = (
                 _PluginDataManager()
-                    .get_singleton()
+                    .read_singleton()
             )
 
             return (
@@ -113,6 +113,14 @@ def _allocate():
                                 "modified_at",
                                 "accessed_at",
                             },
+                            "callbacks": {
+                                "on_pre_setup": None,
+                                "on_post_setup": None,
+                                "on_pre_run": None,
+                                "on_post_run": None,
+                                "on_pre_shutdown": None,
+                                "on_post_shutdown": None,
+                            },
                         }
                     })
             )
@@ -129,7 +137,7 @@ def _allocate():
         ):
             data = (
                 _PluginDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .read_all_data(
                         self._root_key_path
                     )
@@ -148,7 +156,7 @@ def _allocate():
             
             data = (
                 _PluginDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .read_one_data(
                         self._root_key_path,
                         key_path
@@ -166,7 +174,7 @@ def _allocate():
             result = True
             result = (
                 _PluginDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .write_all_data(
                         self._root_key_path,
                         value
@@ -188,7 +196,7 @@ def _allocate():
             result = True
             result = (
                 _PluginDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .write_one_data(
                         self._root_key_path,
                         key_path,
@@ -210,7 +218,7 @@ def _allocate():
             result = True
             result = (
                 _PluginDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .remove_one_data(
                         self._root_key_path,
                         key_path,
@@ -227,7 +235,7 @@ def _allocate():
             result = True
             result = (
                 _PluginDataManager()
-                    .get_singleton()
+                    .read_singleton()
                     .remove_all_data(
                         self._root_key_path,
                     ) and result

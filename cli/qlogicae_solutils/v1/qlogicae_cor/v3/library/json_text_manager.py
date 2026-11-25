@@ -26,7 +26,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -45,12 +45,12 @@ def _allocate():
             )
 
             _json = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="json",
                 )
             )
             _JsonIoDataManager = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="qlogicae_cor.v3.library.json_io_data_manager",
                     member="JsonIoDataManager",
                     is_member_callable=True,
@@ -78,7 +78,7 @@ def _allocate():
 
         def convert_to_string(self, value):
             json_io_data_manager = (
-                _JsonIoDataManager().get_singleton()
+                _JsonIoDataManager().read_singleton()
             )
 
             result = _json().dumps(

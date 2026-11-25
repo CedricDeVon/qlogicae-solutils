@@ -31,7 +31,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -53,7 +53,7 @@ def _allocate():
             )
             _HardwareDataManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(                    
                         path="qlogicae_cor.v3.library.hardware_data_manager",
                         member="HardwareDataManager",
@@ -62,7 +62,7 @@ def _allocate():
             )
             _ScriptProcessManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(                    
                         path="qlogicae_cor.v3.library.script_process_manager",
                         member="ScriptProcessManager",
@@ -71,7 +71,7 @@ def _allocate():
             )
             _ScriptProcessDelayManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(                    
                         path="qlogicae_cor.v3.library.script_process_delay_manager",
                         member="ScriptProcessDelayManager",
@@ -80,7 +80,7 @@ def _allocate():
             )            
             _WorkflowDataManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(                    
                         path="qlogicae_cor.v3.library.workflow_data_manager",
                         member="WorkflowDataManager",
@@ -89,7 +89,7 @@ def _allocate():
             )
             _CommandDataManager = (
                 _ExternalDependencyManager()
-                    .get_singleton()
+                    .read_singleton()
                     .import_module(                    
                         path="qlogicae_cor.v3.library.command_data_manager",
                         member="CommandDataManager",
@@ -124,7 +124,7 @@ def _allocate():
 
             workflow_data_manager = (
                 _WorkflowDataManager()
-                    .get_singleton()
+                    .read_singleton()
             )
             root_data = (
                 workflow_data_manager
@@ -146,7 +146,7 @@ def _allocate():
 
             command_data_manager = (
                 _CommandDataManager()
-                    .get_singleton()
+                    .read_singleton()
             )
 
             functions = (
@@ -203,7 +203,7 @@ def _allocate():
                 ):
                     hardware_data_manager = (
                         _HardwareDataManager()
-                            .get_singleton()
+                            .read_singleton()
                     )
                     current_platform = (
                         hardware_data_manager.read_platform()
@@ -249,7 +249,7 @@ def _allocate():
                 if workflow_selection_delay:
                     script_process_delay_manager = (
                         _ScriptProcessDelayManager()
-                            .get_singleton()
+                            .read_singleton()
                     )
 
                     script_process_delay_manager.delay_process(
@@ -291,7 +291,7 @@ def _allocate():
                     ):
                         hardware_data_manager = (
                             _HardwareDataManager()
-                                .get_singleton()
+                                .read_singleton()
                         )
                         current_platform (
                             hardware_data_manager.read_platform()
@@ -336,7 +336,7 @@ def _allocate():
                     if workflow_selection_job_delay:
                         script_process_delay_manager = (
                             _ScriptProcessDelayManager()
-                                .get_singleton()
+                                .read_singleton()
                         )
 
                         script_process_delay_manager.delay_process(
@@ -401,7 +401,7 @@ def _allocate():
                     else:                        
                         script_process_manager = (
                             _ScriptProcessManager()
-                                .get_singleton()
+                                .read_singleton()
                         )
 
                         workflow_selection_job_process = (

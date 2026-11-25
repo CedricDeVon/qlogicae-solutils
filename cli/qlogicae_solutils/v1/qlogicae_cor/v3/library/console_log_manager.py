@@ -33,7 +33,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -62,26 +62,26 @@ def _allocate():
             )
 
             _logging = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="logging",
                 )
             )
             _LogFormat = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="qlogicae_cor.v3.library.log_format",
                     member="LogFormat",
                     is_member_callable=True,
                 )
             )
             _LogOptions = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="qlogicae_cor.v3.library.log_options",
                     member="LogOptions",
                     is_member_callable=True,
                 )
             )
             _LogOptionsManager = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="qlogicae_cor.v3.library.log_options_manager",
                     member="LogOptionsManager",
                     is_member_callable=True,
@@ -139,7 +139,7 @@ def _allocate():
             return self.log(
                 message,
                 _LogOptionsManager()
-                    .get_singleton().generate_modified_defaults(
+                    .read_singleton().generate_modified_defaults(
                         self._options,
                         log_level=_logging().DEBUG,
                     ),
@@ -149,7 +149,7 @@ def _allocate():
             return self.log(
                 message,
                 _LogOptionsManager()
-                    .get_singleton().generate_modified_defaults(
+                    .read_singleton().generate_modified_defaults(
                         self._options,
                         log_level=_logging().INFO,
                     ),
@@ -159,7 +159,7 @@ def _allocate():
             return self.log(
                 message,
                 _LogOptionsManager()
-                    .get_singleton().generate_modified_defaults(
+                    .read_singleton().generate_modified_defaults(
                         self._options,
                         log_level=_logging().WARNING,
                     ),
@@ -169,7 +169,7 @@ def _allocate():
             return self.log(
                 message,
                 _LogOptionsManager()
-                    .get_singleton().generate_modified_defaults(
+                    .read_singleton().generate_modified_defaults(
                         self._options,
                         log_level=_logging().ERROR,
                     ),
@@ -179,7 +179,7 @@ def _allocate():
             return self.log(
                 message,
                 _LogOptionsManager()
-                    .get_singleton().generate_modified_defaults(
+                    .read_singleton().generate_modified_defaults(
                         self._options,
                         log_level=_logging().CRITICAL,
                     ),

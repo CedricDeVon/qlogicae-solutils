@@ -31,7 +31,7 @@ def _allocate():
             self.shutdown()
 
         @classmethod
-        def get_singleton(cls):
+        def read_singleton(cls):
             if cls._singleton is None:
                 cls._singleton = cls()
 
@@ -58,14 +58,14 @@ def _allocate():
             )
 
             _TimeManager = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="qlogicae_cor.v3.library.time_manager",
                     member="TimeManager",
                     is_member_callable=True,
                 )
             )
             _TimeUnit = (
-                _ExternalDependencyManager().get_singleton().import_module(
+                _ExternalDependencyManager().read_singleton().import_module(
                     path="qlogicae_cor.v3.library.time_unit",
                     member="TimeUnit",
                     is_member_callable=True,
@@ -88,14 +88,14 @@ def _allocate():
 
         def start_time(self):
             self._start_timestamp = (
-                _TimeManager().get_singleton().current_nanosecond
+                _TimeManager().read_singleton().current_nanosecond
             )
 
             return True
 
         def stop_time(self):
             self._stop_timestamp = (
-                _TimeManager().get_singleton().current_nanosecond
+                _TimeManager().read_singleton().current_nanosecond
             )
 
             return True
@@ -108,7 +108,7 @@ def _allocate():
 
         def reset_time(self):
             self._start_timestamp = (
-                _TimeManager().get_singleton().current_nanosecond
+                _TimeManager().read_singleton().current_nanosecond
             )
             self._stop_timestamp = 0
 
@@ -119,7 +119,7 @@ def _allocate():
                 time_unit = _TimeUnit().SECOND
 
             TimeManager = (
-                _TimeManager().get_singleton()
+                _TimeManager().read_singleton()
             )
 
             value = (
@@ -135,7 +135,7 @@ def _allocate():
             if time_unit is None:
                 time_unit = _TimeUnit().SECOND
 
-            value = _TimeManager().get_singleton().convert_time_unit(
+            value = _TimeManager().read_singleton().convert_time_unit(
                 self._stop_timestamp - self._start_timestamp,
                 output_time_unit=time_unit,
             )
