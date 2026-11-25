@@ -2,10 +2,11 @@ __all__ = (
     "LogFormat",
 )
 
-_logging = None
-_TimestampManager = None
 _LogFormat = None
 _ExternalDependencyManager = None
+
+_logging = None
+_TimestampManager = None
 
 
 def _allocate():

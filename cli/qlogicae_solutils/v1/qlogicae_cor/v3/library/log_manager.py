@@ -2,12 +2,13 @@ __all__ = (
     "LogManager",
 )
 
-_logging = None
-_ConsoleLogManager = None
-_FileLogManager = None
-_LogOptionsManager = None
 _LogManager = None
 _ExternalDependencyManager = None
+
+_logging = None
+_FileLogManager = None
+_ConsoleLogManager = None
+_LogOptionsManager = None
 
 
 def _allocate():
@@ -35,9 +36,10 @@ def _allocate():
 
         def construct(self):
             global _ExternalDependencyManager
+
             global _logging
-            global _ConsoleLogManager
             global _FileLogManager
+            global _ConsoleLogManager
             global _LogOptionsManager
 
             from .external_dependency_manager import ExternalDependencyManager
@@ -75,8 +77,8 @@ def _allocate():
 
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
 
             return True

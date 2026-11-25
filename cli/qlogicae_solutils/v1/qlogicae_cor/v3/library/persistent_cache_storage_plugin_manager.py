@@ -57,7 +57,7 @@ def _allocate():
                 _ExternalDependencyManager()
                     .get_singleton()
                     .import_module(                    
-                        path="qlogicae_cor.v3.library.persistent_cache_data_storage_manager",
+                        path="qlogicae_cor.v3.library.persistent_cache_storage_data_manager",
                         member="PersistentCacheStorageDataManager",
                         is_member_callable=True,
                     )
@@ -65,8 +65,8 @@ def _allocate():
 
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
 
             return True
@@ -75,37 +75,18 @@ def _allocate():
             return True
 
         def export_plugin(self):
-            persistent_cache_data_storage_manager = (
+            persistent_cache_storage_data_manager = (
                 _PersistentCacheStorageDataManager()
                     .get_singleton()
             )
             
             return (
-                persistent_cache_data_storage_manager
+                persistent_cache_storage_data_manager
                     .setup_plugin_data()
             )
 
         def setup_plugin(self):    
-            persistent_cache_storage_manager = (
-                _PersistentCacheStorageManager()
-                    .get_singleton()
-            )
-            persistent_cache_data_storage_manager = (
-                _PersistentCacheStorageDataManager()
-                    .get_singleton()
-            )
-
             result = True
-            result = (
-                persistent_cache_storage_manager
-                    .setup(
-                        **(
-                            persistent_cache_data_storage_manager
-                                .read_root_data()
-                        )
-                    ) and result
-            )
-
             return result
 
         def run_plugin(self):

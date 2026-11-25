@@ -2,10 +2,11 @@ __all__ = (
     "LogOptionsManager",
 )
 
-_logging = None
-_LogOptions = None
 _LogOptionsManager = None
 _ExternalDependencyManager = None
+
+_logging = None
+_LogOptions = None
 
 
 def _allocate():
@@ -33,6 +34,7 @@ def _allocate():
 
         def construct(self):
             global _ExternalDependencyManager
+
             global _logging
             global _LogOptions
 

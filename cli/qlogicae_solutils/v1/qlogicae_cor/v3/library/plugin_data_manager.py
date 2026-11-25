@@ -30,6 +30,11 @@ def _allocate():
         def __exit__(self, exc_type, exc_value, traceback):
             self.shutdown()
 
+        def read_plugin_items(self):
+            return (
+                self._plugin_items
+            )
+
         @property
         def plugin_items(self):
             return self._plugin_items
@@ -91,7 +96,7 @@ def _allocate():
                     )
             )
 
-            self._plugin_items = tuple()
+            self._plugin_items = []
 
             return True
 
@@ -244,10 +249,10 @@ def _allocate():
                     merged_plugin_export_data
                 )
 
-            self._plugin_items = (
+            self._plugin_items = [
                 plugin_item[0]
                 for plugin_item in plugin_items
-            )
+            ]
 
             return True
 

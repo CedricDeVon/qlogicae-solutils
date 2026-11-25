@@ -2,12 +2,15 @@ __all__ = (
     "FilesystemManager",
 )
 
+_FilesystemManager = None
+_ExternalDependencyManager = None
+
 _os = None
 _re = None
 _shutil = None
 _pathlib = None
-_FilesystemManager = None
-_ExternalDependencyManager = None
+_FilesystemDataManager = None
+_TextEncodingDataManager = None
 
 
 def _allocate():
@@ -35,10 +38,13 @@ def _allocate():
 
         def construct(self):
             global _ExternalDependencyManager
+
             global _os
             global _re
             global _shutil
             global _pathlib
+            global _FilesystemDataManager
+            global _TextEncodingDataManager
 
             from .external_dependency_manager import ExternalDependencyManager
 
@@ -66,11 +72,29 @@ def _allocate():
                     path="pathlib",
                 )
             )
+            _FilesystemDataManager = (
+                _ExternalDependencyManager()
+                    .get_singleton()
+                    .import_module(                    
+                        path="qlogicae_cor.v3.library.filesystem_data_manager",
+                        member="FilesystemDataManager",
+                        is_member_callable=True,
+                    )
+            )
+            _TextEncodingDataManager = (
+                _ExternalDependencyManager()
+                    .get_singleton()
+                    .import_module(                    
+                        path="qlogicae_cor.v3.library.text_encoding_data_manager",
+                        member="TextEncodingDataManager",
+                        is_member_callable=True,
+                    )
+            )
 
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
                 
             return True
@@ -132,7 +156,7 @@ def _allocate():
             result = _pathlib().Path(value).is_dir()
             return result
 
-        def create_files(self, **kwargs):
+        def create_files(self, kwargs):
             if not isinstance(kwargs, dict) or not kwargs:
                 raise ValueError("")
 
@@ -145,10 +169,11 @@ def _allocate():
                 "is_overwrite_enabled",
                 False
             )
-            encoding = kwargs.get(
-                "encoding",
-                "utf-8"
-            ) or "utf-8"
+            selected_encoding_type = (
+                _TextEncodingDataManager()
+                    .get_singleton()
+                    .read_selected_encoding_type()
+            )
 
             if not target_filesystem_paths:
                 raise ValueError("")
@@ -175,12 +200,14 @@ def _allocate():
 
                 path.write_text(
                     content,
-                    encoding=encoding
+                    encoding=(
+                        selected_encoding_type
+                    )
                 )
             
             return True
 
-        def create_folders(self, **kwargs):
+        def create_folders(self, kwargs):
             if not isinstance(kwargs, dict) or not kwargs:
                 raise ValueError("")
 
@@ -203,14 +230,27 @@ def _allocate():
             
             return True
 
-        def remove_paths(self, **kwargs):
+        def remove_paths(self, kwargs):
             if not isinstance(kwargs, dict) or not kwargs:
                 raise ValueError("")
 
             target_filesystem_paths = kwargs.get("target_filesystem_paths", ()) or ()
-            target_regex_patterns = kwargs.get("target_regex_patterns", ()) or ()
             excluded_filesystem_paths = kwargs.get("excluded_filesystem_paths", ()) or ()
+            target_regex_patterns = kwargs.get("target_regex_patterns", ()) or ()
             excluded_regex_patterns = kwargs.get("excluded_regex_patterns", ()) or ()
+
+            filesystem_data_manager = (
+                _FilesystemDataManager()
+                    .get_singleton()
+            )
+            default_remove_excluded_filesystem_paths = (
+                filesystem_data_manager
+                    .read_default_remove_excluded_filesystem_paths()
+            )
+            excluded_filesystem_paths = (
+                tuple(default_remove_excluded_filesystem_paths) +
+                tuple(excluded_filesystem_paths)
+            )
 
             if not target_filesystem_paths:
                 raise ValueError("")
@@ -227,15 +267,6 @@ def _allocate():
 
             target_patterns = tuple(_re().compile(pattern) for pattern in target_regex_patterns)
             excluded_patterns = tuple(_re().compile(pattern) for pattern in excluded_regex_patterns)
-
-            def absolute_path(value):
-                return _pathlib().Path(_os().path.abspath(_os().fspath(value)))
-
-            current_path = absolute_path(_pathlib().Path.cwd())
-            excluded_paths = {
-                current_path,
-                *(absolute_path(path) for path in excluded_filesystem_paths),
-            }
 
             def is_within(path, parent):
                 return path == parent or path.is_relative_to(parent)
@@ -307,7 +338,7 @@ def _allocate():
 
             return True
 
-        def move_path(self, **kwargs):
+        def move_path(self, kwargs):
             if not isinstance(kwargs, dict) or not kwargs:
                 raise ValueError("")
 
@@ -406,7 +437,7 @@ def _allocate():
 
             return True
 
-        def copy_paths(self, **kwargs):
+        def copy_paths(self, kwargs):
             if not isinstance(kwargs, dict) or not kwargs:
                 raise ValueError("")
 
@@ -514,7 +545,7 @@ def _allocate():
 
             return True
 
-        def list_paths(self, **kwargs):
+        def list_paths(self, kwargs):
             if not isinstance(kwargs, dict) or not kwargs:
                 raise ValueError("")
 

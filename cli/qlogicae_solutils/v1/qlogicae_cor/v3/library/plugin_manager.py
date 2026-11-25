@@ -133,7 +133,7 @@ def _allocate():
                 )
             )
 
-        def run_plugins(self):
+        def run_plugins(self):            
             return (
                 self.run_method_plugins(
                     self.run_plugin
@@ -153,20 +153,21 @@ def _allocate():
             callback,
             is_reversed=False,
         ):
+
             if not callable(callback):
                 raise TypeError("")
 
             if not isinstance(is_reversed, (bool)):
                 raise TypeError("")
+            
 
             plugin_data_manager = (
                 _PluginDataManager().get_singleton()
             )
             plugin_items = (
                 plugin_data_manager
-                    .plugin_items
+                    .read_plugin_items()
             )
-
             if not plugin_items:
                 return True
 
@@ -176,7 +177,9 @@ def _allocate():
                 if is_reversed
                 else plugin_items
             )
+
             for plugin_item in plugin_items:
+
                 if not plugin_item:
                     raise TypeError("")
 
@@ -185,6 +188,7 @@ def _allocate():
                         plugin_item
                     )
                 )
+
  
             return result
 
@@ -241,6 +245,7 @@ def _allocate():
             if not isinstance(method_name, (str)):
                 raise TypeError("")
 
+
             result = True
             plugin_method = (
                 getattr(
@@ -249,6 +254,7 @@ def _allocate():
                     None
                 ) or None
             )
+
             if plugin_method:
                 if not callable(plugin_method):
                     raise TypeError("")

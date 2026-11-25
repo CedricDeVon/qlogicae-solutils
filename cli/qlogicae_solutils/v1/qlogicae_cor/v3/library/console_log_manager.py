@@ -102,14 +102,17 @@ def _allocate():
 
             return True
 
-        def setup(self, **kwargs):
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
+                return True
+
             self._options = (
                 kwargs.get(
                     "options",
                     _LogOptions()()
                 ) or _LogOptions()()
             )
-
+            
             return True
 
         def shutdown(self):

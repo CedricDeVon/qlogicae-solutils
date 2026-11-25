@@ -128,6 +128,13 @@ def _allocate():
                     })
             )
 
+        def read_functions(self):
+            return (
+                self.read_one_data(
+                    ("functions",)
+                )
+            )
+
         def read_all_data(
             self
         ):

@@ -2,11 +2,12 @@ __all__ = (
     "FilesystemTreeManager",
 )
 
+_FilesystemTreeManager = None
+_ExternalDependencyManager = None
+
 _pathlib = None
 _FileEntityFilesystemTreeSetupOptions = None
 _FolderEntityFilesystemTreeSetupOptions = None
-_FilesystemTreeManager = None
-_ExternalDependencyManager = None
 
 
 def _allocate():
@@ -34,6 +35,7 @@ def _allocate():
 
         def construct(self):
             global _ExternalDependencyManager
+
             global _pathlib
             global _FileEntityFilesystemTreeSetupOptions
             global _FolderEntityFilesystemTreeSetupOptions
@@ -66,8 +68,8 @@ def _allocate():
 
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
                 
             return True

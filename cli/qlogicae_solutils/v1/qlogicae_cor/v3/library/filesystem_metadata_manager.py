@@ -2,14 +2,16 @@ __all__ = (
     "FilesystemMetadataManager",
 )
 
-_datetime = None
-_json = None
-_re = None
-_stat = None
-_pathlib = None
-_FilesystemMetadata = None
 _FilesystemMetadataManager = None
 _ExternalDependencyManager = None
+
+_re = None
+_json = None
+_stat = None
+_pathlib = None
+_datetime = None
+_FilesystemMetadata = None
+_FilesystemMetadataDataManager = None
 
 
 def _allocate():
@@ -17,10 +19,7 @@ def _allocate():
     global _FilesystemMetadataManager
 
     class __FilesystemMetadataManager:
-        __slots__ = (
-            "_property_names",
-            "_size_units",
-        )
+        __slots__ = ()
 
         _singleton = None
 
@@ -42,12 +41,14 @@ def _allocate():
 
         def construct(self):
             global _ExternalDependencyManager
+
+            global _re
+            global _json
+            global _stat
             global _pathlib
             global _datetime
-            global _json
-            global _re
-            global _stat
             global _FilesystemMetadata
+            global _FilesystemMetadataDataManager
 
             from .external_dependency_manager import ExternalDependencyManager
 
@@ -87,98 +88,20 @@ def _allocate():
                     is_member_callable=True
                 )
             )
-
-            self._property_names = {
-                "path",
-                "name",
-                "type",
-                "size",
-                "permissions",
-                "mode",
-                "owner_id",
-                "group_id",
-                "hard_links",
-                "device_id",
-                "inode",
-                "created_at",
-                "changed_at",
-                "modified_at",
-                "accessed_at",
-            }
-
-            self._size_units = {
-                "b": 1 / 8,
-                "bit": 1 / 8,
-                "bits": 1 / 8,
-                "B": 1,
-                "byte": 1,
-                "bytes": 1,
-                "kb": 1000 / 8,
-                "kilobit": 1000 / 8,
-                "kilobits": 1000 / 8,
-                "kB": 1000,
-                "kilobyte": 1000,
-                "kilobytes": 1000,
-                "Mb": 1000 ** 2 / 8,
-                "megabit": 1000 ** 2 / 8,
-                "megabits": 1000 ** 2 / 8,
-                "MB": 1000 ** 2,
-                "megabyte": 1000 ** 2,
-                "megabytes": 1000 ** 2,
-                "Gb": 1000 ** 3 / 8,
-                "gigabit": 1000 ** 3 / 8,
-                "gigabits": 1000 ** 3 / 8,
-                "GB": 1000 ** 3,
-                "gigabyte": 1000 ** 3,
-                "gigabytes": 1000 ** 3,
-                "Tb": 1000 ** 4 / 8,
-                "terabit": 1000 ** 4 / 8,
-                "terabits": 1000 ** 4 / 8,
-                "TB": 1000 ** 4,
-                "terabyte": 1000 ** 4,
-                "terabytes": 1000 ** 4,
-                "Pb": 1000 ** 5 / 8,
-                "petabit": 1000 ** 5 / 8,
-                "petabits": 1000 ** 5 / 8,
-                "PB": 1000 ** 5,
-                "petabyte": 1000 ** 5,
-                "petabytes": 1000 ** 5,
-                "Kib": 1024 / 8,
-                "kibibit": 1024 / 8,
-                "kibibits": 1024 / 8,
-                "KiB": 1024,
-                "kibibyte": 1024,
-                "kibibytes": 1024,
-                "Mib": 1024 ** 2 / 8,
-                "mebibit": 1024 ** 2 / 8,
-                "mebibits": 1024 ** 2 / 8,
-                "MiB": 1024 ** 2,
-                "mebibyte": 1024 ** 2,
-                "mebibytes": 1024 ** 2,
-                "Gib": 1024 ** 3 / 8,
-                "gibibit": 1024 ** 3 / 8,
-                "gibibits": 1024 ** 3 / 8,
-                "GiB": 1024 ** 3,
-                "gibibyte": 1024 ** 3,
-                "gibibytes": 1024 ** 3,
-                "Tib": 1024 ** 4 / 8,
-                "tebibit": 1024 ** 4 / 8,
-                "tebibits": 1024 ** 4 / 8,
-                "TiB": 1024 ** 4,
-                "tebibyte": 1024 ** 4,
-                "tebibytes": 1024 ** 4,
-                "Pib": 1024 ** 5 / 8,
-                "pebibit": 1024 ** 5 / 8,
-                "pebibits": 1024 ** 5 / 8,
-                "PiB": 1024 ** 5,
-                "pebibyte": 1024 ** 5,
-                "pebibytes": 1024 ** 5,
-            }
+            _FilesystemMetadataDataManager = (
+                _ExternalDependencyManager()
+                    .get_singleton()
+                    .import_module(                    
+                        path="qlogicae_cor.v3.library.filesystem_metadata_data_manager",
+                        member="FilesystemMetadataDataManager",
+                        is_member_callable=True,
+                    )
+            )
 
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
                 
             return True
@@ -208,22 +131,15 @@ def _allocate():
                 status_change_time=stat.st_ctime,
             )
 
-        def read_data(self, **kwargs):
+        def read_data(
+            self,
+            target_filesystem_path,
+            target_regex_patterns,
+            properties,
+        ):
             if not isinstance(kwargs, dict) or not kwargs:
                 raise ValueError("")
         
-            target_filesystem_path = kwargs.get(
-                "target_filesystem_path"
-            )
-            target_regex_patterns = kwargs.get(
-                "target_regex_patterns",
-                ()
-            )
-            properties = kwargs.get(
-                "properties",
-                ()
-            )
-
             if not target_filesystem_path:
                 raise ValueError("")
 
@@ -234,7 +150,16 @@ def _allocate():
                 properties = (properties,)            
 
             if properties:
-                invalid_properties = set(properties) - self._property_names
+                filesystem_metadata_data_manager = (
+                    _FilesystemMetadataDataManager()
+                        .get_singleton()
+                )
+                property_names = (
+                    filesystem_metadata_data_manager
+                        .read_property_names()
+                )
+
+                invalid_properties = set(properties) - property_names
 
                 if invalid_properties:
                     raise ValueError("")
@@ -354,20 +279,11 @@ def _allocate():
                 )
             )
 
-        def read_size(self, **kwargs):
-            if not isinstance(kwargs, dict) or not kwargs:
-                raise ValueError("")
-
-            target_filesystem_paths = kwargs.get(
-                "target_filesystem_paths",
-                ()
-            ) or ()
-            target_regex_patterns = kwargs.get(
-                "target_regex_patterns",
-                ()
-            ) or ()
-            unit = kwargs.get("unit", "B") or "B"
-
+        def read_size(
+            self,
+            target_filesystem_paths,
+            target_regex_patterns,
+        ):
             if not target_filesystem_paths:
                 raise ValueError("")
 
@@ -376,9 +292,6 @@ def _allocate():
 
             if isinstance(target_regex_patterns, str):
                 target_regex_patterns = (target_regex_patterns,)
-
-            if unit not in self._size_units:
-                raise ValueError("")
 
             compiled_patterns = tuple(
                 _re().compile(pattern)
@@ -419,25 +332,14 @@ def _allocate():
 
                     total_size += path.stat().st_size
 
-            result = total_size / self._size_units.get(
-                unit,
-                1
-            ) or 1
+            return total_size
 
-            return result
-
-        def run_filesystem_count_command(self, **kwargs):
+        def run_filesystem_count_command(self,
+            target_filesystem_paths,
+            target_regex_patterns,
+        ):
             if not isinstance(kwargs, object) or not kwargs:
                 raise ValueError("")
-
-            target_filesystem_paths = kwargs.get(
-                "target_filesystem_paths",
-                ()
-            ) or ()
-            target_regex_patterns = kwargs.get(
-                "target_regex_patterns",
-                ()
-            ) or ()
 
             if not target_filesystem_paths:
                 raise ValueError("")

@@ -7,7 +7,6 @@ _ExternalDependencyManager = None
 
 _LogOptions = None
 _FileLogManager = None
-_PluginDataManager = None
 _FileLogDataManager = None
 
 
@@ -41,7 +40,6 @@ def _allocate():
             
             global _LogOptions
             global _FileLogManager
-            global _PluginDataManager
             global _FileLogDataManager
         
 
@@ -49,15 +47,6 @@ def _allocate():
 
             _ExternalDependencyManager = (
                 ExternalDependencyManager()
-            )
-            _PluginDataManager = (
-                _ExternalDependencyManager()
-                    .get_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.plugin_data_manager",
-                        member="PluginDataManager",
-                        is_member_callable=True,
-                    )
             )
             _LogOptions = (
                 _ExternalDependencyManager()
@@ -89,8 +78,8 @@ def _allocate():
 
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
 
             return True
@@ -109,22 +98,15 @@ def _allocate():
                     .setup_plugin_data()
             )
 
-        def setup_plugin(self):
-            plugin_data_manager = (
-                _PluginDataManager()
-                    .get_singleton()
-            )
+        def setup_plugin(self):            
             file_log_data_manager = (
                 _FileLogDataManager()
                     .get_singleton()
             )
             
             plugin_data = (
-                plugin_data_manager
-                    .read_all_data(
-                        file_log_data_manager
-                            .root_key_path        
-                    )
+                file_log_data_manager
+                    .read_all_data()
             )
             if not plugin_data:
                 return True
@@ -135,6 +117,8 @@ def _allocate():
                     False
                 )
             )
+
+            result = True
             if is_file_logging_enabled_data:
                 file_log_manager = (
                     _FileLogManager()
@@ -143,11 +127,11 @@ def _allocate():
 
                 result = (
                     file_log_manager
-                        .setup(
-                            options=_LogOptions()(
+                        .setup({
+                            "options": _LogOptions()(
                                 **plugin_data
                             )
-                        ) and result
+                        }) and result
                 )
 
             return result
@@ -157,22 +141,15 @@ def _allocate():
             return result
 
 
-        def shutdown_plugin(self):            
-            plugin_data_manager = (
-                _PluginDataManager()
-                    .get_singleton()
-            )
+        def shutdown_plugin(self):                        
             file_log_data_manager = (
                 _FileLogDataManager()
                     .get_singleton()
             )
             
             plugin_data = (
-                plugin_data_manager
-                    .read_all_data(
-                        file_log_data_manager
-                            .root_key_path        
-                    )
+                file_log_data_manager
+                    .read_all_data()
             )
             if not plugin_data:
                 return True
@@ -183,6 +160,8 @@ def _allocate():
                     False
                 )
             )
+
+            result = True
             if is_file_logging_enabled_data:
                 file_log_manager = (
                     _FileLogManager()

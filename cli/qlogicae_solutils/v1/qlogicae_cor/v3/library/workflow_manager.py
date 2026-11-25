@@ -5,7 +5,8 @@ __all__ = (
 _WorkflowManager = None
 _ExternalDependencyManager = None
 
-_SystemManager = None
+_CommandDataManager = None
+_HardwareDataManager = None
 _WorkflowDataManager = None
 _ScriptProcessManager = None
 _ScriptProcessDelayManager = None
@@ -39,9 +40,10 @@ def _allocate():
         def construct(self):
             global _ExternalDependencyManager
 
-            global _SystemManager
-            global _ScriptProcessManager
+            global _CommandDataManager
+            global _HardwareDataManager
             global _WorkflowDataManager
+            global _ScriptProcessManager
             global _ScriptProcessDelayManager
 
             from .external_dependency_manager import ExternalDependencyManager
@@ -49,12 +51,12 @@ def _allocate():
             _ExternalDependencyManager = (
                 ExternalDependencyManager()
             )
-            _SystemManager = (
+            _HardwareDataManager = (
                 _ExternalDependencyManager()
                     .get_singleton()
                     .import_module(                    
-                        path="qlogicae_cor.v3.library.system_manager",
-                        member="SystemManager",
+                        path="qlogicae_cor.v3.library.hardware_data_manager",
+                        member="HardwareDataManager",
                         is_member_callable=True,
                     )
             )
@@ -85,39 +87,52 @@ def _allocate():
                         is_member_callable=True,
                     )
             )
-
+            _CommandDataManager = (
+                _ExternalDependencyManager()
+                    .get_singleton()
+                    .import_module(                    
+                        path="qlogicae_cor.v3.library.command_data_manager",
+                        member="CommandDataManager",
+                        is_member_callable=True,
+                    )
+            )
 
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
-                return True
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
+                raise TypeError("")
 
             return True
 
         def shutdown(self):
             return True
 
-        def run(self, **kwargs):
+        def run_workflows(self, kwargs):
+            if not isinstance(kwargs, (dict)):
+                raise TypeError("")
+
             workflow_selection_targets = (
                 kwargs.get(
                     "targets",
                     ()
                 ) or ()
             )
-            root_data = (
-                kwargs.get(
-                    "root_data",
-                    {}
-                ) or {}
-            )
-            if not workflow_selection_targets or not root_data:
+
+            if not workflow_selection_targets:
                 return True
 
             workflow_data_manager = (
                 _WorkflowDataManager()
                     .get_singleton()
             )
+            root_data = (
+                workflow_data_manager
+                    .read_all_data()
+            )
+            
+            if not root_data:
+                return True
 
             root_data_workflow_selection = (
                 workflow_data_manager
@@ -129,11 +144,14 @@ def _allocate():
             if not root_data_workflow_selection:
                 return True
 
-            commands = (
-                kwargs.get(
-                    "commands",
-                    {}
-                ) or {}
+            command_data_manager = (
+                _CommandDataManager()
+                    .get_singleton()
+            )
+
+            functions = (
+                command_data_manager
+                    .read_functions()
             )
 
             def run_workflow(workflow_selection_target):
@@ -183,12 +201,12 @@ def _allocate():
                     workflow_selection_platforms_included or
                     workflow_selection_platforms_excluded
                 ):
-                    system_manager = (
-                        _SystemManager()
+                    hardware_data_manager = (
+                        _HardwareDataManager()
                             .get_singleton()
                     )
                     current_platform = (
-                        system_manager.read_platform()
+                        hardware_data_manager.read_platform()
                     )
 
                     if (
@@ -271,12 +289,12 @@ def _allocate():
                         workflow_selection_job_platforms_included or
                         workflow_selection_job_platforms_excluded
                     ):
-                        system_manager = (
-                            _SystemManager()
+                        hardware_data_manager = (
+                            _HardwareDataManager()
                                 .get_singleton()
                         )
                         current_platform (
-                            system_manager.read_platform()
+                            hardware_data_manager.read_platform()
                         )
 
                         if (
@@ -331,7 +349,7 @@ def _allocate():
                         ) and workflow_result
                 
                     elif (
-                        workflow_selection_job_run in commands or
+                        workflow_selection_job_run in functions or
                         callable(workflow_selection_job_run)
                     ):
                         workflow_selection_job_run_arguments = (
@@ -363,9 +381,9 @@ def _allocate():
                                     **workflow_selection_job_run_arguments_kwargs
                                 ) and workflow_result
                             )
-                        elif workflow_selection_job_run in commands:
+                        elif workflow_selection_job_run in functions:
                             command = (
-                                commands.get(
+                                functions.get(
                                     workflow_selection_job_run,
                                     None
                                 ) or None

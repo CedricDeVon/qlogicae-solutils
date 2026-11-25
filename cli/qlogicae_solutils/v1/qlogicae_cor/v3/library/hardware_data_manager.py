@@ -115,6 +115,18 @@ def _allocate():
                     })
             )
 
+        def read_platform(self):
+            operating_system_type = (
+                self.read_operating_system_type()
+            )
+            instruction_architecture_type = (
+                self.instruction_architecture_type()
+            )
+
+            return (
+                f"{operating_system_type}_{instruction_architecture_type}"
+            )
+
         def read_operating_system_type(self):
             return (
                 self.read_one_data(

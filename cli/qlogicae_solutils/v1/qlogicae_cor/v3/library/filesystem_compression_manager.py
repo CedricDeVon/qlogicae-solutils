@@ -2,20 +2,23 @@ __all__ = (
     "FilesystemCompressionManager",
 )
 
+_ExternalDependencyManager = None
+_FilesystemCompressionManager = None
+
 _os = None
 _re = None
-_tempfile = None
 _zipfile = None
 _pathlib = None
-_FilesystemCompressionManager = None
-_ExternalDependencyManager = None
-
+_tempfile = None
+_FilesystemCompressionDataManager = None
 
 def _allocate():
     global _allocate
     global _FilesystemCompressionManager
 
     class __FilesystemCompressionManager:
+        __slots__ = ()
+
         _singleton = None
 
         def __init__(self):
@@ -36,11 +39,13 @@ def _allocate():
 
         def construct(self):
             global _ExternalDependencyManager
+
             global _os
             global _re
-            global _tempfile
             global _zipfile
             global _pathlib
+            global _tempfile
+            global _FilesystemCompressionDataManager
 
             from .external_dependency_manager import ExternalDependencyManager
 
@@ -73,42 +78,26 @@ def _allocate():
                     path="pathlib",
                 )
             )
+            _FilesystemCompressionDataManager = (
+                _ExternalDependencyManager()
+                    .get_singleton()
+                    .import_module(                    
+                        path="qlogicae_cor.v3.library.filesystem_compression_data_manager",
+                        member="FilesystemCompressionDataManager",
+                        is_member_callable=True,
+                    )
+            )
 
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
 
             return True
 
         def shutdown(self):
             return True
-
-        def get_zip_format_compression(
-            self,
-            value,
-        ):
-            if not isinstance(value, (str)):
-                raise ValueError("'value' must be a string")
-
-            match value.lower():
-                case "store" | "stored" | "none":
-                    result = _zipfile().ZIP_STORED
-
-                case "deflate" | "deflated":
-                    result = _zipfile().ZIP_DEFLATED
-
-                case "bz2" | "bzip2":
-                    result = _zipfile().ZIP_BZIP2
-
-                case "lzma" | "xz":
-                    result = _zipfile().ZIP_LZMA
-
-                case _:
-                    result = ""
-
-            return result
 
         def extract_path(
             self,
@@ -205,11 +194,17 @@ def _allocate():
             if not isinstance(compression_type, str):
                 return False
 
+            filesystem_compression_data_manager = (
+                _FilesystemCompressionDataManager()
+                    .get_singleton()
+            )
+
             normalized_type = compression_type.lower()
             compression_method = (
-                self.get_zip_format_compression(
-                    normalized_type
-                )
+                filesystem_compression_data_manager
+                    .read_zip_compression_type(
+                        normalized_type
+                    )
             )
 
             if not compression_method:

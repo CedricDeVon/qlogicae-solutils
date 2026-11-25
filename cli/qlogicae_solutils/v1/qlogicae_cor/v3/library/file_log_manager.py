@@ -12,7 +12,7 @@ _LogFormat = None
 _LogOptions = None
 _logging_handlers = None
 _LogOptionsManager = None
-_TextEncodingManager = None
+_TextEncodingDataManager = None
 
 
 def _allocate():
@@ -71,7 +71,7 @@ def _allocate():
                     with _pathlib().Path.open(
                         current_file_path,
                         "a",
-                        encoding=_TextEncodingManager().selected_encoding,
+                        encoding=_TextEncodingDataManager().selected_encoding,
                     ) as file:
                         file.write(
                             f"{str(message).strip()}\n"
@@ -89,7 +89,7 @@ def _allocate():
             global _LogOptions
             global _logging_handlers
             global _LogOptionsManager
-            global _TextEncodingManager
+            global _TextEncodingDataManager
 
             from .external_dependency_manager import ExternalDependencyManager
 
@@ -117,10 +117,10 @@ def _allocate():
                     path="pathlib",
                 )
             )
-            _TextEncodingManager = (
+            _TextEncodingDataManager = (
                 _ExternalDependencyManager().get_singleton().import_module(
-                    path="qlogicae_cor.v3.library.text_encoding_manager",
-                    member="TextEncodingManager",
+                    path="qlogicae_cor.v3.library.text_encoding_data_manager",
+                    member="TextEncodingDataManager",
                     is_member_callable=True,
                 )
             )
@@ -174,13 +174,17 @@ def _allocate():
 
             return True
 
-        def setup(self, **kwargs):
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
+                return True
+
             self._options = (
                 kwargs.get(
                     "options",
                     _LogOptions()()
                 ) or _LogOptions()()
             )
+            
 
             target_filesystem_paths = (
                 self._options.target_filesystem_paths or tuple()
@@ -301,7 +305,11 @@ def _allocate():
 
             handler = _logging().FileHandler(
                 path,
-                encoding=_TextEncodingManager().get_singleton().selected_encoding,
+                encoding=(
+                    _TextEncodingDataManager()
+                        .get_singleton()
+                        .read_selected_encoding_type()
+                ),
             )
 
             handler.setFormatter(
