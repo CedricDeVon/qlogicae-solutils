@@ -2,10 +2,11 @@ __all__ = (
     "TextFileIoManager",
 )
 
-_pathlib = None
-_TextEncodingManager = None
 _TextFileIoManager = None
 _ExternalDependencyManager = None
+
+_pathlib = None
+_TextEncodingDataManager = None
 
 
 def _allocate():
@@ -40,16 +41,17 @@ def _allocate():
 
             with path.open(
                 mode="r",
-                encoding=_TextEncodingManager().selected_encoding,
+                encoding=_TextEncodingDataManager().read_selected_encoding_type(),
             ) as file:
                 output_data = file.read() or ""
 
             return output_data
 
         def construct(self):
-            global _pathlib
-            global _TextEncodingManager
             global _ExternalDependencyManager
+
+            global _pathlib
+            global _TextEncodingDataManager
 
             from .external_dependency_manager import ExternalDependencyManager
 
@@ -62,9 +64,9 @@ def _allocate():
                     path="pathlib",
                 )
             )
-            _TextEncodingManager = (
+            _TextEncodingDataManager = (
                 _ExternalDependencyManager().get_singleton().import_module(
-                    path="qlogicae_cor.v3.library.text_encoding_manager",
+                    path="qlogicae_cor.v3.library.text_encoding_data_manager",
                     member="TextEncodingManager",
                     is_member_callable=True,
                 )
@@ -72,8 +74,8 @@ def _allocate():
 
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
 
             return True
@@ -91,7 +93,7 @@ def _allocate():
 
             with path.open(
                 mode="w",
-                encoding=_TextEncodingManager().selected_encoding,
+                encoding=_TextEncodingDataManager().read_selected_encoding_type(),
             ) as file:
                 file.write(str(data))
 

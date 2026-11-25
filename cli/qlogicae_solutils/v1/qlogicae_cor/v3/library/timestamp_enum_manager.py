@@ -1,17 +1,19 @@
 __all__ = (
-    "EnumConversionValueEnumManager",
+    "TimestampEnumManager",
 )
 
-_EnumConversionValue = None
-_EnumConversionValueEnumManager = None
+_TimestampEnumManager = None
 _ExternalDependencyManager = None
+
+_Timestamp = None
+_EnumConversionValue = None
 
 
 def _allocate():
     global _allocate
-    global _EnumConversionValueEnumManager
+    global _TimestampEnumManager
 
-    class __EnumConversionValueEnumManager:
+    class __TimestampEnumManager:
         _singleton = None
 
         def __init__(self):
@@ -32,6 +34,8 @@ def _allocate():
 
         def construct(self):
             global _ExternalDependencyManager
+
+            global _Timestamp
             global _EnumConversionValue
 
             from .external_dependency_manager import ExternalDependencyManager
@@ -44,13 +48,21 @@ def _allocate():
                 _ExternalDependencyManager().get_singleton().import_module(
                     path="qlogicae_cor.v3.library.enum_conversion_value",
                     member="EnumConversionValue",
-                    is_member_callable=True,
+                    is_member_callable=True
+                )
+            )
+            _Timestamp = (
+                _ExternalDependencyManager().get_singleton().import_module(
+                    path="qlogicae_cor.v3.library.timestamp",
+                    member="Timestamp",
+                    is_member_callable=True
                 )
             )
 
             return True
-        def setup(self, **kwargs):
-            if not kwargs:
+
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
 
             return True
@@ -66,6 +78,9 @@ def _allocate():
             EnumConversionValue = (
                 _EnumConversionValue()
             )
+            Timestamp = (
+                _Timestamp()
+            )
 
             if output_type is None:
                 output_type = EnumConversionValue.STRING
@@ -73,44 +88,38 @@ def _allocate():
             match output_type:
                 case EnumConversionValue.STRING:
                     match input_type:
-                        case EnumConversionValue.STRING:
-                            return "string"
+                        case Timestamp.ISO_DATE_STRING:
+                            return "iso_date_string"
 
-                        case EnumConversionValue.ENUM:
-                            return "enum"
-
-                        case EnumConversionValue.CUSTOM:
-                            return "custom"
+                        case Timestamp.ISO_FILESYSTEM_STRING:
+                            return "iso_filesystem_string"
 
                         case _:
-                            return "none"
+                            return "iso_date_string"
 
                 case EnumConversionValue.ENUM:
-                    match str(input_type).lower():
-                        case "string":
-                            return EnumConversionValue.STRING
+                    match input_type.lower():
+                        case "local":
+                            return Timestamp.ISO_DATE_STRING
 
-                        case "none":
-                            return EnumConversionValue.ENUM
-
-                        case "custom":
-                            return EnumConversionValue.CUSTOM
+                        case "iso_filesystem_string":
+                            return Timestamp.ISO_FILESYSTEM_STRING
 
                         case _:
-                            return EnumConversionValue.NONE
+                            return Timestamp.NONE
 
                 case _:
                     return EnumConversionValue.NONE
 
-    _EnumConversionValueEnumManager = __EnumConversionValueEnumManager
+    _TimestampEnumManager = __TimestampEnumManager
     _allocate = lambda: None
 
 
-def EnumConversionValueEnumManager():
-    if _EnumConversionValueEnumManager is None:
+def TimestampEnumManager():
+    if _TimestampEnumManager is None:
         _allocate()
 
-    return _EnumConversionValueEnumManager
+    return _TimestampEnumManager
 
 
-# EnumConversionValueEnumManager()
+# TimestampEnumManager()

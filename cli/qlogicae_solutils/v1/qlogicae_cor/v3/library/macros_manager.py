@@ -384,7 +384,7 @@ def _allocate():
                         file_data = current_path.read_text(
                             encoding=(
                                 text_encoding_data_manager
-                                    .read_selected_type()
+                                    .read_selected_encoding_type()()
                             ),
                         )
                     except UnicodeDecodeError:
@@ -403,7 +403,7 @@ def _allocate():
                                 parsed_file_data,
                                 encoding=(
                                     text_encoding_data_manager
-                                        .read_selected_type()
+                                        .read_selected_encoding_type()()
                                 ),
                             )
 

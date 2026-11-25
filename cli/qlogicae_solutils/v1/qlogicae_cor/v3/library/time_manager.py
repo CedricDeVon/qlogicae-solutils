@@ -2,12 +2,13 @@ __all__ = (
     "TimeManager",
 )
 
+_TimeManager = None
+_ExternalDependencyManager = None
+
 _time = None
 _datetime = None
 _TimeUnit = None
 _TimeZoneManager = None
-_TimeManager = None
-_ExternalDependencyManager = None
 
 
 def _allocate():
@@ -124,11 +125,12 @@ def _allocate():
             ) // 1000 + 1
 
         def construct(self):
+            global _ExternalDependencyManager
+            
             global _time
             global _datetime
             global _TimeUnit
             global _TimeZoneManager
-            global _ExternalDependencyManager
 
             from .external_dependency_manager import ExternalDependencyManager
 
@@ -179,8 +181,8 @@ def _allocate():
 
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
 
             return True

@@ -70,8 +70,8 @@ def _allocate():
 
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
 
             return True
@@ -119,14 +119,14 @@ def _allocate():
             return (
                 self.read_one_data(
                     ("operating_system_type",),
-                )
+                ) or _platform().system()
             )
 
         def read_instruction_architecture_type(self):
             return (
                 self.read_one_data(
                     ("instruction_architecture_type",),
-                )
+                ) or _platform().machine()
             )
 
         def read_all_data(

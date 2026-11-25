@@ -2,10 +2,11 @@ __all__ = (
     "TimeUnitEnumManager",
 )
 
-_EnumConversionValue = None
-_TimeUnit = None
 _TimeUnitEnumManager = None
 _ExternalDependencyManager = None
+
+_TimeUnit = None
+_EnumConversionValue = None
 
 
 def _allocate():
@@ -32,9 +33,10 @@ def _allocate():
             return cls._singleton
 
         def construct(self):
-            global _EnumConversionValue
-            global _TimeUnit
             global _ExternalDependencyManager
+
+            global _TimeUnit
+            global _EnumConversionValue
 
             from .external_dependency_manager import ExternalDependencyManager
 
@@ -59,8 +61,8 @@ def _allocate():
 
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
 
             return True

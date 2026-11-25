@@ -1,20 +1,18 @@
 __all__ = (
-    "SystemPluginManager",
+    "ScriptProcessPluginManager",
 )
 
-_SystemPluginManager = None
 _ExternalDependencyManager = None
+_ScriptProcessPluginManager = None
 
-_SystemManager = None
-_PluginDataManager = None
-_SystemDataManager = None
+_ScriptProcessDataManager = None
 
 
 def _allocate():
     global _allocate
-    global _SystemPluginManager
+    global _ScriptProcessPluginManager
 
-    class __SystemPluginManager:
+    class __ScriptProcessPluginManager:
         __slots__ = ()
 
         _singleton = None
@@ -37,48 +35,28 @@ def _allocate():
 
         def construct(self):
             global _ExternalDependencyManager
-
-            global _SystemManager
-            global _PluginDataManager
-            global _SystemDataManager
+            
+            global _ScriptProcessDataManager
 
             from .external_dependency_manager import ExternalDependencyManager
 
             _ExternalDependencyManager = (
                 ExternalDependencyManager()
             )
-            _SystemManager = (
+            _ScriptProcessDataManager = (
                 _ExternalDependencyManager()
                     .get_singleton()
                     .import_module(                    
-                        path="qlogicae_cor.v3.library.system_manager",
-                        member="SystemManager",
+                        path="qlogicae_cor.v3.library.script_process_data_manager",
+                        member="ScriptProcessDataManager",
                         is_member_callable=True,
                     )
             )
-            _PluginDataManager = (
-                _ExternalDependencyManager()
-                    .get_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.plugin_data_manager",
-                        member="PluginDataManager",
-                        is_member_callable=True,
-                    )
-            )
-            _SystemDataManager = (
-                _ExternalDependencyManager()
-                    .get_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.system_data_manager",
-                        member="SystemDataManager",
-                        is_member_callable=True,
-                    )
-            )
-            
+
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
 
             return True
@@ -87,13 +65,13 @@ def _allocate():
             return True
 
         def export_plugin(self):
-            system_data_manager = (
-                _SystemDataManager()
+            script_process_data_manager = (
+                _ScriptProcessDataManager()
                     .get_singleton()
             )
             
             return (
-                system_data_manager
+                script_process_data_manager
                     .setup_plugin_data()
             )
 
@@ -105,19 +83,19 @@ def _allocate():
             result = True
             return result
 
-
         def shutdown_plugin(self):            
             result = True
             return result
 
 
-    _SystemPluginManager = __SystemPluginManager
+    _ScriptProcessPluginManager = __ScriptProcessPluginManager
     _allocate = lambda: None
 
 
-def SystemPluginManager():
-    if _SystemPluginManager is None:
+def ScriptProcessPluginManager():
+    if _ScriptProcessPluginManager is None:
         _allocate()
 
-    return _SystemPluginManager
+    return _ScriptProcessPluginManager
+
 

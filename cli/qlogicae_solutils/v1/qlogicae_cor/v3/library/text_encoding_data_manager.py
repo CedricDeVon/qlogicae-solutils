@@ -61,8 +61,8 @@ def _allocate():
 
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
 
             return True
@@ -94,16 +94,16 @@ def _allocate():
                         "root_key_path": self._root_key_path,
                         "layer": 0,
                         "data": {
-                            "selected_type": "utf-8"
+                            "selected_encoding_type": "utf-8"
                         }
                     })
             )
         
-        def read_selected_type(self):
+        def read_selected_encoding_type(self):
             return (
                 self.read_one_data(
-                    ("selected_type",)
-                )
+                    ("selected_encoding_type",)
+                ) or "utf-8"
             )
 
         

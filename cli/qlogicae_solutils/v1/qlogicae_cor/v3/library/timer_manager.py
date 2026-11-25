@@ -3,9 +3,10 @@ __all__ = (
 )
 
 _TimeManager = None
+_ExternalDependencyManager = None
+
 _TimeUnit = None
 _TimerManager = None
-_ExternalDependencyManager = None
 
 
 def _allocate():
@@ -45,9 +46,10 @@ def _allocate():
             return self._stop_timestamp
 
         def construct(self):
-            global _TimeManager
-            global _TimeUnit
             global _ExternalDependencyManager
+
+            global _TimeUnit
+            global _TimeManager
 
             from .external_dependency_manager import ExternalDependencyManager
 
@@ -75,8 +77,8 @@ def _allocate():
 
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
 
             return True

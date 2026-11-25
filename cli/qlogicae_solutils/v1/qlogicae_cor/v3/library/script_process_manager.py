@@ -2,11 +2,12 @@ __all__ = (
     "ScriptProcessManager",
 )
 
-_shlex = None
-_subprocess = None
-_TextEncodingManager = None
 _ScriptProcessManager = None
 _ExternalDependencyManager = None
+
+_shlex = None
+_subprocess = None
+_TextEncodingDataManager = None
 
 
 def _allocate():
@@ -14,10 +15,7 @@ def _allocate():
     global _ScriptProcessManager
 
     class __ScriptProcessManager:
-        __slots__ = (
-            "_selected_script_process",
-            "_valid_script_processes",
-        )
+        __slots__ = ()
 
         _singleton = None
 
@@ -37,26 +35,12 @@ def _allocate():
 
             return cls._singleton
 
-        @property
-        def selected_script_process(self):
-            return self._selected_script_process
-
-        @selected_script_process.setter
-        def selected_script_process(self, value):
-            if value not in self._valid_script_processes:
-                return
-
-            self._selected_script_process = value
-
-        @property
-        def valid_script_processes(self):
-            return self._valid_script_processes
-
         def construct(self):
+            global _ExternalDependencyManager
+
             global _shlex
             global _subprocess
-            global _TextEncodingManager
-            global _ExternalDependencyManager
+            global _TextEncodingDataManager
 
             from .external_dependency_manager import ExternalDependencyManager
 
@@ -73,24 +57,25 @@ def _allocate():
                     path="subprocess",
                 )
             )
-            _TextEncodingManager = (
+            _TextEncodingDataManager = (
                 _ExternalDependencyManager().get_singleton().import_module(
-                    path="qlogicae_cor.v3.library.text_encoding_manager",
-                    member="TextEncodingManager",
+                    path="qlogicae_cor.v3.library.text_encoding_data_manager",
+                    member="TextEncodingDataManager",
+                    is_member_callable=True,
+                )
+            )
+            _ScriptProcessDataManager = (
+                _ExternalDependencyManager().get_singleton().import_module(
+                    path="qlogicae_cor.v3.library.script_process_data_manager",
+                    member="ScriptProcessDataManager",
                     is_member_callable=True,
                 )
             )
 
-            self._selected_script_process = "subprocess"
-            self._valid_script_processes = {
-                "shell",
-                "subprocess",
-            }
-
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
 
             return True
@@ -101,18 +86,28 @@ def _allocate():
         def execute_command(
             self,
             command,
-            script_process_type="subprocess",
         ):
-            if not script_process_type:
-                script_process_type = "subprocess"
-
             if not command:
                 raise ValueError("")
 
-            encoding = (
-                _TextEncodingManager()
+            script_process_type = (
+                _ScriptProcessDataManager()
                     .get_singleton()
-                    .selected_encoding
+                    .read_script_process_type()
+            )
+            valid_script_process_types = (
+                _ScriptProcessDataManager()
+                    .get_singleton()
+                    .read_valid_script_process_types()
+            )
+
+            if script_process_type not in valid_script_process_types:
+                return False
+
+            encoding = (
+                _TextEncodingDataManager()
+                    .get_singleton()
+                    .read_selected_encoding_type()
             )
 
             match script_process_type.lower():

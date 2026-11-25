@@ -2,12 +2,13 @@ __all__ = (
     "JsonFileIoManager",
 )
 
-_json = None
-_pathlib = None
-_JsonManager = None
-_TextEncodingManager = None
 _JsonFileIoManager = None
 _ExternalDependencyManager = None
+
+_json = None
+_pathlib = None
+_JsonIoDataManager = None
+_TextEncodingDataManager = None
 
 
 def _allocate():
@@ -35,10 +36,11 @@ def _allocate():
 
         def construct(self):
             global _ExternalDependencyManager
+
             global _json
             global _pathlib
-            global _JsonManager
-            global _TextEncodingManager
+            global _JsonIoDataManager
+            global _TextEncodingDataManager
 
             from .external_dependency_manager import ExternalDependencyManager
 
@@ -56,24 +58,25 @@ def _allocate():
                     path="pathlib",
                 )
             )
-            _JsonManager = (
+            _JsonIoDataManager = (
                 _ExternalDependencyManager().get_singleton().import_module(
-                    path="qlogicae_cor.v3.library.json_manager",
-                    member="JsonManager",
+                    path="qlogicae_cor.v3.library.json_io_data_manager",
+                    member="JsonIoDataManager",
                     is_member_callable=True,
                 )
             )
-            _TextEncodingManager = (
+            _TextEncodingDataManager = (
                 _ExternalDependencyManager().get_singleton().import_module(
                     path="qlogicae_cor.v3.library.text_encoding_manager",
-                    member="TextEncodingManager",
+                    member="TextEncodingDataManager",
                     is_member_callable=True,
                 )
             )
+            
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
 
             return True
@@ -82,19 +85,29 @@ def _allocate():
             return True
 
         def read_file(self, file_path):
+            if not isinstance(file_path, (str, _pathlib().Path)):
+                raise TypeError("")
+
             path = _pathlib().Path(file_path)
 
             output_data = {}
 
             with path.open(
                 mode="r",
-                encoding=_TextEncodingManager().get_singleton().selected_encoding,
+                encoding=(
+                    _TextEncodingDataManager()
+                        .get_singleton()
+                        .read_selected_encoding_type()
+                ),
             ) as file:
                 output_data = _json().load(file) or {}
 
             return output_data
 
         def write_file(self, file_path, data):
+            if not isinstance(file_path, (str, _pathlib().Path)):
+                raise TypeError("")
+
             path = _pathlib().Path(file_path)
 
             path.parent.mkdir(
@@ -102,19 +115,41 @@ def _allocate():
                 exist_ok=True,
             )
 
+            json_io_data_manager = (
+                _JsonIoDataManager()
+                    .get_singleton()
+            )
+            text_encoding_manager = (
+                _TextEncodingDataManager()
+                    .get_singleton()
+            )
+
             with path.open(
                 mode="w",
-                encoding=_TextEncodingManager().get_singleton().selected_encoding,
+                encoding=(
+                    text_encoding_manager
+                        .read_selected_encoding_type()
+                ),
             ) as file:
                 _json().dump(
                     data,
                     file,
-                    indent=_JsonManager().get_singleton().indent_count,
-                    ensure_ascii=_JsonManager().get_singleton().is_ascii_format_enabled,
-                    sort_keys=_JsonManager().get_singleton().is_key_sortable,
+                    indent=(
+                        json_io_data_manager
+                            .read_indent_count()
+                    ),
+                    ensure_ascii=(
+                        json_io_data_manager
+                            .read_is_ascii_format_enabled()
+                    ),
+                    sort_keys=(
+                        json_io_data_manager
+                            .read_is_key_sortable()
+                    ),
                 )
 
             return True
+
 
     _JsonFileIoManager = __JsonFileIoManager
     _allocate = lambda: None

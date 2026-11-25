@@ -129,28 +129,28 @@ def _allocate():
             return (
                 self.read_one_data(
                     ("original_executing_filesystem_path",),
-                )
+                ) or _pathlib().Path.cwd().resolve()
             )
 
         def read_previous_executing_filesystem_path(self):
             return (
                 self.read_one_data(
                     ("previous_executing_filesystem_path",),
-                )
+                ) or ""
             )
 
         def read_current_executing_filesystem_path(self):
             return (
                 self.read_one_data(
                     ("current_executing_filesystem_path",),
-                )
+                ) or _pathlib().Path.cwd().resolve()
             )
 
         def read_original_executing_script_filesystem_path(self):
             return (
                 self.read_one_data(
                     ("original_executing_script_filesystem_path",),
-                )
+                ) or _pathlib().Path(__file__).resolve()
             )
 
         def write_original_executing_filesystem_path(self, value):

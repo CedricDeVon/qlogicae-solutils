@@ -2,13 +2,15 @@ __all__ = (
     "TimestampManager",
 )
 
+_TimestampManager = None
+_ExternalDependencyManager = None
+
 _time = None
 _datetime = None
 _TimeUnit = None
-_TimeZoneManager = None
 _Timestamp = None
-_TimestampManager = None
-_ExternalDependencyManager = None
+_TimeZoneDataManager = None
+_TimestampDataManager = None
 
 def _allocate():
     global _allocate
@@ -34,12 +36,14 @@ def _allocate():
             return cls._singleton
 
         def construct(self):
+            global _ExternalDependencyManager
+
             global _time
             global _datetime
             global _TimeUnit
-            global _TimeZoneManager
             global _Timestamp
-            global _ExternalDependencyManager
+            global _TimeZoneDataManager
+            global _TimestampDataManager
 
             from .external_dependency_manager import ExternalDependencyManager
 
@@ -64,10 +68,17 @@ def _allocate():
                     is_member_callable=True,
                 )
             )
-            _TimeZoneManager = (
+            _TimeZoneDataManager = (
                 _ExternalDependencyManager().get_singleton().import_module(
-                    path="qlogicae_cor.v3.library.time_zone_manager",
-                    member="TimeZoneManager",
+                    path="qlogicae_cor.v3.library.time_zone_data_manager",
+                    member="TimeZoneDataManager",
+                    is_member_callable=True,
+                )
+            )
+            _TimestampDataManager = (
+                _ExternalDependencyManager().get_singleton().import_module(
+                    path="qlogicae_cor.v3.library.timestamp_data_manager",
+                    member="TimestampDataManager",
                     is_member_callable=True,
                 )
             )
@@ -81,8 +92,8 @@ def _allocate():
 
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
 
             return True
@@ -112,7 +123,14 @@ def _allocate():
 
             current = _datetime().datetime.fromtimestamp(
                 timestamp_nanoseconds / 1_000_000_000,
-                _TimeZoneManager().get_singleton().selected_time_zone,
+                _TimeZoneDataManager()
+                    .get_singleton()
+                    .read_selected_time_zone_type(),
+            )
+
+            timestamp_data_manager = (
+                _TimestampDataManager()
+                    .get_singleton()
             )
 
             match time_unit:
@@ -150,10 +168,16 @@ def _allocate():
 
             match timestamp:
                 case Timestamp.ISO_DATE_STRING:
-                    prefix = current.strftime("%Y-%m-%dT%H:%M:%S")
+                    prefix = current.strftime(
+                        timestamp_data_manager
+                            .read_date_timestamp_format()
+                    )
 
                 case Timestamp.ISO_FILESYSTEM_STRING:
-                    prefix = current.strftime("%Y-%m-%dT%H-%M-%S")
+                    prefix = current.strftime(
+                        timestamp_data_manager
+                            .read_filesystem_timestamp_format()
+                    )
                     suffix = suffix.replace(":", "-")
 
                 case _:

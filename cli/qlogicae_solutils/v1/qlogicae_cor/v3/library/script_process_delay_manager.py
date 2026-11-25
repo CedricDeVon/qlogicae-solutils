@@ -2,9 +2,10 @@ __all__ = (
     "ScriptProcessDelayManager",
 )
 
-_time = None
 _ScriptProcessDelayManager = None
 _ExternalDependencyManager = None
+
+_time = None
 
 
 def _allocate():
@@ -49,8 +50,8 @@ def _allocate():
 
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
 
             return True

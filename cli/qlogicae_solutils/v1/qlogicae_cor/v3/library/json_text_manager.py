@@ -2,10 +2,11 @@ __all__ = (
     "JsonTextManager",
 )
 
-_json = None
-_JsonManager = None
 _JsonTextManager = None
 _ExternalDependencyManager = None
+
+_json = None
+_JsonIoDataManager = None
 
 
 def _allocate():
@@ -33,8 +34,9 @@ def _allocate():
 
         def construct(self):
             global _ExternalDependencyManager
+
             global _json
-            global _JsonManager
+            global _JsonIoDataManager
 
             from .external_dependency_manager import ExternalDependencyManager
 
@@ -47,18 +49,18 @@ def _allocate():
                     path="json",
                 )
             )
-            _JsonManager = (
+            _JsonIoDataManager = (
                 _ExternalDependencyManager().get_singleton().import_module(
-                    path="qlogicae_cor.v3.library.json_manager",
-                    member="JsonManager",
+                    path="qlogicae_cor.v3.library.json_io_data_manager",
+                    member="JsonIoDataManager",
                     is_member_callable=True,
                 )
             )
 
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
 
             return True
@@ -75,10 +77,20 @@ def _allocate():
             return _json().loads(value)
 
         def convert_to_string(self, value):
+            json_io_data_manager = (
+                _JsonIoDataManager().get_singleton()
+            )
+
             result = _json().dumps(
                 value,
-                indent=_JsonManager().get_singleton().indent_count,
-                ensure_ascii=_JsonManager().get_singleton().is_ascii_format_enabled,
+                indent=(
+                    json_io_data_manager
+                        .read_indent_count()
+                ),
+                ensure_ascii=(
+                    json_io_data_manager
+                        .read_is_ascii_format_enabled()
+                ),
             )
 
             return result

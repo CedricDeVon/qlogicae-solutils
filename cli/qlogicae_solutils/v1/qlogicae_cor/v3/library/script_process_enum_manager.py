@@ -1,18 +1,21 @@
 __all__ = (
-    "TimestampEnumManager",
+    "ScriptProcessEnumManager",
 )
 
-_EnumConversionValue = None
-_Timestamp = None
-_TimestampEnumManager = None
+_ScriptProcessEnumManager = None
 _ExternalDependencyManager = None
+
+_ScriptProcess = None
+_EnumConversionValue = None
 
 
 def _allocate():
     global _allocate
-    global _TimestampEnumManager
+    global _ScriptProcessEnumManager
 
-    class __TimestampEnumManager:
+    class __ScriptProcessEnumManager:
+        __slots__ = ()
+
         _singleton = None
 
         def __init__(self):
@@ -32,9 +35,10 @@ def _allocate():
             return cls._singleton
 
         def construct(self):
-            global _EnumConversionValue
-            global _Timestamp
             global _ExternalDependencyManager
+
+            global _ScriptProcess
+            global _EnumConversionValue
 
             from .external_dependency_manager import ExternalDependencyManager
 
@@ -45,22 +49,22 @@ def _allocate():
             _EnumConversionValue = (
                 _ExternalDependencyManager().get_singleton().import_module(
                     path="qlogicae_cor.v3.library.enum_conversion_value",
-                    member="EnumConversionValue",
-                    is_member_callable=True
+                    member="EnumConversionValueScriptProcess",
+                    is_member_callable=True,
                 )
             )
-            _Timestamp = (
+            _ScriptProcess = (
                 _ExternalDependencyManager().get_singleton().import_module(
-                    path="qlogicae_cor.v3.library.timestamp",
-                    member="Timestamp",
-                    is_member_callable=True
+                    path="qlogicae_cor.v3.library.script_process",
+                    member="ScriptProcess",
+                    is_member_callable=True,
                 )
             )
 
             return True
 
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
 
             return True
@@ -76,8 +80,8 @@ def _allocate():
             EnumConversionValue = (
                 _EnumConversionValue()
             )
-            Timestamp = (
-                _Timestamp()
+            ScriptProcess = (
+                _ScriptProcess()
             )
 
             if output_type is None:
@@ -86,38 +90,39 @@ def _allocate():
             match output_type:
                 case EnumConversionValue.STRING:
                     match input_type:
-                        case Timestamp.ISO_DATE_STRING:
-                            return "iso_date_string"
+                        case ScriptProcess.SHELL:
+                            return "shell"
 
-                        case Timestamp.ISO_FILESYSTEM_STRING:
-                            return "iso_filesystem_string"
+                        case ScriptProcess.SUBPROCESS:
+                            return "subprocess"
 
                         case _:
-                            return "iso_date_string"
+                            return "none"
 
                 case EnumConversionValue.ENUM:
-                    match input_type.lower():
-                        case "local":
-                            return Timestamp.ISO_DATE_STRING
+                    match str(input_type).lower():
+                        case "shell":
+                            return ScriptProcess.SHELL
 
-                        case "iso_filesystem_string":
-                            return Timestamp.ISO_FILESYSTEM_STRING
+                        case "subprocess":
+                            return ScriptProcess.SUBPROCESS
 
                         case _:
-                            return Timestamp.NONE
+                            return ScriptProcess.SUBPROCESS
 
                 case _:
                     return EnumConversionValue.NONE
 
-    _TimestampEnumManager = __TimestampEnumManager
+
+    _ScriptProcessEnumManager = __ScriptProcessEnumManager
     _allocate = lambda: None
 
 
-def TimestampEnumManager():
-    if _TimestampEnumManager is None:
+def ScriptProcessEnumManager():
+    if _ScriptProcessEnumManager is None:
         _allocate()
 
-    return _TimestampEnumManager
+    return _ScriptProcessEnumManager
 
 
-# TimestampEnumManager()
+# ScriptProcessEnumManager()

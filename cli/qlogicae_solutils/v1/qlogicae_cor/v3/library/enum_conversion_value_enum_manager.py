@@ -1,18 +1,17 @@
 __all__ = (
-    "ScriptProcessEnumManager",
+    "EnumConversionValueEnumManager",
 )
 
 _EnumConversionValue = None
-_ScriptProcess = None
-_ScriptProcessEnumManager = None
+_EnumConversionValueEnumManager = None
 _ExternalDependencyManager = None
 
 
 def _allocate():
     global _allocate
-    global _ScriptProcessEnumManager
+    global _EnumConversionValueEnumManager
 
-    class __ScriptProcessEnumManager:
+    class __EnumConversionValueEnumManager:
         _singleton = None
 
         def __init__(self):
@@ -34,7 +33,6 @@ def _allocate():
         def construct(self):
             global _ExternalDependencyManager
             global _EnumConversionValue
-            global _ScriptProcess
 
             from .external_dependency_manager import ExternalDependencyManager
 
@@ -45,22 +43,14 @@ def _allocate():
             _EnumConversionValue = (
                 _ExternalDependencyManager().get_singleton().import_module(
                     path="qlogicae_cor.v3.library.enum_conversion_value",
-                    member="EnumConversionValueScriptProcess",
-                    is_member_callable=True,
-                )
-            )
-            _ScriptProcess = (
-                _ExternalDependencyManager().get_singleton().import_module(
-                    path="qlogicae_cor.v3.library.script_process",
-                    member="ScriptProcess",
+                    member="EnumConversionValue",
                     is_member_callable=True,
                 )
             )
 
             return True
-
-        def setup(self, **kwargs):
-            if not kwargs:
+        def setup(self, kwargs):
+            if not isinstance(kwargs, (dict)):
                 return True
 
             return True
@@ -76,9 +66,6 @@ def _allocate():
             EnumConversionValue = (
                 _EnumConversionValue()
             )
-            ScriptProcess = (
-                _ScriptProcess()
-            )
 
             if output_type is None:
                 output_type = EnumConversionValue.STRING
@@ -86,38 +73,44 @@ def _allocate():
             match output_type:
                 case EnumConversionValue.STRING:
                     match input_type:
-                        case ScriptProcess.SHELL:
-                            return "shell"
+                        case EnumConversionValue.STRING:
+                            return "string"
 
-                        case ScriptProcess.SUBPROCESS:
-                            return "subprocess"
+                        case EnumConversionValue.ENUM:
+                            return "enum"
+
+                        case EnumConversionValue.CUSTOM:
+                            return "custom"
 
                         case _:
                             return "none"
 
                 case EnumConversionValue.ENUM:
                     match str(input_type).lower():
-                        case "shell":
-                            return ScriptProcess.SHELL
+                        case "string":
+                            return EnumConversionValue.STRING
 
-                        case "subprocess":
-                            return ScriptProcess.SUBPROCESS
+                        case "none":
+                            return EnumConversionValue.ENUM
+
+                        case "custom":
+                            return EnumConversionValue.CUSTOM
 
                         case _:
-                            return ScriptProcess.SUBPROCESS
+                            return EnumConversionValue.NONE
 
                 case _:
                     return EnumConversionValue.NONE
 
-    _ScriptProcessEnumManager = __ScriptProcessEnumManager
+    _EnumConversionValueEnumManager = __EnumConversionValueEnumManager
     _allocate = lambda: None
 
 
-def ScriptProcessEnumManager():
-    if _ScriptProcessEnumManager is None:
+def EnumConversionValueEnumManager():
+    if _EnumConversionValueEnumManager is None:
         _allocate()
 
-    return _ScriptProcessEnumManager
+    return _EnumConversionValueEnumManager
 
 
-# ScriptProcessEnumManager()
+# EnumConversionValueEnumManager()
