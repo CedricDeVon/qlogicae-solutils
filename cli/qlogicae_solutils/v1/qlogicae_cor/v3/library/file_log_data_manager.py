@@ -24,10 +24,10 @@ def _allocate():
             return (
                 self.base_setup_plugin_data({ 
                     "data": {
-                        "is_enabled": False,
-                        "is_verbose_enabled": True,
                         "log_level": 10,
                         "stack_level": 3,
+                        "is_enabled": False,
+                        "is_verbose_enabled": True,
                         "target_filesystem_paths": [],
                     }                  
                 })

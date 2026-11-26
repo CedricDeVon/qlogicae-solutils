@@ -98,45 +98,11 @@ def _allocate():
                     .read_singleton()
             )
 
-            data = (
-                kwargs.get("data", {}) or {}
-            )
-            root_key_path = (
-                kwargs.get(
-                    "root_key_path",
-                    self.read_root_key_path()
-                ) or self.read_root_key_path()
-            )
-            layer = (
-                kwargs.get("layer", 0)
-            )
-            is_default_data_enabled = (
-                kwargs.get("is_default_data_enabled", True)
-            )
-            default_data = (
-                {
-                    "callbacks": {
-                        "on_pre_setup": None,
-                        "on_post_setup": None,
-                        "on_pre_run": None,
-                        "on_post_run": None,
-                        "on_pre_shutdown": None,
-                        "on_post_shutdown": None,
-                    }
-                }
-                if is_default_data_enabled
-                else {}
-            )
-
             return (
                 plugin_data_manager
                     .setup_plugin_data({
-                        "root_key_path": root_key_path,
-                        "layer": layer,
-                        "data": {
-                            **default_data,
-                            **data,
-                        }
+                        "root_key_path": self.read_root_key_path(),
+                        **kwargs,
                     })
             )
 

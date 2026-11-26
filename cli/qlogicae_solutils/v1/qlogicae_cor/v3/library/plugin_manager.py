@@ -151,7 +151,6 @@ def _allocate():
             )
 
             for plugin_item in plugin_items:
-
                 if not plugin_item:
                     raise TypeError("")
 

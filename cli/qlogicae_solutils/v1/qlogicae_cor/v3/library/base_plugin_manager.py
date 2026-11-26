@@ -41,11 +41,33 @@ def _allocate():
             data_manager = (
                 self._data_manager()
                     .read_singleton()
-            )
+            )            
 
-            return (
+            on_pre_export = (
+                data_manager.read_callback(
+                    "on_pre_export"
+                )
+            )
+            if callable(on_pre_export):
+                on_pre_export()
+
+            self.on_export_plugin()
+            plugin_data = (
                 data_manager
                     .setup_plugin_data()
+            )
+
+            on_post_export = (
+                data_manager.read_callback(
+                    "on_post_export"
+                )
+            )
+            if callable(on_post_export):
+                on_post_export()
+
+
+            return (
+                plugin_data
             )
 
         def setup_plugin(self):
@@ -133,6 +155,10 @@ def _allocate():
             if callable(on_post_shutdown):
                 result = on_post_shutdown() and result
 
+            return result
+
+        def on_export_plugin(self):
+            result = True
             return result
 
         def on_setup_plugin(self):

@@ -92,11 +92,26 @@ def _allocate():
             if not isinstance(kwargs, (dict)):
                 raise TypeError("")
 
-            kwargs = (
-                self.write_setup_kwargs(
-                    kwargs
-                )
-            )
+            if "target_filesystem_paths" not in kwargs:
+                kwargs["target_filesystem_paths"] = tuple()
+
+            if "is_recursive" not in kwargs:
+                kwargs["is_recursive"] = True
+
+            if "is_export_call_enabled" not in kwargs:
+                kwargs["is_export_call_enabled"] = True
+
+            if "internal_objects" not in kwargs:
+                kwargs["internal_objects"] = tuple()
+
+            if "internal_modules" not in kwargs:
+                kwargs["internal_modules"] = tuple()
+
+            if "external_objects" not in kwargs:
+                kwargs["external_objects"] = tuple()
+
+            if "internal_data" not in kwargs:
+                kwargs["internal_data"] = {}
 
             target_filesystem_paths = (
                 kwargs.get("target_filesystem_paths", tuple()) or tuple()
@@ -399,33 +414,6 @@ def _allocate():
                 result
             )
 
-        def write_setup_kwargs(self, kwargs):
-            if not isinstance(kwargs, (dict)):
-                raise TypeError("")
-
-            if "target_filesystem_paths" not in kwargs:
-                kwargs["target_filesystem_paths"] = tuple()
-
-            if "is_recursive" not in kwargs:
-                kwargs["is_recursive"] = True
-
-            if "is_export_call_enabled" not in kwargs:
-                kwargs["is_export_call_enabled"] = True
-
-            if "internal_objects" not in kwargs:
-                kwargs["internal_objects"] = tuple()
-
-            if "internal_modules" not in kwargs:
-                kwargs["internal_modules"] = tuple()
-
-            if "external_objects" not in kwargs:
-                kwargs["external_objects"] = tuple()
-
-            if "internal_data" not in kwargs:
-                kwargs["internal_data"] = {}
-
-            return kwargs
-
         def setup_plugin_data(
             self,
             kwargs
@@ -451,11 +439,36 @@ def _allocate():
                     {}
                 ) or {}
             )
+            is_default_data_enabled = (
+                kwargs.get(
+                    "is_default_data_enabled",
+                    True
+                )
+            )
+            default_data = (
+                {
+                    "callbacks": {
+                        "on_pre_export": None,
+                        "on_post_export": None,
+                        "on_pre_setup": None,
+                        "on_post_setup": None,
+                        "on_pre_run": None,
+                        "on_post_run": None,
+                        "on_pre_shutdown": None,
+                        "on_post_shutdown": None,
+                    }
+                }
+                if is_default_data_enabled
+                else {}
+            )
 
             result = {
                 "root_key_path": root_key_path,
                 "layer": layer,
-                root_key_path: data,
+                root_key_path: {
+                    **default_data,
+                    **data
+                },
             }
 
             return result

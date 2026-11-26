@@ -24,12 +24,12 @@ def _allocate():
     class __FileLogManager(AbstractManager()):
         __slots__ = (
             "logger",
-            "file_handlers",
-            "log_queue",
-            "queue_handler",
+            "_cache",
             "listener",
             "_options",
-            "_cache",
+            "log_queue",
+            "file_handlers",
+            "queue_handler",
         )
 
         def __init__(self):

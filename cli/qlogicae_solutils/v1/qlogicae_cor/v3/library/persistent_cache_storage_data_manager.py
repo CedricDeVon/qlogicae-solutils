@@ -5,6 +5,8 @@ __all__ = (
 _ExternalDependencyManager = None
 _PersistentCacheStorageDataManager = None
 
+_TextEncodingDataManager = None
+
 
 def _allocate():
     global _allocate
@@ -20,7 +22,37 @@ def _allocate():
                 "sub_root_key_path": "persistent_cache_storage"
             })
 
+            self.construct()
+
+        def construct(self):
+            global _ExternalDependencyManager
+
+            if not _ExternalDependencyManager:
+                from .external_dependency_manager import ExternalDependencyManager
+
+                global _TextEncodingDataManager
+
+                _ExternalDependencyManager = (
+                    ExternalDependencyManager()
+                )
+                _TextEncodingDataManager = (
+                    _ExternalDependencyManager()
+                        .read_singleton()
+                        .import_module(                    
+                            path="qlogicae_cor.v3.library.text_encoding_data_manager",
+                            member="TextEncodingDataManager",
+                            is_member_callable=True,
+                        )
+                )
+
+            return True
+
         def setup_plugin_data(self):
+            text_encoding_data_manager = (
+                _TextEncodingDataManager()
+                    .read_singleton()
+            )
+
             return (
                 self.base_setup_plugin_data({ 
                     "data": {
@@ -29,7 +61,10 @@ def _allocate():
                             "create_missing": True,
                             "lifespan_in_seconds": 0.0,
                             "file_mode": 0o600,
-                            "key_encoding": "utf-8",
+                            "key_encoding": (
+                                text_encoding_data_manager
+                                    .read_selected_encoding_type()
+                            ),
                             "auto_remove_expired": True,
                             "auto_remove_invalid": True,
                             "sync_on_write": False,
@@ -183,3 +218,5 @@ def PersistentCacheStorageDataManager():
         _allocate()
 
     return _PersistentCacheStorageDataManager
+
+
