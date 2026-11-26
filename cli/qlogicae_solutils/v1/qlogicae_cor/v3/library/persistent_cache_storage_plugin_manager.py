@@ -57,7 +57,7 @@ def _allocate():
 
             return True
 
-        def run_plugin_hook(self):
+        def on_run_plugin(self):
             persistent_cache_storage_manager = (
                 _PersistentCacheStorageManager()
                     .read_singleton()
@@ -70,7 +70,7 @@ def _allocate():
 
             return result
 
-        def shutdown_plugin_hook(self):
+        def on_shutdown_plugin(self):
             persistent_cache_storage_manager = (
                 _PersistentCacheStorageManager()
                     .read_singleton()

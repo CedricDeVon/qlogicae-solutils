@@ -69,7 +69,7 @@ def _allocate():
 
             return True
 
-        def setup_plugin_hook(self):            
+        def on_setup_plugin(self):            
             console_log_data_manager = (
                 _ConsoleLogDataManager()
                     .read_singleton()
@@ -107,12 +107,12 @@ def _allocate():
 
             return result
 
-        def run_plugin_hook(self):            
+        def on_run_plugin(self):            
             result = True
             return result
 
 
-        def shutdown_plugin_hook(self):                        
+        def on_shutdown_plugin(self):                        
             console_log_data_manager = (
                 _ConsoleLogDataManager()
                     .read_singleton()

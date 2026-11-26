@@ -64,7 +64,7 @@ def _allocate():
                 result = on_pre_setup() and result
 
             result = (
-                self.setup_plugin_hook() and result
+                self.on_setup_plugin() and result
             )
 
             on_post_setup = (
@@ -93,7 +93,7 @@ def _allocate():
                 result = on_pre_run() and result
 
             result = (
-                self.run_plugin_hook() and result
+                self.on_run_plugin() and result
             )
 
             on_post_run = (
@@ -122,7 +122,7 @@ def _allocate():
                 result = on_pre_shutdown() and result
 
             result = (
-                self.shutdown_plugin_hook() and result
+                self.on_shutdown_plugin() and result
             )
 
             on_post_shutdown = (
@@ -135,15 +135,15 @@ def _allocate():
 
             return result
 
-        def setup_plugin_hook(self):
+        def on_setup_plugin(self):
             result = True
             return result
 
-        def run_plugin_hook(self):            
+        def on_run_plugin(self):            
             result = True
             return result
 
-        def shutdown_plugin_hook(self):            
+        def on_shutdown_plugin(self):            
             result = True
             return result
 

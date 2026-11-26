@@ -58,7 +58,7 @@ def _allocate():
 
             return True
 
-        def setup_plugin_hook(self):
+        def on_setup_plugin(self):
             command_data_manager = (
                 _CommandDataManager()
                     .read_singleton()
@@ -79,7 +79,7 @@ def _allocate():
 
             return result
 
-        def run_plugin_hook(self):       
+        def on_run_plugin(self):       
             command_data_manager = (
                 _CommandDataManager()
                     .read_singleton()

@@ -69,7 +69,7 @@ def _allocate():
 
             return True
 
-        def setup_plugin_hook(self):            
+        def on_setup_plugin(self):            
             file_log_data_manager = (
                 _FileLogDataManager()
                     .read_singleton()
@@ -107,7 +107,7 @@ def _allocate():
 
             return result
 
-        def shutdown_plugin_hook(self):                        
+        def on_shutdown_plugin(self):                        
             file_log_data_manager = (
                 _FileLogDataManager()
                     .read_singleton()
