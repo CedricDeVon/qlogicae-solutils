@@ -6,121 +6,55 @@ _HardwareDataManager = None
 _ExternalDependencyManager = None
 
 _platform = None
-_PluginDataManager = None
 
 
 def _allocate():
     global _allocate
     global _HardwareDataManager
 
-    class __HardwareDataManager:
-        __slots__ = (
-            "_root_key_path",
-        )
+    from .base_data_manager import (
+        BaseDataManager
+    )
 
-        _singleton = None
-
+    class __HardwareDataManager(BaseDataManager()):
         def __init__(self):
+            super().__init__({
+                "sub_root_key_path": "hardware"
+            })
+
             self.construct()
-
-        def __enter__(self):
-            return self
-
-        def __exit__(self, exc_type, exc_value, traceback):
-            self.shutdown()
-
-        @property
-        def key_path(self):
-            return self._root_key_path
-
-        @key_path.setter
-        def key_path(self, value):
-            if not isinstance(value, (tuple, list)):
-                raise ValueError("")
-
-            self._root_key_path = value
-
-        @classmethod
-        def read_singleton(cls):
-            if cls._singleton is None:
-                cls._singleton = cls()
-
-            return cls._singleton
 
         def construct(self):
             global _ExternalDependencyManager
 
-            global _platform
+            if not _ExternalDependencyManager:
+                from .external_dependency_manager import ExternalDependencyManager
+    
+                global _platform
 
-            from .external_dependency_manager import ExternalDependencyManager
-
-            _ExternalDependencyManager = (
-                ExternalDependencyManager()
-            )
-
-            _platform = (
-                _ExternalDependencyManager().read_singleton().import_module(
-                    path="platform",
+                _ExternalDependencyManager = (
+                    ExternalDependencyManager()
                 )
-            )
-            
-            self._root_key_path = (
-                "qlogicae_cor_v3_hardware"
-            )
+                _platform = (
+                    _ExternalDependencyManager().read_singleton().import_module(
+                        path="platform",
+                    )
+                )
 
-            return True
-
-        def setup(self, kwargs):
-            if not isinstance(kwargs, (dict)):
-                return True
-
-            return True
-
-        def shutdown(self):
             return True
 
         def setup_plugin_data(self):
-            global _PluginDataManager
-            
-            _PluginDataManager = (
-                _ExternalDependencyManager()
-                    .read_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.plugin_data_manager",
-                        member="PluginDataManager",
-                        is_member_callable=True,
-                    )
-            )
-
-            plugin_data_manager = (
-                _PluginDataManager()
-                    .read_singleton()
-            )
-
             return (
-                plugin_data_manager
-                    .setup_plugin_data({
-                        "root_key_path": self._root_key_path,
-                        "layer": 0,
-                        "data": (
-                            {
-                                "operating_system_type": (
-                                    _platform().system()
-                                ),
-                                "instruction_architecture_type": (
-                                    _platform().machine()
-                                ),
-                                "callbacks": {
-                                    "on_pre_setup": None,
-                                    "on_post_setup": None,
-                                    "on_pre_run": None,
-                                    "on_post_run": None,
-                                    "on_pre_shutdown": None,
-                                    "on_post_shutdown": None,
-                                },
-                            }
-                        )
-                    })
+                self.base_setup_plugin_data({ 
+                    "data": {
+                        "operating_system_type": (
+                            _platform().system()
+                        ),
+                        "instruction_architecture_type": (
+                            _platform().machine()
+                        ),
+                    }                  
+                })
             )
 
         def read_platform(self):
@@ -147,119 +81,6 @@ def _allocate():
                 self.read_one_data(
                     ("instruction_architecture_type",),
                 ) or _platform().machine()
-            )
-
-        def read_all_data(
-            self
-        ):
-            data = (
-                _PluginDataManager()
-                    .read_singleton()
-                    .read_all_data(
-                        self._root_key_path
-                    )
-            )
-
-            return (
-                data
-            )
-
-        def read_one_data(
-            self,
-            key_path,
-        ):
-            if not isinstance(key_path, (tuple, list)):
-                raise TypeError("")
-            
-            data = (
-                _PluginDataManager()
-                    .read_singleton()
-                    .read_one_data(
-                        self._root_key_path,
-                        key_path
-                    )
-            )
-
-            return (
-                data
-            )
-
-        def write_all_data(
-            self,
-            value
-        ):
-            result = True
-            result = (
-                _PluginDataManager()
-                    .read_singleton()
-                    .write_all_data(
-                        self._root_key_path,
-                        value
-                    ) and result
-            )
-
-            return (
-                result
-            )
-
-        def write_one_data(
-            self,
-            key_path,
-            value,
-        ):
-            if not isinstance(key_path, (tuple, list)):
-                raise TypeError("")
-            
-            result = True
-            result = (
-                _PluginDataManager()
-                    .read_singleton()
-                    .write_one_data(
-                        self._root_key_path,
-                        key_path,
-                        value
-                    ) and result
-            )
-
-            return (
-                result
-            )
-
-        def remove_one_data(
-            self,
-            key_path,
-        ):
-            if not isinstance(key_path, (tuple, list)):
-                raise TypeError("")
-            
-            result = True
-            result = (
-                _PluginDataManager()
-                    .read_singleton()
-                    .remove_one_data(
-                        self._root_key_path,
-                        key_path,
-                    ) and result
-            )
-
-            return (
-                result
-            )
-
-        def remove_all_data(
-            self,
-        ):
-            result = True
-            result = (
-                _PluginDataManager()
-                    .read_singleton()
-                    .remove_all_data(
-                        self._root_key_path,
-                    ) and result
-            )
-
-            return (
-                result
             )
 
 

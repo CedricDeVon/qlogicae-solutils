@@ -12,7 +12,7 @@ _concurrent_futures = None
 
 
 def _allocate():
-    global _allocate
+    global _allocate    
     global _AsynchronousManager
 
     from .abstract_manager import AbstractManager
@@ -46,45 +46,46 @@ def _allocate():
         def construct(self):
             global _ExternalDependencyManager
             
-            global _asyncio
-            global _threading
-            global _functools
-            global _concurrent_futures
+            if not _ExternalDependencyManager:        
+                from .external_dependency_manager import ExternalDependencyManager
 
-            from .external_dependency_manager import ExternalDependencyManager
+                global _asyncio
+                global _threading
+                global _functools
+                global _concurrent_futures
 
-            _ExternalDependencyManager = (
-                ExternalDependencyManager()
-            )
+                _ExternalDependencyManager = (
+                    ExternalDependencyManager()
+                )
 
-            _asyncio = (
-                _ExternalDependencyManager()
-                    .read_singleton()
-                    .import_module(
-                        path="asyncio",
-                    )
-            )
-            _threading = (
-                _ExternalDependencyManager()
-                    .read_singleton()
-                    .import_module(
-                        path="threading",
-                    )
-            )
-            _functools = (
-                _ExternalDependencyManager()
-                    .read_singleton()
-                    .import_module(
-                        path="functools",
-                    )
-            )
-            _concurrent_futures = (
-                _ExternalDependencyManager()
-                    .read_singleton()
-                    .import_module(
-                        path="concurrent.futures",
-                    )
-            )
+                _asyncio = (
+                    _ExternalDependencyManager()
+                        .read_singleton()
+                        .import_module(
+                            path="asyncio",
+                        )
+                )
+                _threading = (
+                    _ExternalDependencyManager()
+                        .read_singleton()
+                        .import_module(
+                            path="threading",
+                        )
+                )
+                _functools = (
+                    _ExternalDependencyManager()
+                        .read_singleton()
+                        .import_module(
+                            path="functools",
+                        )
+                )
+                _concurrent_futures = (
+                    _ExternalDependencyManager()
+                        .read_singleton()
+                        .import_module(
+                            path="concurrent.futures",
+                        )
+                )
 
             self._thread_executor = None
             self._process_executor = None

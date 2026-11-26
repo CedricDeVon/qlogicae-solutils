@@ -10,50 +10,81 @@ _PluginDataManager = None
 
 def _allocate():
     global _allocate
-    global _BaseDataManager
+    global _BaseDataManager    
 
     from .abstract_manager import AbstractManager
 
     class __BaseDataManager(AbstractManager()):
         __slots__ = (
-            "_root_key_path",
+            "_main_root_key_path",
+            "_sub_root_key_path",
         )
 
-        def __init__(self, root_key_path):
-            self.base_construct(root_key_path)
+        def __init__(self, kwargs):
+            self.base_construct(kwargs)
 
         @property
-        def root_key_path(self):
-            return self._root_key_path
+        def main_root_key_path(self):
+            return self._main_root_key_path
 
-        @root_key_path.setter
-        def root_key_path(self, value):
+        @main_root_key_path.setter
+        def main_root_key_path(self, value):
             if not isinstance(value, (tuple, list)):
                 raise ValueError("")
 
-            self._root_key_path = value
+            self._main_root_key_path = value
 
-        def base_construct(self, root_key_path):
-            global _ExternalDependencyManager
-            global _PluginDataManager
-            
-            from .external_dependency_manager import ExternalDependencyManager
+        @property
+        def sub_root_key_path(self):
+            return self._sub_root_key_path
 
-            _ExternalDependencyManager = (
-                ExternalDependencyManager()
-            )
-            _PluginDataManager = (
-                _ExternalDependencyManager()
-                    .read_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.plugin_data_manager",
-                        member="PluginDataManager",
-                        is_member_callable=True,
-                    )
+        @sub_root_key_path.setter
+        def sub_root_key_path(self, value):
+            if not isinstance(value, (tuple, list)):
+                raise ValueError("")
+
+            self._sub_root_key_path = value
+
+        def read_root_key_path(self):
+            return (
+                f"{self._main_root_key_path}_{self._sub_root_key_path}"
             )
 
-            self._root_key_path = (
-                root_key_path
+        def base_construct(self, kwargs):
+            if not isinstance(kwargs, (dict)):
+                raise TypeError("")         
+                
+            global _ExternalDependencyManager   
+
+            if not _ExternalDependencyManager:            
+                from .external_dependency_manager import ExternalDependencyManager
+
+                global _PluginDataManager
+                
+                _ExternalDependencyManager = (
+                    ExternalDependencyManager()
+                )
+                _PluginDataManager = (
+                    _ExternalDependencyManager()
+                        .read_singleton()
+                        .import_module(                    
+                            path="qlogicae_cor.v3.library.plugin_data_manager",
+                            member="PluginDataManager",
+                            is_member_callable=True,
+                        )
+                )
+
+            self._main_root_key_path = (
+                kwargs.get(
+                    "main_root_key_path",
+                    "qlogicae_cor_v3"
+                ) or "qlogicae_cor_v3"
+            )
+            self._sub_root_key_path = (
+                kwargs.get(
+                    "sub_root_key_path",
+                    "base"
+                ) or "base"
             )
 
             return True
@@ -67,9 +98,46 @@ def _allocate():
                     .read_singleton()
             )
 
+            data = (
+                kwargs.get("data", {}) or {}
+            )
+            root_key_path = (
+                kwargs.get(
+                    "root_key_path",
+                    self.read_root_key_path()
+                ) or self.read_root_key_path()
+            )
+            layer = (
+                kwargs.get("layer", 0)
+            )
+            is_default_data_enabled = (
+                kwargs.get("is_default_data_enabled", True)
+            )
+            default_data = (
+                {
+                    "callbacks": {
+                        "on_pre_setup": None,
+                        "on_post_setup": None,
+                        "on_pre_run": None,
+                        "on_post_run": None,
+                        "on_pre_shutdown": None,
+                        "on_post_shutdown": None,
+                    }
+                }
+                if is_default_data_enabled
+                else {}
+            )
+
             return (
                 plugin_data_manager
-                    .setup_plugin_data(kwargs)
+                    .setup_plugin_data({
+                        "root_key_path": root_key_path,
+                        "layer": layer,
+                        "data": {
+                            **default_data,
+                            **data,
+                        }
+                    })
             )
 
         def read_callback(self, callback_name):
@@ -90,7 +158,7 @@ def _allocate():
                 _PluginDataManager()
                     .read_singleton()
                     .read_all_data(
-                        self._root_key_path
+                        self.read_root_key_path()
                     )
             )
 
@@ -109,7 +177,7 @@ def _allocate():
                 _PluginDataManager()
                     .read_singleton()
                     .read_one_data(
-                        self._root_key_path,
+                        self.read_root_key_path(),
                         key_path
                     )
             )
@@ -127,7 +195,7 @@ def _allocate():
                 _PluginDataManager()
                     .read_singleton()
                     .write_all_data(
-                        self._root_key_path,
+                        self.read_root_key_path(),
                         value
                     ) and result
             )
@@ -149,7 +217,7 @@ def _allocate():
                 _PluginDataManager()
                     .read_singleton()
                     .write_one_data(
-                        self._root_key_path,
+                        self.read_root_key_path(),
                         key_path,
                         value
                     ) and result
@@ -171,7 +239,7 @@ def _allocate():
                 _PluginDataManager()
                     .read_singleton()
                     .remove_one_data(
-                        self._root_key_path,
+                        self.read_root_key_path(),
                         key_path,
                     ) and result
             )
@@ -188,7 +256,7 @@ def _allocate():
                 _PluginDataManager()
                     .read_singleton()
                     .remove_all_data(
-                        self._root_key_path,
+                        self.read_root_key_path(),
                     ) and result
             )
 

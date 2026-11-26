@@ -14,21 +14,14 @@ def _allocate():
     global _allocate
     global _PluginDataManager
 
-    class __PluginDataManager:
+    from .abstract_manager import AbstractManager
+
+    class __PluginDataManager(AbstractManager()):
         __slots__ = (
             "_plugin_items",
         )
-
-        _singleton = None
-
         def __init__(self):
             self.construct()
-
-        def __enter__(self):
-            return self
-
-        def __exit__(self, exc_type, exc_value, traceback):
-            self.shutdown()
 
         def read_plugin_items(self):
             return (
@@ -46,55 +39,47 @@ def _allocate():
 
             self._plugin_items = value
 
-        @classmethod
-        def read_singleton(cls):
-            if cls._singleton is None:
-                cls._singleton = cls()
-
-            return cls._singleton
-
         def construct(self):
             global _ExternalDependencyManager
 
-            global _ObjectMergeManager
-            global _PythonModuleManager
-            global _ValueCacheStorageManager
+            if not _ExternalDependencyManager:
+                from .external_dependency_manager import ExternalDependencyManager
+                
+                global _ObjectMergeManager
+                global _PythonModuleManager
+                global _ValueCacheStorageManager
 
-            from qlogicae_cor.v3.library.external_dependency_manager import (
-                ExternalDependencyManager,
-            )
+                _ExternalDependencyManager = (
+                    ExternalDependencyManager()
+                )
 
-            _ExternalDependencyManager = (
-                ExternalDependencyManager()
-            )
-
-            _ObjectMergeManager = (
-                _ExternalDependencyManager()
-                    .read_singleton()
-                    .import_module(
-                        path="qlogicae_cor.v3.library.object_merge_manager",
-                        member="ObjectMergeManager",
-                        is_member_callable=True,
-                    )
-            )
-            _PythonModuleManager = (
-                _ExternalDependencyManager()
-                    .read_singleton()
-                    .import_module(
-                        path="qlogicae_cor.v3.library.python_module_manager",
-                        member="PythonModuleManager",
-                        is_member_callable=True,
-                    )
-            )
-            _ValueCacheStorageManager = (
-                _ExternalDependencyManager()
-                    .read_singleton()
-                    .import_module(
-                        path="qlogicae_cor.v3.library.value_cache_storage_manager",
-                        member="ValueCacheStorageManager",
-                        is_member_callable=True,
-                    )
-            )
+                _ObjectMergeManager = (
+                    _ExternalDependencyManager()
+                        .read_singleton()
+                        .import_module(
+                            path="qlogicae_cor.v3.library.object_merge_manager",
+                            member="ObjectMergeManager",
+                            is_member_callable=True,
+                        )
+                )
+                _PythonModuleManager = (
+                    _ExternalDependencyManager()
+                        .read_singleton()
+                        .import_module(
+                            path="qlogicae_cor.v3.library.python_module_manager",
+                            member="PythonModuleManager",
+                            is_member_callable=True,
+                        )
+                )
+                _ValueCacheStorageManager = (
+                    _ExternalDependencyManager()
+                        .read_singleton()
+                        .import_module(
+                            path="qlogicae_cor.v3.library.value_cache_storage_manager",
+                            member="ValueCacheStorageManager",
+                            is_member_callable=True,
+                        )
+                )
 
             self._plugin_items = []
 
@@ -254,9 +239,6 @@ def _allocate():
                 for plugin_item in plugin_items
             ]
 
-            return True
-
-        def shutdown(self):
             return True
 
         def read_all_data(

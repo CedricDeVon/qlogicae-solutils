@@ -16,96 +16,73 @@ def _allocate():
     global _allocate
     global _WorkflowManager
 
-    class __WorkflowManager:
-        __slots__ = ()
+    from .abstract_manager import AbstractManager
 
-        _singleton = None
-
+    class __WorkflowManager(AbstractManager()):
         def __init__(self):
             self.construct()
-
-        def __enter__(self):
-            return self
-
-        def __exit__(self, exc_type, exc_value, traceback):
-            self.shutdown()
-
-        @classmethod
-        def read_singleton(cls):
-            if cls._singleton is None:
-                cls._singleton = cls()
-
-            return cls._singleton
 
         def construct(self):
             global _ExternalDependencyManager
 
-            global _CommandDataManager
-            global _HardwareDataManager
-            global _WorkflowDataManager
-            global _ScriptProcessManager
-            global _ScriptProcessDelayManager
+            if not _ExternalDependencyManager:
+                from .external_dependency_manager import ExternalDependencyManager
 
-            from .external_dependency_manager import ExternalDependencyManager
+                global _CommandDataManager
+                global _HardwareDataManager
+                global _WorkflowDataManager
+                global _ScriptProcessManager
+                global _ScriptProcessDelayManager
 
-            _ExternalDependencyManager = (
-                ExternalDependencyManager()
-            )
-            _HardwareDataManager = (
-                _ExternalDependencyManager()
-                    .read_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.hardware_data_manager",
-                        member="HardwareDataManager",
-                        is_member_callable=True,
-                    )
-            )
-            _ScriptProcessManager = (
-                _ExternalDependencyManager()
-                    .read_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.script_process_manager",
-                        member="ScriptProcessManager",
-                        is_member_callable=True,
-                    )
-            )
-            _ScriptProcessDelayManager = (
-                _ExternalDependencyManager()
-                    .read_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.script_process_delay_manager",
-                        member="ScriptProcessDelayManager",
-                        is_member_callable=True,
-                    )
-            )            
-            _WorkflowDataManager = (
-                _ExternalDependencyManager()
-                    .read_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.workflow_data_manager",
-                        member="WorkflowDataManager",
-                        is_member_callable=True,
-                    )
-            )
-            _CommandDataManager = (
-                _ExternalDependencyManager()
-                    .read_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.command_data_manager",
-                        member="CommandDataManager",
-                        is_member_callable=True,
-                    )
-            )
+                _ExternalDependencyManager = (
+                    ExternalDependencyManager()
+                )
+                _HardwareDataManager = (
+                    _ExternalDependencyManager()
+                        .read_singleton()
+                        .import_module(                    
+                            path="qlogicae_cor.v3.library.hardware_data_manager",
+                            member="HardwareDataManager",
+                            is_member_callable=True,
+                        )
+                )
+                _ScriptProcessManager = (
+                    _ExternalDependencyManager()
+                        .read_singleton()
+                        .import_module(                    
+                            path="qlogicae_cor.v3.library.script_process_manager",
+                            member="ScriptProcessManager",
+                            is_member_callable=True,
+                        )
+                )
+                _ScriptProcessDelayManager = (
+                    _ExternalDependencyManager()
+                        .read_singleton()
+                        .import_module(                    
+                            path="qlogicae_cor.v3.library.script_process_delay_manager",
+                            member="ScriptProcessDelayManager",
+                            is_member_callable=True,
+                        )
+                )            
+                _WorkflowDataManager = (
+                    _ExternalDependencyManager()
+                        .read_singleton()
+                        .import_module(                    
+                            path="qlogicae_cor.v3.library.workflow_data_manager",
+                            member="WorkflowDataManager",
+                            is_member_callable=True,
+                        )
+                )
+                _CommandDataManager = (
+                    _ExternalDependencyManager()
+                        .read_singleton()
+                        .import_module(                    
+                            path="qlogicae_cor.v3.library.command_data_manager",
+                            member="CommandDataManager",
+                            is_member_callable=True,
+                        )
+                )
 
-            return True
-
-        def setup(self, kwargs):
-            if not isinstance(kwargs, (dict)):
-                raise TypeError("")
-
-            return True
-
-        def shutdown(self):
             return True
 
         def run_workflows(self, kwargs):

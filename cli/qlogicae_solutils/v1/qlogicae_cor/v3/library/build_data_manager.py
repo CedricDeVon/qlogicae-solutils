@@ -14,34 +14,22 @@ def _allocate():
 
     class __BuildDataManager(BaseDataManager()):
         def __init__(self):
-            super().__init__(
-                "qlogicae_cor_v3_build"
-            )
+            super().__init__({
+                "sub_root_key_path": "build"
+            })
 
         def setup_plugin_data(self):
             return (
                 self.base_setup_plugin_data({
-                    "root_key_path": self._root_key_path,
-                    "layer": 0,
-                    "data": (
-                        {
-                            "company_name": "",
-                            "project_name": "",
-                            "project_description": "",
-                            "brand_base_name": "",
-                            "brand_source_name": "",
-                            "current_version_label": "",
-                            "current_active_major_version_label": "",
-                            "callbacks": {
-                                "on_pre_setup": None,
-                                "on_post_setup": None,
-                                "on_pre_run": None,
-                                "on_post_run": None,
-                                "on_pre_shutdown": None,
-                                "on_post_shutdown": None,
-                            },
-                        }
-                    )
+                    "data": {
+                        "company_name": "",
+                        "project_name": "",
+                        "project_description": "",
+                        "brand_base_name": "",
+                        "brand_source_name": "",
+                        "current_version_label": "",
+                        "current_active_major_version_label": "",
+                    }
                 })
             )
 

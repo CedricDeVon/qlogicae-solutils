@@ -15,18 +15,15 @@ def _allocate():
     global _allocate
     global _PersistentCacheStorageManager
 
-    class __PersistentCacheStorageManager:
+    from .abstract_manager import AbstractManager
+
+    class __PersistentCacheStorageManager(AbstractManager()):
         __slots__ = (
             "_database",
         )
 
-        _singleton = None
-
         def __init__(self):
             self.construct()
-
-        def __enter__(self):
-            return self
 
         def __exit__(self, exc_type, exc_value, traceback):
             self.shutdown()
@@ -37,59 +34,50 @@ def _allocate():
                 database.close()
                 self._database = None
 
-        @classmethod
-        def read_singleton(cls):
-            if cls._singleton is None:
-                cls._singleton = cls()
-            
-            return cls._singleton
-
         def construct(self):
             global _ExternalDependencyManager
 
-            global _dbm
-            global _time
-            global _pickle
-            global _PersistentCacheStorageDataManager
-            from .external_dependency_manager import ExternalDependencyManager
-            _ExternalDependencyManager = (
-                ExternalDependencyManager()
-            )
-            _dbm = (
-                _ExternalDependencyManager().read_singleton()
-                    .import_module(
-                        path="dbm"
-                    )
-            )
-            _pickle = (
-                _ExternalDependencyManager().read_singleton()
-                    .import_module(
-                        path="pickle"
-                    )
-            )
-            _time = (
-                _ExternalDependencyManager().read_singleton()
-                    .import_module(
-                        path="time"
-                    )
-            )
-            _PersistentCacheStorageDataManager = (
-                _ExternalDependencyManager()
-                    .read_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.persistent_cache_storage_data_manager",
-                        member="PersistentCacheStorageDataManager",
-                        is_member_callable=True,
-                    )
-            )
+            if not _ExternalDependencyManager:
+                from .external_dependency_manager import ExternalDependencyManager
+
+                global _dbm
+                global _time
+                global _pickle
+                global _PersistentCacheStorageDataManager
+
+                _ExternalDependencyManager = (
+                    ExternalDependencyManager()
+                )
+                _dbm = (
+                    _ExternalDependencyManager().read_singleton()
+                        .import_module(
+                            path="dbm"
+                        )
+                )
+                _pickle = (
+                    _ExternalDependencyManager().read_singleton()
+                        .import_module(
+                            path="pickle"
+                        )
+                )
+                _time = (
+                    _ExternalDependencyManager().read_singleton()
+                        .import_module(
+                            path="time"
+                        )
+                )
+                _PersistentCacheStorageDataManager = (
+                    _ExternalDependencyManager()
+                        .read_singleton()
+                        .import_module(                    
+                            path="qlogicae_cor.v3.library.persistent_cache_storage_data_manager",
+                            member="PersistentCacheStorageDataManager",
+                            is_member_callable=True,
+                        )
+                )
 
             self._database = None
             
-            return True
-
-        def setup(self, kwargs):
-            if not isinstance(kwargs, (dict)):
-                return True
             return True
 
         def setup_properties(self, kwargs):

@@ -8,18 +8,29 @@ def _allocate():
     global _allocate
     global _BasePluginManager
 
-    from .abstract_manager import AbstractManager
+    from .abstract_manager import AbstractManager        
 
     class __BasePluginManager(AbstractManager()):
         __slots__ = (
             "_data_manager",
         )
 
-        def __init__(self):
-            self.base_construct()
+        def base_construct(self, kwargs):
+            if not isinstance(kwargs, (dict)):
+                raise TypeError("")
 
-        def base_construct(self):
-            self._data_manager = None
+            data_manager = (
+                kwargs.get(
+                    "data_manager",
+                    None
+                ) or None
+            )
+            if not isinstance(data_manager, (object)):
+                raise TypeError("")
+
+            self._data_manager = (
+                data_manager
+            )
 
             return True
 

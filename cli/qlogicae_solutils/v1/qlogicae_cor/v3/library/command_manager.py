@@ -13,8 +13,9 @@ def _allocate():
     global _allocate
     global _CommandManager
 
+    from .abstract_manager import AbstractManager
 
-    class __CommandManager:
+    class __CommandManager(AbstractManager()):
         __slots__ = (
             "_parser",
             "_commands",
@@ -22,44 +23,30 @@ def _allocate():
             "_parsed_arguments",
         )
 
-        _singleton = None
-
         def __init__(self):
             self.construct()
-
-        def __enter__(self):
-            return self
-
-        def __exit__(self, exc_type, exc_value, traceback):
-            self.shutdown()
-
-        @classmethod
-        def read_singleton(cls):
-            if cls._singleton is None:
-                cls._singleton = cls()
-
-            return cls._singleton
 
         def construct(self):
             global _ExternalDependencyManager
 
-            global _argparse
-            global _CommandFunctionManager
+            if not _ExternalDependencyManager:
+                from .external_dependency_manager import ExternalDependencyManager
+                
+                global _argparse
+                global _CommandFunctionManager
 
-            from .external_dependency_manager import ExternalDependencyManager
-
-            _ExternalDependencyManager = (
-                ExternalDependencyManager()
-            )
-            _CommandFunctionManager = (
-                _ExternalDependencyManager()
-                    .read_singleton()
-                    .import_module(
-                        path="qlogicae_cor.v3.library.command_function_manager",
-                        member="CommandFunctionManager",
-                        is_member_callable=True,
-                    )
-            )
+                _ExternalDependencyManager = (
+                    ExternalDependencyManager()
+                )
+                _CommandFunctionManager = (
+                    _ExternalDependencyManager()
+                        .read_singleton()
+                        .import_module(
+                            path="qlogicae_cor.v3.library.command_function_manager",
+                            member="CommandFunctionManager",
+                            is_member_callable=True,
+                        )
+                )
 
             self._parser = None
             self._commands = None
@@ -72,51 +59,22 @@ def _allocate():
             if not isinstance(kwargs, (dict)):
                 raise TypeError("")
 
-            options = (
+            parser_options = (
                 kwargs.get(
-                    "options",
+                    "parser_options",
                     {}
                 ) or {}
             )
-            if not isinstance(options, (dict)):
+            if not isinstance(parser_options, (dict)):
                 raise TypeError("")
 
             is_parser_enabled = (
                 kwargs.get(
                     "is_parser_enabled",
-                    True
                 )
             )
             if not isinstance(is_parser_enabled, (bool)):
                 raise TypeError("")
-
-            callbacks = (
-                kwargs.get(
-                    "callbacks",
-                    {}
-                ) or {}
-            )
-            if not isinstance(callbacks, (dict)):
-                raise TypeError("")
-
-            callback_on_pre_setup = (
-                callbacks.get(
-                    "on_pre_setup",
-                    None
-                )
-            )
-            callback_on_post_setup = (
-                callbacks.get(
-                    "on_post_setup",
-                    None
-                )
-            )
-
-            if (
-                callback_on_pre_setup and
-                callable(callback_on_pre_setup)
-            ):
-                callback_on_pre_setup()
 
             command_function_manager = (
                 _CommandFunctionManager()
@@ -131,50 +89,26 @@ def _allocate():
             if is_parser_enabled:
                 result = (
                     self.setup_parser(
-                        options
+                        parser_options
                     ) and result
                 )
 
-            if (
-                callback_on_post_setup and
-                callable(callback_on_post_setup)
-            ):
-                callback_on_post_setup()
-
             return result
-
-        def shutdown(self):
-            return True
 
         def run(self, kwargs):
             if not isinstance(kwargs, (dict)):
                 raise TypeError("")
 
-            command_callbacks = (
+            is_parser_enabled = (
                 kwargs.get(
-                    "callbacks",
-                    {}
-                ) or {}
-            )
-
-            command_callback_on_pre_run = (
-                command_callbacks.get(
-                    "on_pre_run",
-                    None
+                    "is_parser_enabled",
                 )
             )
-            command_callback_on_post_run = (
-                command_callbacks.get(
-                    "on_post_run",
-                    None
-                )
-            )
+            if not isinstance(is_parser_enabled, (bool)):
+                raise TypeError("")
 
-            if (
-                command_callback_on_pre_run and
-                callable(command_callback_on_pre_run)
-            ):
-                command_callback_on_pre_run()
+            if not is_parser_enabled:
+                return True
 
             result = True
             result = (
@@ -186,12 +120,6 @@ def _allocate():
             result = (
                 self.run_command_handler() and result
             )
-
-            if (
-                command_callback_on_post_run and
-                callable(command_callback_on_post_run)
-            ):
-                command_callback_on_post_run()
 
             return (
                 result

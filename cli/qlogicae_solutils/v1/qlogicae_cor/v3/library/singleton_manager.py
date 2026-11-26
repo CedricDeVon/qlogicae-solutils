@@ -9,7 +9,9 @@ def _allocate():
     global _allocate
     global _SingletonManager
 
-    class __SingletonManager:
+    from .abstract_manager import AbstractManager
+
+    class __SingletonManager(AbstractManager()):
         _singletons = {}
         _singleton_arrays = {}
 

@@ -12,84 +12,52 @@ def _allocate():
     global _allocate
     global _PersistentCacheStoragePluginManager
 
-    class __PersistentCacheStoragePluginManager:
-        __slots__ = ()
+    from .base_plugin_manager import BasePluginManager
 
-        _singleton = None
-
+    class __PersistentCacheStoragePluginManager(BasePluginManager()):
         def __init__(self):
-            self.construct()
+            super().__init__()
 
-        def __enter__(self):
-            return self
-
-        def __exit__(self, exc_type, exc_value, traceback):
-            self.shutdown()
-
-        @classmethod
-        def read_singleton(cls):
-            if cls._singleton is None:
-                cls._singleton = cls()
-
-            return cls._singleton
+            self.construct()        
 
         def construct(self):
             global _ExternalDependencyManager
-                    
-            global _PersistentCacheStorageManager
-            global _PersistentCacheStorageDataManager
 
-            from .external_dependency_manager import ExternalDependencyManager
+            if not _ExternalDependencyManager:
+                from .external_dependency_manager import ExternalDependencyManager
 
-            _ExternalDependencyManager = (
-                ExternalDependencyManager()
-            )
-            _PersistentCacheStorageManager = (
-                _ExternalDependencyManager()
-                    .read_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.persistent_cache_storage_manager",
-                        member="PersistentCacheStorageManager",
-                        is_member_callable=True,
-                    )
-            )
-            _PersistentCacheStorageDataManager = (
-                _ExternalDependencyManager()
-                    .read_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.persistent_cache_storage_data_manager",
-                        member="PersistentCacheStorageDataManager",
-                        is_member_callable=True,
-                    )
-            )
+                global _PersistentCacheStorageManager
+                global _PersistentCacheStorageDataManager
+
+                _ExternalDependencyManager = (
+                    ExternalDependencyManager()
+                )
+                _PersistentCacheStorageManager = (
+                    _ExternalDependencyManager()
+                        .read_singleton()
+                        .import_module(                    
+                            path="qlogicae_cor.v3.library.persistent_cache_storage_manager",
+                            member="PersistentCacheStorageManager",
+                            is_member_callable=True,
+                        )
+                )
+                _PersistentCacheStorageDataManager = (
+                    _ExternalDependencyManager()
+                        .read_singleton()
+                        .import_module(                    
+                            path="qlogicae_cor.v3.library.persistent_cache_storage_data_manager",
+                            member="PersistentCacheStorageDataManager",
+                            is_member_callable=True,
+                        )
+                )
+
+            self.base_construct({
+                "data_manager": _PersistentCacheStorageDataManager
+            })        
 
             return True
 
-        def setup(self, kwargs):
-            if not isinstance(kwargs, (dict)):
-                return True
-
-            return True
-
-        def shutdown(self):
-            return True
-
-        def export_plugin(self):
-            persistent_cache_storage_data_manager = (
-                _PersistentCacheStorageDataManager()
-                    .read_singleton()
-            )
-            
-            return (
-                persistent_cache_storage_data_manager
-                    .setup_plugin_data()
-            )
-
-        def setup_plugin(self):    
-            result = True
-            return result
-
-        def run_plugin(self):
+        def run_plugin_hook(self):
             persistent_cache_storage_manager = (
                 _PersistentCacheStorageManager()
                     .read_singleton()
@@ -102,7 +70,7 @@ def _allocate():
 
             return result
 
-        def shutdown_plugin(self):
+        def shutdown_plugin_hook(self):
             persistent_cache_storage_manager = (
                 _PersistentCacheStorageManager()
                     .read_singleton()

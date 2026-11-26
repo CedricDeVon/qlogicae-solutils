@@ -9,19 +9,16 @@ def _allocate():
     global _allocate    
     global _ExternalDependencyManager        
 
-    class __ExternalDependencyManager:
+    from .abstract_manager import AbstractManager
+
+    class __ExternalDependencyManager(AbstractManager()):
         __slots__ = (
             "_import_targets",
             "_is_pre_allocated",
         )
 
-        _singleton = None
-
         def __init__(self):
             self.construct()
-
-        def __enter__(self):
-            return self
 
         def __exit__(self, exc_type, exc_value, traceback):
             self.shutdown()
@@ -55,23 +52,17 @@ def _allocate():
 
             self._import_targets = value
 
-        @classmethod
-        def read_singleton(cls):
-            if cls._singleton is None:
-                cls._singleton = cls()
-
-            return cls._singleton
-
         def construct(self):
             global _ImportTarget
 
-            from qlogicae_cor.v3.library.import_target import (
-                ImportTarget
-            )
+            if not _ImportTarget:
+                from qlogicae_cor.v3.library.import_target import (
+                    ImportTarget
+                )
 
-            _ImportTarget = (
-                ImportTarget()
-            )
+                _ImportTarget = (
+                    ImportTarget()
+                )
 
             self._import_targets = {}
             self._is_pre_allocated = False

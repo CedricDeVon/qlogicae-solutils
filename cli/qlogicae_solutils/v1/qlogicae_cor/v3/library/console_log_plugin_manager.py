@@ -14,91 +14,62 @@ def _allocate():
     global _allocate
     global _ConsoleLogPluginManager
 
-    class __ConsoleLogPluginManager:
-        __slots__ = ()
+    from .base_plugin_manager import BasePluginManager
 
-        _singleton = None
-
+    class __ConsoleLogPluginManager(BasePluginManager()):
         def __init__(self):
-            self.construct()
+            super().__init__()
 
-        def __enter__(self):
-            return self
-
-        def __exit__(self, exc_type, exc_value, traceback):
-            self.shutdown()
-
-        @classmethod
-        def read_singleton(cls):
-            if cls._singleton is None:
-                cls._singleton = cls()
-
-            return cls._singleton
+            self.construct()        
 
         def construct(self):
             global _ExternalDependencyManager
-            
-            global _LogOptions
-            global _ConsoleLogManager
             global _ConsoleLogDataManager
-        
-
-            from .external_dependency_manager import ExternalDependencyManager
-
-            _ExternalDependencyManager = (
-                ExternalDependencyManager()
-            )
-            _LogOptions = (
-                _ExternalDependencyManager()
-                    .read_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.log_options",
-                        member="LogOptions",
-                        is_member_callable=True,
-                    )
-            )
-            _ConsoleLogManager = (
-                _ExternalDependencyManager()
-                    .read_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.console_log_manager",
-                        member="ConsoleLogManager",
-                        is_member_callable=True,
-                    )
-            )
-            _ConsoleLogDataManager = (
-                _ExternalDependencyManager()
-                    .read_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.console_log_data_manager",
-                        member="ConsoleLogDataManager",
-                        is_member_callable=True,
-                    )
-            )
-
-            return True
-
-        def setup(self, kwargs):
-            if not isinstance(kwargs, (dict)):
-                return True
-
-            return True
-
-        def shutdown(self):
-            return True
-
-        def export_plugin(self):
-            console_log_data_manager = (
-                _ConsoleLogDataManager()
-                    .read_singleton()
-            )
             
-            return (
-                console_log_data_manager
-                    .setup_plugin_data()
-            )
+            if not _ExternalDependencyManager:
+                from .external_dependency_manager import ExternalDependencyManager
 
-        def setup_plugin(self):            
+                global _LogOptions
+                global _ConsoleLogManager
+            
+                _ExternalDependencyManager = (
+                    ExternalDependencyManager()
+                )
+                _LogOptions = (
+                    _ExternalDependencyManager()
+                        .read_singleton()
+                        .import_module(                    
+                            path="qlogicae_cor.v3.library.log_options",
+                            member="LogOptions",
+                            is_member_callable=True,
+                        )
+                )
+                _ConsoleLogManager = (
+                    _ExternalDependencyManager()
+                        .read_singleton()
+                        .import_module(                    
+                            path="qlogicae_cor.v3.library.console_log_manager",
+                            member="ConsoleLogManager",
+                            is_member_callable=True,
+                        )
+                )
+                _ConsoleLogDataManager = (
+                    _ExternalDependencyManager()
+                        .read_singleton()
+                        .import_module(                    
+                            path="qlogicae_cor.v3.library.console_log_data_manager",
+                            member="ConsoleLogDataManager",
+                            is_member_callable=True,
+                        )
+                )
+
+            self.base_construct({
+                "data_manager": _ConsoleLogDataManager
+            })        
+
+            return True
+
+        def setup_plugin_hook(self):            
             console_log_data_manager = (
                 _ConsoleLogDataManager()
                     .read_singleton()
@@ -136,12 +107,12 @@ def _allocate():
 
             return result
 
-        def run_plugin(self):            
+        def run_plugin_hook(self):            
             result = True
             return result
 
 
-        def shutdown_plugin(self):                        
+        def shutdown_plugin_hook(self):                        
             console_log_data_manager = (
                 _ConsoleLogDataManager()
                     .read_singleton()

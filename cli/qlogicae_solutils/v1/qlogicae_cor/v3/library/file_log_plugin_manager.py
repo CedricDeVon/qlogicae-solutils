@@ -14,91 +14,62 @@ def _allocate():
     global _allocate
     global _FileLogPluginManager
 
-    class __FileLogPluginManager:
-        __slots__ = ()
+    from .base_plugin_manager import BasePluginManager
 
-        _singleton = None
-
+    class __FileLogPluginManager(BasePluginManager()):
         def __init__(self):
-            self.construct()
+            super().__init__()
 
-        def __enter__(self):
-            return self
-
-        def __exit__(self, exc_type, exc_value, traceback):
-            self.shutdown()
-
-        @classmethod
-        def read_singleton(cls):
-            if cls._singleton is None:
-                cls._singleton = cls()
-
-            return cls._singleton
+            self.construct()        
 
         def construct(self):
             global _ExternalDependencyManager
-            
-            global _LogOptions
-            global _FileLogManager
-            global _FileLogDataManager
-        
+                    
+            if not _ExternalDependencyManager:
+                from .external_dependency_manager import ExternalDependencyManager
 
-            from .external_dependency_manager import ExternalDependencyManager
+                global _LogOptions
+                global _FileLogManager
+                global _FileLogDataManager
 
-            _ExternalDependencyManager = (
-                ExternalDependencyManager()
-            )
-            _LogOptions = (
-                _ExternalDependencyManager()
-                    .read_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.log_options",
-                        member="LogOptions",
-                        is_member_callable=True,
-                    )
-            )
-            _FileLogManager = (
-                _ExternalDependencyManager()
-                    .read_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.file_log_manager",
-                        member="FileLogManager",
-                        is_member_callable=True,
-                    )
-            )
-            _FileLogDataManager = (
-                _ExternalDependencyManager()
-                    .read_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.file_log_data_manager",
-                        member="FileLogDataManager",
-                        is_member_callable=True,
-                    )
-            )
+                _ExternalDependencyManager = (
+                    ExternalDependencyManager()
+                )
+                _LogOptions = (
+                    _ExternalDependencyManager()
+                        .read_singleton()
+                        .import_module(                    
+                            path="qlogicae_cor.v3.library.log_options",
+                            member="LogOptions",
+                            is_member_callable=True,
+                        )
+                )
+                _FileLogManager = (
+                    _ExternalDependencyManager()
+                        .read_singleton()
+                        .import_module(                    
+                            path="qlogicae_cor.v3.library.file_log_manager",
+                            member="FileLogManager",
+                            is_member_callable=True,
+                        )
+                )
+                _FileLogDataManager = (
+                    _ExternalDependencyManager()
+                        .read_singleton()
+                        .import_module(                    
+                            path="qlogicae_cor.v3.library.file_log_data_manager",
+                            member="FileLogDataManager",
+                            is_member_callable=True,
+                        )
+                )
 
-            return True
-
-        def setup(self, kwargs):
-            if not isinstance(kwargs, (dict)):
-                return True
+            self.base_construct({
+                "data_manager": _FileLogDataManager
+            })        
 
             return True
 
-        def shutdown(self):
-            return True
-
-        def export_plugin(self):
-            file_log_data_manager = (
-                _FileLogDataManager()
-                    .read_singleton()
-            )
-            
-            return (
-                file_log_data_manager
-                    .setup_plugin_data()
-            )
-
-        def setup_plugin(self):            
+        def setup_plugin_hook(self):            
             file_log_data_manager = (
                 _FileLogDataManager()
                     .read_singleton()
@@ -136,12 +107,7 @@ def _allocate():
 
             return result
 
-        def run_plugin(self):            
-            result = True
-            return result
-
-
-        def shutdown_plugin(self):                        
+        def shutdown_plugin_hook(self):                        
             file_log_data_manager = (
                 _FileLogDataManager()
                     .read_singleton()

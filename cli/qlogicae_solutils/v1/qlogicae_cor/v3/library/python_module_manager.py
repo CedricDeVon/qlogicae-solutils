@@ -14,68 +14,42 @@ def _allocate():
     global _allocate
     global _PythonModuleManager
 
-    class __PythonModuleManager:
-        __slots__ = ()
+    from .abstract_manager import AbstractManager
 
-        _singleton = None
-
+    class __PythonModuleManager(AbstractManager()):
         def __init__(self):
             self.construct()
-
-        def __enter__(self):
-            return self
-
-        def __exit__(self, exc_type, exc_value, traceback):
-            self.shutdown()
-
-        @classmethod
-        def read_singleton(cls):
-            if cls._singleton is None:
-                cls._singleton = cls()
-
-            return cls._singleton
 
         def construct(self):
             global _ExternalDependencyManager
 
-            global _sys
-            global _pathlib
-            global _importlib_util
+            if not _ExternalDependencyManager:
+                from .external_dependency_manager import ExternalDependencyManager
 
-            from .external_dependency_manager import ExternalDependencyManager
+                global _sys
+                global _pathlib
+                global _importlib_util
 
-            _ExternalDependencyManager = (
-                ExternalDependencyManager()
-            )
-
-            _sys = (
-                _ExternalDependencyManager().read_singleton().import_module(
-                    path="sys",
+                _ExternalDependencyManager = (
+                    ExternalDependencyManager()
                 )
-            )
-            _pathlib = (
-                _ExternalDependencyManager().read_singleton().import_module(
-                    path="pathlib",
+
+                _sys = (
+                    _ExternalDependencyManager().read_singleton().import_module(
+                        path="sys",
+                    )
                 )
-            )
-            _importlib_util = (
-                _ExternalDependencyManager().read_singleton().import_module(
-                    path="importlib.util",
+                _pathlib = (
+                    _ExternalDependencyManager().read_singleton().import_module(
+                        path="pathlib",
+                    )
                 )
-            )
+                _importlib_util = (
+                    _ExternalDependencyManager().read_singleton().import_module(
+                        path="importlib.util",
+                    )
+                )
 
-            return True
-
-        def setup(
-            self,
-            kwargs,
-        ):
-            if not isinstance(kwargs, (dict)):
-                return True
-
-            return True
-
-        def shutdown(self):
             return True
 
         def read_imported_modules(

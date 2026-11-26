@@ -15,29 +15,16 @@ def _allocate():
     global _allocate
     global _ConsoleLogManager
 
-    class __ConsoleLogManager:
+    from .abstract_manager import AbstractManager
+
+    class __ConsoleLogManager(AbstractManager()):
         __slots__ = (
             "_logger",
             "_options",
         )
 
-        _singleton = None
-
         def __init__(self):
             self.construct()
-
-        def __enter__(self):
-            return self
-
-        def __exit__(self, exc_type, exc_value, traceback):
-            self.shutdown()
-
-        @classmethod
-        def read_singleton(cls):
-            if cls._singleton is None:
-                cls._singleton = cls()
-
-            return cls._singleton
 
         @property
         def options(self):
@@ -50,43 +37,44 @@ def _allocate():
         def construct(self):
             global _ExternalDependencyManager
 
-            global _logging
-            global _LogFormat
-            global _LogOptions
-            global _LogOptionsManager
+            if not _ExternalDependencyManager:
+                from .external_dependency_manager import ExternalDependencyManager
 
-            from .external_dependency_manager import ExternalDependencyManager
+                global _logging
+                global _LogFormat
+                global _LogOptions
+                global _LogOptionsManager
 
-            _ExternalDependencyManager = (
-                ExternalDependencyManager()
-            )
+                _ExternalDependencyManager = (
+                    ExternalDependencyManager()
+                )
 
-            _logging = (
-                _ExternalDependencyManager().read_singleton().import_module(
-                    path="logging",
+                _logging = (
+                    _ExternalDependencyManager().read_singleton().import_module(
+                        path="logging",
+                    )
                 )
-            )
-            _LogFormat = (
-                _ExternalDependencyManager().read_singleton().import_module(
-                    path="qlogicae_cor.v3.library.log_format",
-                    member="LogFormat",
-                    is_member_callable=True,
+                _LogFormat = (
+                    _ExternalDependencyManager().read_singleton().import_module(
+                        path="qlogicae_cor.v3.library.log_format",
+                        member="LogFormat",
+                        is_member_callable=True,
+                    )
                 )
-            )
-            _LogOptions = (
-                _ExternalDependencyManager().read_singleton().import_module(
-                    path="qlogicae_cor.v3.library.log_options",
-                    member="LogOptions",
-                    is_member_callable=True,
+                _LogOptions = (
+                    _ExternalDependencyManager().read_singleton().import_module(
+                        path="qlogicae_cor.v3.library.log_options",
+                        member="LogOptions",
+                        is_member_callable=True,
+                    )
                 )
-            )
-            _LogOptionsManager = (
-                _ExternalDependencyManager().read_singleton().import_module(
-                    path="qlogicae_cor.v3.library.log_options_manager",
-                    member="LogOptionsManager",
-                    is_member_callable=True,
+                _LogOptionsManager = (
+                    _ExternalDependencyManager().read_singleton().import_module(
+                        path="qlogicae_cor.v3.library.log_options_manager",
+                        member="LogOptionsManager",
+                        is_member_callable=True,
+                    )
                 )
-            )
 
             self._logger = _logging().getLogger("console-logger")
             self._logger.setLevel(_logging().DEBUG)
@@ -113,9 +101,6 @@ def _allocate():
                 ) or _LogOptions()()
             )
             
-            return True
-
-        def shutdown(self):
             return True
 
         def log(self, message, options):

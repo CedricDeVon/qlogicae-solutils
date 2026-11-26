@@ -16,89 +16,68 @@ def _allocate():
     global _allocate
     global _TimestampManager
 
-    class __TimestampManager:
-        _singleton = None
+    from .abstract_manager import AbstractManager
 
+    class __TimestampManager(AbstractManager()):
         def __init__(self):
             self.construct()
-
-        def __enter__(self):
-            return self
-
-        def __exit__(self, exc_type, exc_value, traceback):
-            self.shutdown()
-
-        @classmethod
-        def read_singleton(cls):
-            if cls._singleton is None:
-                cls._singleton = cls()
-
-            return cls._singleton
 
         def construct(self):
             global _ExternalDependencyManager
 
-            global _time
-            global _datetime
-            global _TimeUnit
-            global _Timestamp
-            global _TimeZoneDataManager
-            global _TimestampDataManager
+            if not _ExternalDependencyManager:
+                from .external_dependency_manager import ExternalDependencyManager
 
-            from .external_dependency_manager import ExternalDependencyManager
+                global _time
+                global _datetime
+                global _TimeUnit
+                global _Timestamp
+                global _TimeZoneDataManager
+                global _TimestampDataManager
 
-            _ExternalDependencyManager = (
-                ExternalDependencyManager()
-            )
-
-            _time = (
-                _ExternalDependencyManager().read_singleton().import_module(
-                    path="time"
+                _ExternalDependencyManager = (
+                    ExternalDependencyManager()
                 )
-            )
-            _datetime = (
-                _ExternalDependencyManager().read_singleton().import_module(
-                    path="datetime",
-                )
-            )
-            _TimeUnit = (
-                _ExternalDependencyManager().read_singleton().import_module(
-                    path="qlogicae_cor.v3.library.time_unit",
-                    member="TimeUnit",
-                    is_member_callable=True,
-                )
-            )
-            _TimeZoneDataManager = (
-                _ExternalDependencyManager().read_singleton().import_module(
-                    path="qlogicae_cor.v3.library.time_zone_data_manager",
-                    member="TimeZoneDataManager",
-                    is_member_callable=True,
-                )
-            )
-            _TimestampDataManager = (
-                _ExternalDependencyManager().read_singleton().import_module(
-                    path="qlogicae_cor.v3.library.timestamp_data_manager",
-                    member="TimestampDataManager",
-                    is_member_callable=True,
-                )
-            )
-            _Timestamp = (
-                _ExternalDependencyManager().read_singleton().import_module(
-                    path="qlogicae_cor.v3.library.timestamp",
-                    member="Timestamp",
-                    is_member_callable=True,
-                )
-            )
 
-            return True
+                _time = (
+                    _ExternalDependencyManager().read_singleton().import_module(
+                        path="time"
+                    )
+                )
+                _datetime = (
+                    _ExternalDependencyManager().read_singleton().import_module(
+                        path="datetime",
+                    )
+                )
+                _TimeUnit = (
+                    _ExternalDependencyManager().read_singleton().import_module(
+                        path="qlogicae_cor.v3.library.time_unit",
+                        member="TimeUnit",
+                        is_member_callable=True,
+                    )
+                )
+                _TimeZoneDataManager = (
+                    _ExternalDependencyManager().read_singleton().import_module(
+                        path="qlogicae_cor.v3.library.time_zone_data_manager",
+                        member="TimeZoneDataManager",
+                        is_member_callable=True,
+                    )
+                )
+                _TimestampDataManager = (
+                    _ExternalDependencyManager().read_singleton().import_module(
+                        path="qlogicae_cor.v3.library.timestamp_data_manager",
+                        member="TimestampDataManager",
+                        is_member_callable=True,
+                    )
+                )
+                _Timestamp = (
+                    _ExternalDependencyManager().read_singleton().import_module(
+                        path="qlogicae_cor.v3.library.timestamp",
+                        member="Timestamp",
+                        is_member_callable=True,
+                    )
+                )
 
-        def setup(self, kwargs):
-            if not isinstance(kwargs, (dict)):
-                return True
-
-            return True
-
-        def shutdown(self):
             return True
 
         def generate_current_timestamp(

@@ -13,26 +13,11 @@ def _allocate():
     global _allocate
     global _TextFileIoManager
 
-    class __TextFileIoManager:
-        __slots__ = ()
+    from .abstract_manager import AbstractManager
 
-        _singleton = None
-
+    class __TextFileIoManager(AbstractManager()):
         def __init__(self):
             self.construct()
-
-        def __enter__(self):
-            return self
-
-        def __exit__(self, exc_type, exc_value, traceback):
-            self.shutdown()
-
-        @classmethod
-        def read_singleton(cls):
-            if cls._singleton is None:
-                cls._singleton = cls()
-
-            return cls._singleton
 
         def read_file(self, file_path):
             path = _pathlib().Path(file_path)
@@ -50,37 +35,29 @@ def _allocate():
         def construct(self):
             global _ExternalDependencyManager
 
-            global _pathlib
-            global _TextEncodingDataManager
+            if not _ExternalDependencyManager:
+                from .external_dependency_manager import ExternalDependencyManager
 
-            from .external_dependency_manager import ExternalDependencyManager
+                global _pathlib
+                global _TextEncodingDataManager
 
-            _ExternalDependencyManager = (
-                ExternalDependencyManager()
-            )
-
-            _pathlib = (
-                _ExternalDependencyManager().read_singleton().import_module(
-                    path="pathlib",
+                _ExternalDependencyManager = (
+                    ExternalDependencyManager()
                 )
-            )
-            _TextEncodingDataManager = (
-                _ExternalDependencyManager().read_singleton().import_module(
-                    path="qlogicae_cor.v3.library.text_encoding_data_manager",
-                    member="TextEncodingManager",
-                    is_member_callable=True,
+
+                _pathlib = (
+                    _ExternalDependencyManager().read_singleton().import_module(
+                        path="pathlib",
+                    )
                 )
-            )
+                _TextEncodingDataManager = (
+                    _ExternalDependencyManager().read_singleton().import_module(
+                        path="qlogicae_cor.v3.library.text_encoding_data_manager",
+                        member="TextEncodingManager",
+                        is_member_callable=True,
+                    )
+                )
 
-            return True
-
-        def setup(self, kwargs):
-            if not isinstance(kwargs, (dict)):
-                return True
-
-            return True
-
-        def shutdown(self):
             return True
 
         def write_file(self, file_path, data):

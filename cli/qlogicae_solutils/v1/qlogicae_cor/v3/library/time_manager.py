@@ -15,28 +15,15 @@ def _allocate():
     global _allocate
     global _TimeManager
 
-    class __TimeManager:
+    from .abstract_manager import AbstractManager
+
+    class __TimeManager(AbstractManager()):
         __slots__ = (
             "_TIME_UNIT_TO_NANOSECONDS",
         )
 
-        _singleton = None
-
         def __init__(self):
             self.construct()
-
-        def __enter__(self):
-            return self
-
-        def __exit__(self, exc_type, exc_value, traceback):
-            self.shutdown()
-
-        @classmethod
-        def read_singleton(cls):
-            if cls._singleton is None:
-                cls._singleton = cls()
-
-            return cls._singleton
 
         @property
         def current_iso8601_date(self):
@@ -127,41 +114,43 @@ def _allocate():
         def construct(self):
             global _ExternalDependencyManager
             
-            global _time
-            global _datetime
-            global _TimeUnit
-            global _TimeZoneManager
 
-            from .external_dependency_manager import ExternalDependencyManager
+            if not _ExternalDependencyManager:
+                from .external_dependency_manager import ExternalDependencyManager
 
-            _ExternalDependencyManager = (
-                ExternalDependencyManager()
-            )
+                global _time
+                global _datetime
+                global _TimeUnit
+                global _TimeZoneManager
 
-            _time = (
-                _ExternalDependencyManager().read_singleton().import_module(
-                    path="time",
+                _ExternalDependencyManager = (
+                    ExternalDependencyManager()
                 )
-            )
-            _datetime = (
-                _ExternalDependencyManager().read_singleton().import_module(
-                    path="datetime",
+
+                _time = (
+                    _ExternalDependencyManager().read_singleton().import_module(
+                        path="time",
+                    )
                 )
-            )
-            _TimeUnit = (
-                _ExternalDependencyManager().read_singleton().import_module(
-                    path="qlogicae_cor.v3.library.time_unit",
-                    member="TimeUnit",
-                    is_member_callable=True,
+                _datetime = (
+                    _ExternalDependencyManager().read_singleton().import_module(
+                        path="datetime",
+                    )
                 )
-            )
-            _TimeZoneManager = (
-                _ExternalDependencyManager().read_singleton().import_module(
-                    path="qlogicae_cor.v3.library.time_zone_manager",
-                    member="TimeZoneManager",
-                    is_member_callable=True,
+                _TimeUnit = (
+                    _ExternalDependencyManager().read_singleton().import_module(
+                        path="qlogicae_cor.v3.library.time_unit",
+                        member="TimeUnit",
+                        is_member_callable=True,
+                    )
                 )
-            )
+                _TimeZoneManager = (
+                    _ExternalDependencyManager().read_singleton().import_module(
+                        path="qlogicae_cor.v3.library.time_zone_manager",
+                        member="TimeZoneManager",
+                        is_member_callable=True,
+                    )
+                )
 
             self._TIME_UNIT_TO_NANOSECONDS = {
                 _TimeUnit().NANOSECOND: 1.0,
@@ -179,15 +168,6 @@ def _allocate():
                 _TimeUnit().MILLENNIUM: 31556952000e9,
             }
 
-            return True
-
-        def setup(self, kwargs):
-            if not isinstance(kwargs, (dict)):
-                return True
-
-            return True
-
-        def shutdown(self):
             return True
 
         def calculate_elapsed_time(

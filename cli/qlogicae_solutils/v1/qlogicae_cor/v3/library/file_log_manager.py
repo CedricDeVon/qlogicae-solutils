@@ -19,7 +19,9 @@ def _allocate():
     global _allocate
     global _FileLogManager
 
-    class __FileLogManager:
+    from .abstract_manager import AbstractManager
+
+    class __FileLogManager(AbstractManager()):
         __slots__ = (
             "logger",
             "file_handlers",
@@ -30,23 +32,11 @@ def _allocate():
             "_cache",
         )
 
-        _singleton = None
-
         def __init__(self):
             self.construct()
 
-        def __enter__(self):
-            return self
-
         def __exit__(self, exc_type, exc_value, traceback):
             self.shutdown()
-
-        @classmethod
-        def get_singleton(cls):
-            if cls._singleton is None:
-                cls._singleton = cls()
-
-            return cls._singleton
 
         @property
         def options(self):
@@ -82,69 +72,70 @@ def _allocate():
         def construct(self):
             global _ExternalDependencyManager
 
-            global _queue
-            global _logging
-            global _pathlib
-            global _LogFormat
-            global _LogOptions
-            global _logging_handlers
-            global _LogOptionsManager
-            global _TextEncodingDataManager
+            if not _ExternalDependencyManager:
+                from .external_dependency_manager import ExternalDependencyManager
+                
+                global _queue
+                global _logging
+                global _pathlib
+                global _LogFormat
+                global _LogOptions
+                global _logging_handlers
+                global _LogOptionsManager
+                global _TextEncodingDataManager
 
-            from .external_dependency_manager import ExternalDependencyManager
+                _ExternalDependencyManager = (
+                    ExternalDependencyManager()
+                )
 
-            _ExternalDependencyManager = (
-                ExternalDependencyManager()
-            )
-
-            _logging = (
-                _ExternalDependencyManager().get_singleton().import_module(
-                    path="logging",
+                _logging = (
+                    _ExternalDependencyManager().get_singleton().import_module(
+                        path="logging",
+                    )
                 )
-            )
-            _queue = (
-                _ExternalDependencyManager().get_singleton().import_module(
-                    path="queue",
+                _queue = (
+                    _ExternalDependencyManager().get_singleton().import_module(
+                        path="queue",
+                    )
                 )
-            )
-            _logging_handlers = (
-                _ExternalDependencyManager().get_singleton().import_module(
-                    path="logging.handlers",
+                _logging_handlers = (
+                    _ExternalDependencyManager().get_singleton().import_module(
+                        path="logging.handlers",
+                    )
                 )
-            )
-            _pathlib = (
-                _ExternalDependencyManager().get_singleton().import_module(
-                    path="pathlib",
+                _pathlib = (
+                    _ExternalDependencyManager().get_singleton().import_module(
+                        path="pathlib",
+                    )
                 )
-            )
-            _TextEncodingDataManager = (
-                _ExternalDependencyManager().get_singleton().import_module(
-                    path="qlogicae_cor.v3.library.text_encoding_data_manager",
-                    member="TextEncodingDataManager",
-                    is_member_callable=True,
+                _TextEncodingDataManager = (
+                    _ExternalDependencyManager().get_singleton().import_module(
+                        path="qlogicae_cor.v3.library.text_encoding_data_manager",
+                        member="TextEncodingDataManager",
+                        is_member_callable=True,
+                    )
                 )
-            )
-            _LogFormat = (
-                _ExternalDependencyManager().get_singleton().import_module(
-                    path="qlogicae_cor.v3.library.log_format",
-                    member="LogFormat",
-                    is_member_callable=True,
+                _LogFormat = (
+                    _ExternalDependencyManager().get_singleton().import_module(
+                        path="qlogicae_cor.v3.library.log_format",
+                        member="LogFormat",
+                        is_member_callable=True,
+                    )
                 )
-            )
-            _LogOptions = (
-                _ExternalDependencyManager().get_singleton().import_module(
-                    path="qlogicae_cor.v3.library.log_options",
-                    member="LogOptions",
-                    is_member_callable=True,
+                _LogOptions = (
+                    _ExternalDependencyManager().get_singleton().import_module(
+                        path="qlogicae_cor.v3.library.log_options",
+                        member="LogOptions",
+                        is_member_callable=True,
+                    )
                 )
-            )
-            _LogOptionsManager = (
-                _ExternalDependencyManager().get_singleton().import_module(
-                    path="qlogicae_cor.v3.library.log_options_manager",
-                    member="LogOptionsManager",
-                    is_member_callable=True,
+                _LogOptionsManager = (
+                    _ExternalDependencyManager().get_singleton().import_module(
+                        path="qlogicae_cor.v3.library.log_options_manager",
+                        member="LogOptionsManager",
+                        is_member_callable=True,
+                    )
                 )
-            )
 
             self.logger = _logging().getLogger("file-logger")
             self.logger.setLevel(_logging().DEBUG)

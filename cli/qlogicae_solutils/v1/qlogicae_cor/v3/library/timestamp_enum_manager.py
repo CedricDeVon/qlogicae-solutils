@@ -13,61 +13,40 @@ def _allocate():
     global _allocate
     global _TimestampEnumManager
 
-    class __TimestampEnumManager:
-        _singleton = None
+    from .abstract_manager import AbstractManager
 
+    class __TimestampEnumManager(AbstractManager()):
         def __init__(self):
             self.construct()
-
-        def __enter__(self):
-            return self
-
-        def __exit__(self, exc_type, exc_value, traceback):
-            self.shutdown()
-
-        @classmethod
-        def read_singleton(cls):
-            if cls._singleton is None:
-                cls._singleton = cls()
-
-            return cls._singleton
 
         def construct(self):
             global _ExternalDependencyManager
 
-            global _Timestamp
-            global _EnumConversionValue
+            if not _ExternalDependencyManager:
+                from .external_dependency_manager import ExternalDependencyManager
 
-            from .external_dependency_manager import ExternalDependencyManager
+                global _Timestamp
+                global _EnumConversionValue
 
-            _ExternalDependencyManager = (
-                ExternalDependencyManager()
-            )
-
-            _EnumConversionValue = (
-                _ExternalDependencyManager().read_singleton().import_module(
-                    path="qlogicae_cor.v3.library.enum_conversion_value",
-                    member="EnumConversionValue",
-                    is_member_callable=True
+                _ExternalDependencyManager = (
+                    ExternalDependencyManager()
                 )
-            )
-            _Timestamp = (
-                _ExternalDependencyManager().read_singleton().import_module(
-                    path="qlogicae_cor.v3.library.timestamp",
-                    member="Timestamp",
-                    is_member_callable=True
+
+                _EnumConversionValue = (
+                    _ExternalDependencyManager().read_singleton().import_module(
+                        path="qlogicae_cor.v3.library.enum_conversion_value",
+                        member="EnumConversionValue",
+                        is_member_callable=True
+                    )
                 )
-            )
+                _Timestamp = (
+                    _ExternalDependencyManager().read_singleton().import_module(
+                        path="qlogicae_cor.v3.library.timestamp",
+                        member="Timestamp",
+                        is_member_callable=True
+                    )
+                )
 
-            return True
-
-        def setup(self, kwargs):
-            if not isinstance(kwargs, (dict)):
-                return True
-
-            return True
-
-        def shutdown(self):
             return True
 
         def convert_value(

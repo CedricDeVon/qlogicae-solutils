@@ -12,29 +12,24 @@ def _allocate():
     global _allocate
     global _ValueCacheStorageManager
 
-    class __ValueCacheStorageManager:
+    from .abstract_manager import AbstractManager
+
+    class __ValueCacheStorageManager(AbstractManager()):
         __slots__ = (
             "_values",
             "_defaults",
         )
 
-        _singleton = None
-
         def __init__(self):
             self.construct()
-
-        def __enter__(self):
-            return self
-
-        def __exit__(self, exc_type, exc_value, traceback):
-            self.shutdown()
 
         def construct(self):
             global _ExternalDependencyManager
 
-            from .external_dependency_manager import ExternalDependencyManager
+            if not _ExternalDependencyManager:
+                from .external_dependency_manager import ExternalDependencyManager
 
-            _ExternalDependencyManager = ExternalDependencyManager()
+                _ExternalDependencyManager = ExternalDependencyManager()
 
             self._values = {}
             self._defaults = {}
@@ -65,16 +60,6 @@ def _allocate():
             self._defaults = defaults
 
             return True
-
-        def shutdown(self):
-            return True
-
-        @classmethod
-        def read_singleton(cls):
-            if cls._singleton is None:
-                cls._singleton = cls()
-
-            return cls._singleton
 
         @property
         def values(self):

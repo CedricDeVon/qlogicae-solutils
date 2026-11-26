@@ -5,117 +5,37 @@ __all__ = (
 _ExternalDependencyManager = None
 _PersistentCacheStorageDataManager = None
 
-_PluginDataManager = None
-
 
 def _allocate():
     global _allocate
     global _PersistentCacheStorageDataManager
 
-    class __PersistentCacheStorageDataManager:
-        __slots__ = (
-            "_root_key_path",
-        )
+    from .base_data_manager import (
+        BaseDataManager
+    )
 
-        _singleton = None
-
+    class __PersistentCacheStorageDataManager(BaseDataManager()):
         def __init__(self):
-            self.construct()
-
-        def __enter__(self):
-            return self
-
-        def __exit__(self, exc_type, exc_value, traceback):
-            self.shutdown()
-
-        @property
-        def root_key_path(self):
-            return self._root_key_path
-
-        @root_key_path.setter
-        def root_key_path(self, value):
-            if not isinstance(value, (tuple, list)):
-                raise ValueError("")
-
-            self._root_key_path = value
-
-        @classmethod
-        def read_singleton(cls):
-            if cls._singleton is None:
-                cls._singleton = cls()
-
-            return cls._singleton
-
-        def construct(self):
-            global _ExternalDependencyManager
-
-            global _PluginDataManager
-
-            from .external_dependency_manager import ExternalDependencyManager
-
-            _ExternalDependencyManager = (
-                ExternalDependencyManager()
-            )
-            _PluginDataManager = (
-                _ExternalDependencyManager()
-                    .read_singleton()
-                    .import_module(                    
-                        path="qlogicae_cor.v3.library.plugin_data_manager",
-                        member="PluginDataManager",
-                        is_member_callable=True,
-                    )
-            )
-
-            self._root_key_path = (
-                "qlogicae_cor_v3_persistent_cache_storage"
-            )
-
-            return True
-
-        def setup(self, kwargs):
-            if not isinstance(kwargs, (dict)):
-                return True
-
-            return True
-
-        def shutdown(self):
-            return True
+            super().__init__({
+                "sub_root_key_path": "persistent_cache_storage"
+            })
 
         def setup_plugin_data(self):
-            plugin_data_manager = (
-                _PluginDataManager()
-                    .read_singleton()
-            )
-
             return (
-                plugin_data_manager
-                    .setup_plugin_data({
-                        "root_key_path": self._root_key_path,
-                        "layer": 0,
-                        "data": (
-                            {
-                                "root": {
-                                    "database_path": "data.db",
-                                    "create_missing": True,
-                                    "lifespan_in_seconds": 0.0,
-                                    "file_mode": 0o600,
-                                    "key_encoding": "utf-8",
-                                    "auto_remove_expired": True,
-                                    "auto_remove_invalid": True,
-                                    "sync_on_write": False,
-                                },
-                                "callbacks": {
-                                    "on_pre_setup": None,
-                                    "on_post_setup": None,
-                                    "on_pre_run": None,
-                                    "on_post_run": None,
-                                    "on_pre_shutdown": None,
-                                    "on_post_shutdown": None,
-                                },
-                            }
-                        )
-
-                    })
+                self.base_setup_plugin_data({ 
+                    "data": {
+                        "root": {
+                            "database_path": "data.db",
+                            "create_missing": True,
+                            "lifespan_in_seconds": 0.0,
+                            "file_mode": 0o600,
+                            "key_encoding": "utf-8",
+                            "auto_remove_expired": True,
+                            "auto_remove_invalid": True,
+                            "sync_on_write": False,
+                        },
+                    }                  
+                })
             )
 
         def read_root_properties(self):
@@ -252,120 +172,6 @@ def _allocate():
                     value
                 )
             )
-
-        def read_all_data(
-            self
-        ):
-            data = (
-                _PluginDataManager()
-                    .read_singleton()
-                    .read_all_data(
-                        self._root_key_path
-                    )
-            )
-
-            return (
-                data
-            )
-
-        def read_one_data(
-            self,
-            key_path,
-        ):
-            if not isinstance(key_path, (tuple, list)):
-                raise TypeError("")
-            
-            data = (
-                _PluginDataManager()
-                    .read_singleton()
-                    .read_one_data(
-                        self._root_key_path,
-                        key_path
-                    )
-            )
-
-            return (
-                data
-            )
-
-        def write_all_data(
-            self,
-            value
-        ):
-            result = True
-            result = (
-                _PluginDataManager()
-                    .read_singleton()
-                    .write_all_data(
-                        self._root_key_path,
-                        value
-                    ) and result
-            )
-
-            return (
-                result
-            )
-
-        def write_one_data(
-            self,
-            key_path,
-            value,
-        ):
-            if not isinstance(key_path, (tuple, list)):
-                raise TypeError("")
-            
-            result = True
-            result = (
-                _PluginDataManager()
-                    .read_singleton()
-                    .write_one_data(
-                        self._root_key_path,
-                        key_path,
-                        value
-                    ) and result
-            )
-
-            return (
-                result
-            )
-
-        def remove_one_data(
-            self,
-            key_path,
-        ):
-            if not isinstance(key_path, (tuple, list)):
-                raise TypeError("")
-            
-            result = True
-            result = (
-                _PluginDataManager()
-                    .read_singleton()
-                    .remove_one_data(
-                        self._root_key_path,
-                        key_path,
-                    ) and result
-            )
-
-            return (
-                result
-            )
-
-        def remove_all_data(
-            self,
-        ):
-            result = True
-            result = (
-                _PluginDataManager()
-                    .read_singleton()
-                    .remove_all_data(
-                        self._root_key_path,
-                    ) and result
-            )
-
-            return (
-                result
-            )
-
 
 
     _PersistentCacheStorageDataManager = __PersistentCacheStorageDataManager

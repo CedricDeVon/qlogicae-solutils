@@ -14,67 +14,44 @@ def _allocate():
     global _allocate
     global _ConsoleNavigationManager
 
-    class __ConsoleNavigationManager:
-        __slots__ = ()
+    from .abstract_manager import AbstractManager
 
-        _singleton = None
-
+    class __ConsoleNavigationManager(AbstractManager()):
         def __init__(self):
             self.construct()
-
-        def __enter__(self):
-            return self
-
-        def __exit__(self, exc_type, exc_value, traceback):
-            self.shutdown()
-
-        @classmethod
-        def read_singleton(cls):
-            if cls._singleton is None:
-                cls._singleton = cls()
-
-            return cls._singleton
 
         def construct(self):
             global _ExternalDependencyManager
 
-            global _os
-            global _pathlib
-            global _ConsoleNavigationDataManager
-
-            from .external_dependency_manager import ExternalDependencyManager
-
-            _ExternalDependencyManager = (
-                ExternalDependencyManager()
-            )
-
-            _os = (
-                _ExternalDependencyManager().read_singleton().import_module(
-                    path="os"
-                )
-            )
-            _pathlib = (
-                _ExternalDependencyManager().read_singleton().import_module(
-                    path="pathlib"
-                )
-            )
-            _ConsoleNavigationDataManager = (
-                _ExternalDependencyManager().read_singleton().import_module(
-                    path="qlogicae_cor.v3.library.console_navigation_data_manager",
-                    member="ConsoleNavigationDataManager",
-                    is_member_callable=True
-                )
-            )
-
-            return True
-
-        def setup(self, kwargs):
-            if not isinstance(kwargs, (dict)):
-                return True
+            if not _ExternalDependencyManager:
+                from .external_dependency_manager import ExternalDependencyManager
                 
-            return True
+                global _os
+                global _pathlib
+                global _ConsoleNavigationDataManager
 
-        def shutdown(self):
+                _ExternalDependencyManager = (
+                    ExternalDependencyManager()
+                )
+
+                _os = (
+                    _ExternalDependencyManager().read_singleton().import_module(
+                        path="os"
+                    )
+                )
+                _pathlib = (
+                    _ExternalDependencyManager().read_singleton().import_module(
+                        path="pathlib"
+                    )
+                )
+                _ConsoleNavigationDataManager = (
+                    _ExternalDependencyManager().read_singleton().import_module(
+                        path="qlogicae_cor.v3.library.console_navigation_data_manager",
+                        member="ConsoleNavigationDataManager",
+                        is_member_callable=True
+                    )
+                )
+
             return True
 
         def navigate(self, filesystem_path):
